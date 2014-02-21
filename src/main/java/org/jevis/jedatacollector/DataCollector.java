@@ -24,14 +24,14 @@ import org.jevis.jedatacollector.parsingNew.Result;
  *
  * @author broder
  */
-public class DataLogger {
+public class DataCollector {
 
     protected ParsingService _parsingService;
     protected ConnectionService _connection;
     protected InputHandler _inputHandler;
     protected Request _request;
 
-    public DataLogger(Request req) {
+    public DataCollector(Request req) {
         _request = req;
     }
     //TODO validate EACH Step.. for example "Exist all information for the conenction, parsing...?
@@ -95,7 +95,7 @@ public class DataLogger {
                 o.getAttribute("Raw Data").addSamples(samples);
             }
         } catch (JEVisException ex) {
-            Logger.getLogger(DataLogger.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DataCollector.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
