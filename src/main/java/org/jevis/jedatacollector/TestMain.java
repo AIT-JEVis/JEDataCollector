@@ -63,7 +63,7 @@ public class TestMain {
         List<Request> requests = RequestGenerator.createJEVisRequests(data);
 
         for (Request request : requests) {
-            DataLogger datalogger = new DataLogger(request);
+            DataCollector datalogger = new DataCollector(request);
             try {
                 datalogger.run();
 
@@ -145,7 +145,7 @@ public class TestMain {
             datapoints.add(client.getObject(60l)); //TODO stimmt so nicht
             data = new Data(parser, connection, equipment, datapoints);
         } catch (JEVisException ex) {
-            Logger.getLogger(DataLogger.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DataCollector.class.getName()).log(Level.SEVERE, null, ex);
         }
         return data;
     }

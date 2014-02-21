@@ -59,4 +59,13 @@ public class RequestGenerator {
         req.setParser(null);
         return req;
     }
+
+    public static Request createConnectionParsingRequest(DatacollectorConnection connection, DataCollectorParser parsing) {
+        Request request = new DefaultRequest();
+        request.setNeedConnection(true);
+        request.setConnection(connection);
+        request.setParser(parsing);
+        request.setNeedImport(true);
+        return request;
+    }
 }
