@@ -1,4 +1,4 @@
-package org.jevis.jedatacollector.ParsingTests;
+package org.jevis.jedatacollector.CSVParsingTests;
 
 /*
  * To change this template, choose Tools | Templates and open the template in
@@ -8,7 +8,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import junit.framework.Assert;
-import org.jevis.jedatacollector.DataLogger;
+import org.jevis.jedatacollector.DataCollector;
 
 import org.jevis.jedatacollector.Request;
 import org.jevis.jedatacollector.RequestGenerator;
@@ -37,12 +37,12 @@ import org.joda.time.format.DateTimeFormatter;
  *
  * @author Broder
  */
-public class TestParsing {
+public class TestCSVParsing {
 
     File _file;
     Request _request;
 
-    public TestParsing() {
+    public TestCSVParsing() {
     }
 
     public void setUp() {
@@ -60,18 +60,18 @@ public class TestParsing {
      */
     public void test_ARA01() throws Exception {
         System.out.println("parse");
-        _file = new File("src/test/java/org/jevis/jedatacollector/ParsingTests/ARA01.csv");
+        _file = new File("src/test/java/org/jevis/jedatacollector/CSVParsingTests/ARA01.csv");
         _request = RequestGenerator.createOnlyParsingRequest();
 
 
-        DataLogger instance = new DataLogger(_request);
+        DataCollector instance = new DataCollector(_request);
         InputHandler inputHandler = new FileInputHandler(_file);
         instance.setInputConverter(inputHandler);
         DataCollectorParser fileParser = new CSVParsing(null, ";", 2);
 
         GeneralDatapointParser datapointParser = new DatapointFixCSVParser(false, 22);
-        GeneralDateParser dateParser = new DateCSVParser("HH:mm:ss", 1, "dd.MM.yyyy", 2);
-        GeneralValueParser valueParser = new ValueCSVParser(0, ".", ",");
+        GeneralDateParser dateParser = new DateCSVParser("HH:mm:ss", 2, "dd.MM.yyyy", 3);
+        GeneralValueParser valueParser = new ValueCSVParser(1, ".", ",");
 
         SampleParserContainer sampleContainer = new SampleParserContainer(datapointParser, dateParser, valueParser);
         fileParser.addSampleContainer(sampleContainer);
@@ -141,18 +141,18 @@ public class TestParsing {
      */
     public void test_JEVisDefault() throws Exception {
         System.out.println("parse");
-        _file = new File("src/test/java/org/jevis/jedatacollector/ParsingTests/JEVis_DEFAULT_example.csv");
+        _file = new File("src/test/java/org/jevis/jedatacollector/CSVParsingTests/JEVis_DEFAULT_example.csv");
         _request = RequestGenerator.createOnlyParsingRequest();
 
         InputHandler inputHandler = new FileInputHandler(_file);
 
-        DataLogger instance = new DataLogger(_request);
+        DataCollector instance = new DataCollector(_request);
         instance.setInputConverter(inputHandler);
         DataCollectorParser fileParser = new CSVParsing("\"", ";", 1);
 
         GeneralDatapointParser datapointParser = new DatapointFixCSVParser(false, 22);
-        GeneralDateParser dateParser = new DateCSVParser(null, null, "dd-MM-yyyy HH:mm:ss", 0);
-        GeneralValueParser valueParser = new ValueCSVParser(1, ".", null);
+        GeneralDateParser dateParser = new DateCSVParser(null, null, "dd-MM-yyyy HH:mm:ss", 1);
+        GeneralValueParser valueParser = new ValueCSVParser(2, ".", null);
 
         SampleParserContainer sampleContainer = new SampleParserContainer(datapointParser, dateParser, valueParser);
         fileParser.addSampleContainer(sampleContainer);
@@ -201,14 +201,5 @@ public class TestParsing {
             Assert.assertEquals(expectedDateTimes.get(i), realDateTimes.get(i));
             Assert.assertEquals(expectedDatapoints.get(i), realDatapoints.get(i));
         }
-    }
-
-    /**
-     * Testcases:
-     *
-     */
-    public void test_alphaConnect() throws Exception {
-        DatacollectorConnection connection = new HTTPConnection();
-        ConnectionService connectionService = new ConnectionService(connection);
     }
 }
