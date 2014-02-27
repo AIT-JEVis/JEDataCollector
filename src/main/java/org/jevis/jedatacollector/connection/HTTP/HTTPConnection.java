@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.*;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -42,12 +43,12 @@ public class HTTPConnection implements DatacollectorConnection {
     private Long _id;
     private String _userName;
     private String _password;
-    
-    public HTTPConnection(){
+
+    public HTTPConnection() {
         super();
     }
-    
-    public HTTPConnection(String serverURL, String filePath, Integer port, Integer connectionTimeout, Integer readTimeout){
+
+    public HTTPConnection(String serverURL, String filePath, Integer port, Integer connectionTimeout, Integer readTimeout) {
         _serverURL = serverURL;
         _filePath = filePath;
         _port = port;
@@ -85,25 +86,9 @@ public class HTTPConnection implements DatacollectorConnection {
     public List<Object> sendSampleRequest(NewDataPoint dp, DateTime from, DateTime until) throws FetchingException {
         List<Object> res = new LinkedList<Object>();
         URL requestUrl;
-        List<String> paths = new LinkedList<String>();
+        List<String> paths = getAllPaths(dp, from, until);
 
-        if (_userName.equals("") && _password.equals("")) {
-            if (_filePath.contains("TIME_START") || _filePath.contains("TIME_END")) {
-                _filePath = _filePath.replaceAll("TIME_START", "DATE_FROM");
-                _filePath = _filePath.replaceAll("TIME_END", "DATE_TO");
-            }
-
-            if (_filePath.contains("DATE_FROM") || _filePath.contains("DATE_TO")) {
-//                TimeSetVector tsv = new TimeSetVector(ts);
-//                tsv.splitIntoChunks(10, 0, 0);
-
-//                for (TimeSet tsPart : tsv) {
-                paths.addAll(ConnectionHelper.parseString(_filePath, String.valueOf(dp.getChannelID()), _dateFormat, from, until));
-//                }
-            }
-//            } else {
-//                paths.addAll(ConnectionHelper.parseString(_filePath, dp.getChannelID(), _dateFormat, ts, deviceTimeZone));
-//            }
+        if (_userName == null || _password == null || _userName.equals("") && _password.equals("")) {
 
             try {
                 List<String> l;
@@ -295,5 +280,26 @@ public class HTTPConnection implements DatacollectorConnection {
     @Override
     public boolean returnsLimitedSampleCount() {
         return false;
+    }
+
+    private List<String> getAllPaths(NewDataPoint dp, DateTime from, DateTime until) {
+        List<String> paths = new ArrayList<String>();
+        if (_filePath.contains("TIME_START") || _filePath.contains("TIME_END")) {
+            _filePath = _filePath.replaceAll("TIME_START", "DATE_FROM");
+            _filePath = _filePath.replaceAll("TIME_END", "DATE_TO");
+        }
+
+        if (_filePath.contains("DATE_FROM") || _filePath.contains("DATE_TO")) {
+//                TimeSetVector tsv = new TimeSetVector(ts);
+//                tsv.splitIntoChunks(10, 0, 0);
+
+//                for (TimeSet tsPart : tsv) {
+            paths.addAll(ConnectionHelper.parseString(_filePath, String.valueOf(dp.getChannelID()), _dateFormat, from, until));
+//                }
+        } else {
+            paths.add(_filePath);
+        }
+
+        return paths;
     }
 }

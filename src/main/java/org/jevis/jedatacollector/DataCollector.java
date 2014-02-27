@@ -19,6 +19,7 @@ import org.jevis.jedatacollector.service.ConnectionService;
 import org.jevis.jedatacollector.service.ParsingService;
 import org.jevis.jedatacollector.service.inputHandler.InputHandler;
 import org.jevis.jedatacollector.parsingNew.Result;
+import org.joda.time.DateTime;
 
 /**
  *
@@ -109,7 +110,13 @@ public class DataCollector {
     }
 
     private void getInput() throws FetchingException {
-        _inputHandler = _connection.sendSamplesRequest(_request.getData().getFrom(_request.getSpecificDatapoint()), _request.getSpecificDatapoint());
+        DateTime time = new DateTime(0);
+        try{
+           time =  _request.getData().getFrom(_request.getSpecificDatapoint());
+        }catch(NullPointerException ex){
+            System.out.println("NO TIME FOUND -- get ALL DATA");
+        }
+        _inputHandler = _connection.sendSamplesRequest(time, _request.getSpecificDatapoint());
 //        _inputHandler.convertInput();
     }
 

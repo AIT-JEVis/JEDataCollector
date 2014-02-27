@@ -16,12 +16,15 @@ public class ValueCSVParser implements GeneralValueParser {
     private int _valueIndex;
     private String _decSep;
     private String _thousandSep;
-    private double _value;
+    private Double _value;
+    private boolean _valueValid;
+    private boolean _outofBounce;
 
     public ValueCSVParser(int valueIndex, String decS, String thousSep) {
-        _valueIndex = valueIndex;
+        _valueIndex = valueIndex - 1;
         _decSep = decS;
         _thousandSep = thousSep;
+        
     }
 
     public int getValueIndex() {
@@ -39,16 +42,35 @@ public class ValueCSVParser implements GeneralValueParser {
     }
 
     @Override
-    public double getValue() {
+    public Double getValue() {
         return _value;
     }
 
     @Override
     public void parse(InputHandler ic) {
+        _valueValid = false;
+        _outofBounce = false;
         String[] line = ic.getLineInput();
-        String sVal = line[_valueIndex];
-        sVal = sVal.replaceAll("\\" + _thousandSep, "");
-        sVal = sVal.replaceAll("\\" + _decSep, ".");
-        _value = Double.parseDouble(sVal);
+        String sVal = null;
+        try {
+            sVal = line[_valueIndex];
+            sVal = sVal.replaceAll("\\" + _thousandSep, "");
+            sVal = sVal.replaceAll("\\" + _decSep, ".");
+            _value = Double.parseDouble(sVal);
+            _valueValid = true;
+        } catch (NumberFormatException nfe) {
+//            System.out.println("Value is wrong " + sVal);
+        } catch (ArrayIndexOutOfBoundsException oob) {
+            _outofBounce = true;
+        }
+    }
+
+    @Override
+    public boolean isValueValid() {
+        return _valueValid;
+    }
+
+    public boolean outOfBounce() {
+        return _outofBounce;
     }
 }

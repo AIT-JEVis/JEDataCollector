@@ -65,7 +65,7 @@ public class RequestGenerator {
         request.setNeedConnection(true);
         request.setConnection(connection);
         request.setParser(parsing);
-        request.setNeedImport(true);
+        request.setNeedImport(false);
         return request;
     }
 }

@@ -26,8 +26,12 @@ public class DateCSVParser implements GeneralDateParser {
     public DateCSVParser(String timeFormat, Integer timeIndex, String dateFormat, Integer dateIndex) {
         _timeFormat = timeFormat;
         _dateFormat = dateFormat;
-        _timeIndex = timeIndex;
-        _dateIndex = dateIndex;
+        if (timeIndex != null) {
+            _timeIndex = timeIndex - 1;
+        }
+        if (dateIndex != null) {
+            _dateIndex = dateIndex - 1;
+        }
     }
 
     @Override

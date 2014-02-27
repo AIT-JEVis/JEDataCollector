@@ -8,11 +8,13 @@ package org.jevis.jedatacollector.parsingNew.sampleParser;
  *
  * @author broder
  */
-public interface GeneralValueParser extends GeneralParser{
+public interface GeneralValueParser extends GeneralParser {
 
-    public double getValue();
+    public Double getValue();
 
     public String getThousandSeperator();
 
     public String getDecimalSeperator();
+
+    public boolean isValueValid();
 }

@@ -10,6 +10,7 @@ import org.jevis.jeapi.JEVisObject;
 import org.jevis.jedatacollector.Request;
 import org.jevis.jedatacollector.data.NewDataPoint;
 import org.jevis.jedatacollector.parsingNew.DataCollectorParser;
+import org.jevis.jedatacollector.parsingNew.sampleParser.SampleParserContainer;
 import org.jevis.jedatacollector.service.inputHandler.InputHandler;
 
 /**
@@ -18,21 +19,27 @@ import org.jevis.jedatacollector.service.inputHandler.InputHandler;
  */
 public class ParsingService {
 
+    public static boolean checkValue(SampleParserContainer parser) {
+        boolean validValue = parser.getValueParser().isValueValid();
+        return validValue;
+    }
 //    private IParsing _parser;
     private DataCollectorParser _fileParser;
 
     public ParsingService(Request request) {
         _fileParser = request.getParser();
-        List<JEVisObject> datapoints = new ArrayList<JEVisObject>();
-        JEVisObject dp = request.getSpecificDatapoint().getJEVisDatapoint();
-        if(dp!=null){
-            datapoints.add(dp);
-        }else{
-            for(NewDataPoint ndp: request.getData().getDatapoints()){
-                datapoints.add(ndp.getJEVisDatapoint());
+        if (_fileParser.getSampleParserContianers().isEmpty()) {
+            List<JEVisObject> datapoints = new ArrayList<JEVisObject>();
+            JEVisObject dp = request.getSpecificDatapoint().getJEVisDatapoint();
+            if (dp != null) {
+                datapoints.add(dp);
+            } else {
+                for (NewDataPoint ndp : request.getData().getDatapoints()) {
+                    datapoints.add(ndp.getJEVisDatapoint());
+                }
             }
+            _fileParser.createSampleContainers(_fileParser.getJEVisParser(), datapoints);
         }
-        _fileParser.createSampleContainers(_fileParser.getJEVisParser(),datapoints);
         //initilize of the FileParser.. in the future this should be from a factory and not with the IParsingObject
     }
 
@@ -52,7 +59,6 @@ public class ParsingService {
 //    public ParsedData getParsedData(){
 //        return _parser.getData();
 //    }
-
     public void setFileParser(DataCollectorParser fileParser) {
         _fileParser = fileParser;
     }

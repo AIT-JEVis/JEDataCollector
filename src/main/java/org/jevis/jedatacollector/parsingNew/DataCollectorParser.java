@@ -47,6 +47,10 @@ public abstract class DataCollectorParser {
         //erstmal einfach
         _sampleParsers.add(parser);
     }
+    
+    public List<SampleParserContainer> getSampleParserContianers(){
+        return _sampleParsers;
+    }
 
     public JEVisObject getJEVisParser() {
         return _jevisParser;

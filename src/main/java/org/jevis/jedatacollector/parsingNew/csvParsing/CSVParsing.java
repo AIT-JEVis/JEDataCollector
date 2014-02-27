@@ -20,6 +20,7 @@ import org.jevis.jedatacollector.parsingNew.sampleParser.GeneralDatapointParser;
 import org.jevis.jedatacollector.parsingNew.sampleParser.GeneralDateParser;
 import org.jevis.jedatacollector.parsingNew.sampleParser.GeneralValueParser;
 import org.jevis.jedatacollector.parsingNew.sampleParser.SampleParserContainer;
+import org.jevis.jedatacollector.service.ParsingService;
 import org.jevis.jedatacollector.service.inputHandler.InputHandler;
 import org.joda.time.DateTime;
 
@@ -61,7 +62,7 @@ public class CSVParsing extends DataCollectorParser {
         String[] stringArrayInput = ic.getStringArrayInput().clone();
         System.out.println("Sampleparserlist " + _sampleParsers.size());
         for (int i = _headerLines; i < stringArrayInput.length; i++) {
-            String line[] = stringArrayInput[i].split(String.valueOf(_delim));
+            String line[] = stringArrayInput[i].split(String.valueOf(_delim),-1);
             if (_quote != null) {
                 line = removeQuotes(line);
             }
@@ -82,6 +83,16 @@ public class CSVParsing extends DataCollectorParser {
                 GeneralDatapointParser dpParser = parser.getDpParser();
                 dpParser.parse(ic);
                 datapoint = dpParser.getDatapoint();
+              
+                
+                if(((ValueCSVParser)valueParser).outOfBounce()){
+                    System.out.println("Date "+ dateTime);
+                    System.out.println("Value "+ value);
+                }
+                boolean valueIsValid = ParsingService.checkValue(parser);
+                if(!valueIsValid){
+                    continue;
+                }
                 _results.add(new Result(datapoint, value, dateTime));
             }
         }
@@ -138,14 +149,12 @@ public class CSVParsing extends DataCollectorParser {
             int dateIndex = -1;
             if (dateObject.getAttribute(indexDate) != null) {
                 dateIndex = (int) (long) dateObject.getAttribute(indexDate).getLatestSample().getValueAsLong();
-                dateIndex--;
             }
             System.out.println("Dateindex" + dateIndex);
 
             int timeIndex = -1;
             if (dateObject.getAttribute(indexTime) != null) {
                 timeIndex = (int) (long) dateObject.getAttribute(indexTime).getLatestSample().getValueAsLong();
-                timeIndex--;
             }
             System.out.println("Timeindex" + timeIndex);
 
@@ -163,7 +172,6 @@ public class CSVParsing extends DataCollectorParser {
             int indexValue = -1;
             if (mapping.getAttribute(indexValueType) != null) {
                 indexValue = (int) (long) mapping.getAttribute(indexValueType).getLatestSample().getValueAsLong();
-                indexValue--;
             }
             System.out.println("IndexValue" + indexValue);
 //            int indexDatapoint = 0;
