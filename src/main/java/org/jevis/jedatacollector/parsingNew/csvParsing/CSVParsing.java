@@ -13,13 +13,10 @@ import org.jevis.jeapi.JEVisType;
 import org.jevis.jedatacollector.data.JevisAttributes;
 import org.jevis.jedatacollector.parsingNew.DataCollectorParser;
 import org.jevis.jedatacollector.parsingNew.Result;
-import org.jevis.jedatacollector.parsingNew.sampleParser.CSV.DatapointFixCSVParser;
-import org.jevis.jedatacollector.parsingNew.sampleParser.CSV.DateCSVParser;
-import org.jevis.jedatacollector.parsingNew.sampleParser.CSV.ValueCSVParser;
-import org.jevis.jedatacollector.parsingNew.sampleParser.GeneralDatapointParser;
-import org.jevis.jedatacollector.parsingNew.sampleParser.GeneralDateParser;
-import org.jevis.jedatacollector.parsingNew.sampleParser.GeneralValueParser;
-import org.jevis.jedatacollector.parsingNew.sampleParser.SampleParserContainer;
+import org.jevis.jedatacollector.parsingNew.GeneralDatapointParser;
+import org.jevis.jedatacollector.parsingNew.GeneralDateParser;
+import org.jevis.jedatacollector.parsingNew.GeneralValueParser;
+import org.jevis.jedatacollector.parsingNew.SampleParserContainer;
 import org.jevis.jedatacollector.service.ParsingService;
 import org.jevis.jedatacollector.service.inputHandler.InputHandler;
 import org.joda.time.DateTime;
@@ -71,8 +68,8 @@ public class CSVParsing extends DataCollectorParser {
             ic.setLineInput(line);
 
             DateTime dateTime;
-            double value;
-            long datapoint;
+            Double value;
+            Long datapoint;
             for (SampleParserContainer parser : _sampleParsers) {
                 GeneralDateParser dateParser = parser.getDateParser();
                 dateParser.parse(ic);

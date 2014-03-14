@@ -55,16 +55,16 @@ public abstract class InputHandler implements Iterable<Object> {
         String[] inputArray = new String[stringInput.size()];
         return stringInput.toArray(inputArray);
     }
-    
+
     //not very nice
-    public void setLineInput(String[] input){
+    public void setLineInput(String[] input) {
         _lineInput = input;
     }
 
-    public String[] getLineInput(){
+    public String[] getLineInput() {
         return _lineInput;
     }
-    
+
     public void setInputStream(List<InputStream> input) {
         _inputStream = input;
     }

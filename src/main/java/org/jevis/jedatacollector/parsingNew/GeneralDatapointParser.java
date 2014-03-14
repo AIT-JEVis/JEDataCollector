@@ -2,16 +2,19 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.jevis.jedatacollector.parsingNew.sampleParser;
+package org.jevis.jedatacollector.parsingNew;
 
 import org.jevis.jedatacollector.service.inputHandler.InputHandler;
 
 /**
- * Interface for parsing a line in a csv File
- * 
+ *
  * @author broder
  */
-interface GeneralParser {
+public interface GeneralDatapointParser extends GeneralParser{
 
-    public void parse(InputHandler ic);
+    public boolean isInFile();
+
+    public long getDatapoint();
+    
+ 
 }

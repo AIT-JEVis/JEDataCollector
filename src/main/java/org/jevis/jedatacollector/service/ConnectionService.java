@@ -31,10 +31,9 @@ public class ConnectionService {
         System.out.println("---Verbinden erfolgreich---");
     }
 
-    public InputHandler sendSamplesRequest(DateTime from, NewDataPoint dp) throws FetchingException {
+    public InputHandler sendSamplesRequest(DateTime from, DateTime until, NewDataPoint dp) throws FetchingException {
         System.out.println("---Send Sample Request---");
-        DateTime until = new DateTime();
-   
+
 //        Calendar fromAfter = GregorianCalendar.getInstance();
 //        fromAfter.setTimeInMillis(from.getMillis());
 //        fromAfter.setTimeZone(timeZone);

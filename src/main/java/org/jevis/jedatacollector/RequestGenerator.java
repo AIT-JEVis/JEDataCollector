@@ -11,6 +11,7 @@ import org.jevis.jedatacollector.data.Data;
 import org.jevis.jedatacollector.data.Equipment;
 import org.jevis.jedatacollector.data.NewDataPoint;
 import org.jevis.jedatacollector.parsingNew.DataCollectorParser;
+import org.joda.time.DateTime;
 
 /**
  *
@@ -36,6 +37,7 @@ public class RequestGenerator {
                 request.setSpecificDatapoint(dp);
                 request.setData(data);
                 request.setNeedImport(true);
+                request.setNeedParsing(true);
                 requests.add(request);
             }
         } else {
@@ -46,6 +48,7 @@ public class RequestGenerator {
             request.setEquipment(equipment);
             request.setSpecificDatapoint(null);
             request.setNeedImport(true);
+            request.setNeedParsing(true);
             requests.add(request);
         }
 
@@ -56,6 +59,7 @@ public class RequestGenerator {
         Request req = new DefaultRequest();
         req.setNeedConnection(false);
         req.setNeedImport(false);
+        req.setNeedParsing(true);
         req.setParser(null);
         return req;
     }
@@ -66,6 +70,19 @@ public class RequestGenerator {
         request.setConnection(connection);
         request.setParser(parsing);
         request.setNeedImport(false);
+        request.setNeedParsing(true);
+        return request;
+    }
+
+    public static Request createConnectionRequestWithTimeperiod(DatacollectorConnection connection, NewDataPoint datapoint, DateTime from, DateTime until) {
+        Request request = new DefaultRequest();
+        request.setNeedConnection(true);
+        request.setConnection(connection);
+        request.setNeedImport(false);
+        request.setNeedParsing(false);
+        request.setFrom(from);
+        request.setUntil(until);
+        request.setSpecificDatapoint(datapoint);
         return request;
     }
 }

@@ -2,9 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.jevis.jedatacollector.parsingNew.sampleParser.CSV;
+package org.jevis.jedatacollector.parsingNew.csvParsing;
 
-import org.jevis.jedatacollector.parsingNew.sampleParser.GeneralValueParser;
+import org.jevis.jedatacollector.parsingNew.GeneralValueParser;
 import org.jevis.jedatacollector.service.inputHandler.InputHandler;
 
 /**

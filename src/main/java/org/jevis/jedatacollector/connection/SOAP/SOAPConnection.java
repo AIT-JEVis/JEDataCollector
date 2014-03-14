@@ -51,6 +51,19 @@ public class SOAPConnection implements DatacollectorConnection {
     private Long _maximumDayRequest;
     private Long _id;
 
+    public SOAPConnection() {
+    }
+
+    public SOAPConnection(String template, String address, String dateFormat, String sampleCount, Long triesRead, Long timeoutRead, Long maximumDayRequest) {
+        _xmlTemplate = template;
+        _address = address;
+        _dateFormat = dateFormat;
+        _sampleCount = sampleCount;
+        _triesRead = triesRead;
+        _timeoutRead = timeoutRead;
+        _maximumDayRequest = maximumDayRequest;
+    }
+
     @Override
     public void initialize(JEVisObject cn) throws FetchingException {
         try {
@@ -137,10 +150,10 @@ public class SOAPConnection implements DatacollectorConnection {
 //            tsv.splitIntoChunks(_maximumDayRequest.intValue(), 0, 0);
 
 //            for (TimeSet tsPart : tsv) {
-            soapRequests.add(getSOAPMessage(new String(_xmlTemplate), from, until, _sampleCount, String.valueOf(dp.getChannelID()), dp.getDataLoggerName(), fmt));
+            soapRequests.add(getSOAPMessage(new String(_xmlTemplate), from, until, _sampleCount, dp.getChannelID(), dp.getDataLoggerName(), fmt));
 //            }
         } else {
-            soapRequests.add(getSOAPMessage(new String(_xmlTemplate), from, until, _sampleCount, String.valueOf(dp.getChannelID()), dp.getDataLoggerName(), fmt));
+            soapRequests.add(getSOAPMessage(new String(_xmlTemplate), from, until, _sampleCount, dp.getChannelID(), dp.getDataLoggerName(), fmt));
         }
 
         for (int i = 0; i < soapRequests.size(); i++) {
@@ -174,6 +187,7 @@ public class SOAPConnection implements DatacollectorConnection {
 
         template = template.replace("*SYSTEM_TIME*", String.valueOf(System.nanoTime()));
 
+        System.out.println("Soap Message #### " + template);
         Document doc = buildDocument(template);
         return buildSOAPMessage(doc);
     }

@@ -18,8 +18,8 @@ import org.joda.time.DateTime;
  *
  * @author bf
  */
-public class DefaultRequest implements Request{
-    
+public class DefaultRequest implements Request {
+
     private boolean _needConnection = false;
     private DatacollectorConnection _connection;
     private DataCollectorParser _parser;
@@ -28,6 +28,9 @@ public class DefaultRequest implements Request{
     private Data _data;
     private boolean _needImport;
     private ParsingService _parsingService;
+    private boolean _needParsing;
+    private DateTime _from;
+    private DateTime _until;
 
     public boolean needConnection() {
         return _needConnection;
@@ -60,20 +63,20 @@ public class DefaultRequest implements Request{
     public void setEquipment(Equipment equipment) {
         _equipment = equipment;
     }
-    
-    public Equipment getEquipment(){
+
+    public Equipment getEquipment() {
         return _equipment;
     }
 
     public void setSpecificDatapoint(NewDataPoint tmpdatapoints) {
         _datapoint = tmpdatapoints;
     }
-    
-    public void setData(Data data){
+
+    public void setData(Data data) {
         _data = data;
     }
-    
-    public Data getData(){
+
+    public Data getData() {
         return _data;
     }
 
@@ -88,6 +91,28 @@ public class DefaultRequest implements Request{
     public void setParsingService(ParsingService ps) {
         _parsingService = ps;
     }
-    
-    
+
+    public boolean needParsing() {
+        return _needParsing;
+    }
+
+    public void setNeedParsing(boolean needParsing) {
+        _needParsing = needParsing;
+    }
+
+    public void setFrom(DateTime from) {
+        _from = from;
+    }
+
+    public DateTime getFrom() {
+        return _from;
+    }
+
+    public void setUntil(DateTime until) {
+        _until = until;
+    }
+
+    public DateTime getUntil() {
+        return _until;
+    }
 }

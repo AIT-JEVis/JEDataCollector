@@ -20,6 +20,7 @@ import org.jevis.jedatacollector.service.ParsingService;
 import org.jevis.jedatacollector.service.inputHandler.InputHandler;
 import org.jevis.jedatacollector.parsingNew.Result;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 /**
  *
@@ -34,6 +35,12 @@ public class DataCollector {
 
     public DataCollector(Request req) {
         _request = req;
+        if (_request.getEquipment() != null) {
+            DateTimeZone.setDefault(_request.getEquipment().getTimezone());
+        } else {
+            DateTimeZone.setDefault(DateTimeZone.UTC);
+        }
+        System.out.println("Default Timezone " + DateTimeZone.getDefault());
     }
     //TODO validate EACH Step.. for example "Exist all information for the conenction, parsing...?
 
@@ -42,9 +49,11 @@ public class DataCollector {
             connect();
             getInput();
         }
-        System.out.println("Beginne parsen");
-        parse();
-        System.out.println("Parsen fertig");
+        if (_request.needParsing()) {
+            System.out.println("Beginne parsen");
+            parse();
+            System.out.println("Parsen fertig");
+        }
         if (_request.needImport()) {
             importData();
         }
@@ -56,6 +65,10 @@ public class DataCollector {
             _parsingService = new ParsingService(_request);
         }
         _parsingService.parseData(_inputHandler);
+    }
+
+    public InputHandler getInputHandler() {
+        return _inputHandler;
     }
 
     public void importData() {
@@ -85,7 +98,8 @@ public class DataCollector {
                 NewDataPoint dataPoint = _request.getData().getDataPointPerOnlineID(datapoint);
                 JEVisObject onlineData = dataPoint.getJEVisOnlineData();
                 List<JEVisSample> samples = onlineToSampleMap.get(dataPoint.getJEVisOnlineData());
-                JEVisSample sample = onlineData.getAttribute("Raw Data").buildSample(s.getDate(), s.getValue());
+                DateTime convertedDate = s.getDate().toDateTime(DateTimeZone.UTC);
+                JEVisSample sample = onlineData.getAttribute("Raw Data").buildSample(convertedDate, s.getValue());
                 samples.add(sample);
             }
 
@@ -110,13 +124,20 @@ public class DataCollector {
     }
 
     private void getInput() throws FetchingException {
-        DateTime time = new DateTime(0);
-        try{
-           time =  _request.getData().getFrom(_request.getSpecificDatapoint());
-        }catch(NullPointerException ex){
+        DateTime from = new DateTime(0);
+        DateTime until = new DateTime();
+        try {
+            from = _request.getData().getFrom(_request.getSpecificDatapoint()); //from is the time of the newest sample
+        } catch (NullPointerException ex) {
             System.out.println("NO TIME FOUND -- get ALL DATA");
+            if (_request.getFrom() != null) {
+                from = _request.getFrom();
+            }
+            if (_request.getUntil() != null) {
+                until = _request.getUntil();
+            }
         }
-        _inputHandler = _connection.sendSamplesRequest(time, _request.getSpecificDatapoint());
+        _inputHandler = _connection.sendSamplesRequest(from, until, _request.getSpecificDatapoint());
 //        _inputHandler.convertInput();
     }
 

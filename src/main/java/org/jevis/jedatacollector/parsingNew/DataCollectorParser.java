@@ -11,7 +11,6 @@ import java.util.logging.Logger;
 import org.jevis.jeapi.JEVisException;
 import org.jevis.jeapi.JEVisObject;
 import org.jevis.jedatacollector.data.JevisAttributes;
-import org.jevis.jedatacollector.parsingNew.sampleParser.SampleParserContainer;
 import org.jevis.jedatacollector.service.inputHandler.InputHandler;
 
 /**

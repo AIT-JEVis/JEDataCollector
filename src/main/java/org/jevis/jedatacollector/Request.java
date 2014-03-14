@@ -10,6 +10,7 @@ import org.jevis.jedatacollector.data.Equipment;
 import org.jevis.jedatacollector.data.NewDataPoint;
 import org.jevis.jedatacollector.parsingNew.DataCollectorParser;
 import org.jevis.jedatacollector.service.ParsingService;
+import org.joda.time.DateTime;
 
 /**
  *
@@ -42,8 +43,20 @@ public interface Request {
     public Data getData();
 
     public boolean needImport();
-    
+
     public void setNeedImport(boolean needImport);
-    
+
     public void setParsingService(ParsingService ps);
+
+    public boolean needParsing();
+
+    public void setNeedParsing(boolean needParsing);
+
+    public void setFrom(DateTime from);
+    
+    public DateTime getFrom();
+    
+    public void setUntil(DateTime until);
+    
+    public DateTime getUntil();
 }

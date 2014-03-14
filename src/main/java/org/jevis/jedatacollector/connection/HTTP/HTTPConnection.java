@@ -5,6 +5,7 @@
 package org.jevis.jedatacollector.connection.HTTP;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.*;
@@ -13,6 +14,19 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.AuthCache;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.auth.BasicScheme;
+import org.apache.http.impl.client.BasicAuthCache;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.util.EntityUtils;
 import org.jevis.jedatacollector.connection.ConnectionHelper;
 import org.jevis.jedatacollector.data.NewDataPoint;
 import org.jevis.jedatacollector.connection.DatacollectorConnection;
@@ -150,63 +164,61 @@ public class HTTPConnection implements DatacollectorConnection {
             } catch (MalformedURLException ex) {
                 throw new FetchingException(_id, FetchingExceptionType.URL_ERROR);
             } catch (Exception ex) {
-                ex.printStackTrace();
                 throw new FetchingException(_id, FetchingExceptionType.CONNECTION_TIMEOUT);
             }
         } else {
-//            DefaultHttpClient _httpClient;
-//            HttpHost _targetHost;
-//            HttpGet _httpGet;
-//            BasicHttpContext _localContext = new BasicHttpContext();
-//
-//            _httpClient = new DefaultHttpClient();
-//            /*
-//             * Define Authetification
-//             */
-//            /*
-//             * Username & password
-//             */
-//
-//            _targetHost = new HttpHost(_serverURL, ((int) (long) _port), "http");
-//            /*
-//             * set the sope for the authentification
-//             */
-//            _httpClient.getCredentialsProvider().setCredentials(
-//                    new AuthScope(_targetHost.getHostName(), _targetHost.getPort()),
-//                    new UsernamePasswordCredentials(_userName, _password));
-//
-//            // Create AuthCache instance
-//            AuthCache authCache = new BasicAuthCache();
-//
-//            //set Authenticication scheme
-//            BasicScheme basicAuth = new BasicScheme();
-//            authCache.put(_targetHost, basicAuth);
-//
-//            _httpGet = new HttpGet(_filePath);
-//
-//
-//            try {
-//                //TODO: Connection timeouts and error handling
-//
-//
-//                HttpResponse oResponse = _httpClient.execute(_targetHost, _httpGet, _localContext);
-//
-//                HttpEntity oEntity = oResponse.getEntity();
-//                String oXmlString = EntityUtils.toString(oEntity);
-//                EntityUtils.consume(oEntity);
-//
-//
-//
-//                res.add(oXmlString);
-//            } catch (ClientProtocolException ex) {
-//                throw new FetchingException(_id, FetchingExceptionType.CONNECTION_ERROR);
-//                //Logger.getLogger(HTTPAuthetificationConnection.class.getName()).log(Level.SEVERE, null, ex);
-//            } 
-////            catch (IOException ex) {
-////                throw new FetchingException(_id, FetchingExceptionType.CONNECTION_ERROR);
-////                //Logger.getLogger(HTTPAuthetificationConnection.class.getName()).log(Level.SEVERE, null, ex);
-////
-////            }
+            DefaultHttpClient _httpClient;
+            HttpHost _targetHost;
+            HttpGet _httpGet;
+            BasicHttpContext _localContext = new BasicHttpContext();
+
+            _httpClient = new DefaultHttpClient();
+            /*
+             * Define Authetification
+             */
+            /*
+             * Username & password
+             */
+
+            _targetHost = new HttpHost(_serverURL, ((int) (long) _port), "http");
+            /*
+             * set the sope for the authentification
+             */
+            _httpClient.getCredentialsProvider().setCredentials(
+                    new AuthScope(_targetHost.getHostName(), _targetHost.getPort()),
+                    new UsernamePasswordCredentials(_userName, _password));
+
+            // Create AuthCache instance
+            AuthCache authCache = new BasicAuthCache();
+
+            //set Authenticication scheme
+            BasicScheme basicAuth = new BasicScheme();
+            authCache.put(_targetHost, basicAuth);
+
+            _httpGet = new HttpGet(_filePath);
+
+
+            try {
+                //TODO: Connection timeouts and error handling
+
+
+                HttpResponse oResponse = _httpClient.execute(_targetHost, _httpGet, _localContext);
+
+                HttpEntity oEntity = oResponse.getEntity();
+                String oXmlString = EntityUtils.toString(oEntity);
+                EntityUtils.consume(oEntity);
+
+
+
+                res.add(oXmlString);
+            } catch (ClientProtocolException ex) {
+                throw new FetchingException(_id, FetchingExceptionType.CONNECTION_ERROR);
+                //Logger.getLogger(HTTPAuthetificationConnection.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                throw new FetchingException(_id, FetchingExceptionType.CONNECTION_ERROR);
+                //Logger.getLogger(HTTPAuthetificationConnection.class.getName()).log(Level.SEVERE, null, ex);
+
+            }
         }
         return res;
     }
@@ -294,7 +306,7 @@ public class HTTPConnection implements DatacollectorConnection {
 //                tsv.splitIntoChunks(10, 0, 0);
 
 //                for (TimeSet tsPart : tsv) {
-            paths.addAll(ConnectionHelper.parseString(_filePath, String.valueOf(dp.getChannelID()), _dateFormat, from, until));
+            paths.addAll(ConnectionHelper.parseString(_filePath, dp.getChannelID(), _dateFormat, from, until));
 //                }
         } else {
             paths.add(_filePath);

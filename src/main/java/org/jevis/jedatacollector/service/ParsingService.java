@@ -10,7 +10,7 @@ import org.jevis.jeapi.JEVisObject;
 import org.jevis.jedatacollector.Request;
 import org.jevis.jedatacollector.data.NewDataPoint;
 import org.jevis.jedatacollector.parsingNew.DataCollectorParser;
-import org.jevis.jedatacollector.parsingNew.sampleParser.SampleParserContainer;
+import org.jevis.jedatacollector.parsingNew.SampleParserContainer;
 import org.jevis.jedatacollector.service.inputHandler.InputHandler;
 
 /**

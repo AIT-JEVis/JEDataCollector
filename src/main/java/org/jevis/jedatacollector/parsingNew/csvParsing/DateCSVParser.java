@@ -2,9 +2,10 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.jevis.jedatacollector.parsingNew.sampleParser.CSV;
+package org.jevis.jedatacollector.parsingNew.csvParsing;
 
-import org.jevis.jedatacollector.parsingNew.sampleParser.GeneralDateParser;
+import java.util.TimeZone;
+import org.jevis.jedatacollector.parsingNew.GeneralDateParser;
 import org.jevis.jedatacollector.service.inputHandler.InputHandler;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -72,7 +73,10 @@ public class DateCSVParser implements GeneralDateParser {
             string += " " + time;
         }
 
+        
         DateTimeFormatter fmt = DateTimeFormat.forPattern(pattern);
-        _dateTime = fmt.parseDateTime(string).toDateTime(DateTimeZone.UTC);
+        _dateTime = fmt.parseDateTime(string);
+        System.out.println("Current time "+_dateTime);
+//        DateTimeZone.setDefault(DateTimeZone.forTimeZone(TimeZone.getTimeZone("CET")));
     }
 }

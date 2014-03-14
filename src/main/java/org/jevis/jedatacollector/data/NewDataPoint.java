@@ -24,7 +24,7 @@ public class NewDataPoint {
 //    public static String JOB_STATE = "Job State";
     public static String ONLINE_ID = "OnlineID";
     public static String VALUE_SPEC = "Value Specification";
-    private Long _channelID;
+    private String _channelID;
     private Long _onlineID;
     private String _valueSpec;
     private String _dataLoggerName;
@@ -35,10 +35,15 @@ public class NewDataPoint {
     JEVisObject _onlineData;
 //    JEVisObject _dataPoint;
 
+    public NewDataPoint(String channelID, String dataLoggerName) {
+        _channelID = channelID;
+        _dataLoggerName = dataLoggerName;
+    }
+
     public NewDataPoint(JEVisObject dp) {
         _jevisDatapoint = dp;
         _datapointID = dp.getID();
-        
+
         try {
 //            _dataPoint = dp;
             JEVisClass type = dp.getJEVisClass();
@@ -49,7 +54,7 @@ public class NewDataPoint {
             JEVisType onlineIDType = type.getType(ONLINE_ID);
             JEVisType valueSpecType = type.getType(VALUE_SPEC);
 
-            _channelID = dp.getAttribute(channelIDType).getLatestSample().getValueAsLong();
+            _channelID = dp.getAttribute(channelIDType).getLatestSample().getValueAsString();
             _dataLoggerName = (String) dp.getAttribute(dataLoggerNameType).getLatestSample().getValue();
 //            _fetchRate = (Integer) dp.getAttribute(fetchRateType).getLatestSample().getValue();
 //            _jobState = (String) dp.getAttribute(jobStateType).getLatestSample().getValue();
@@ -62,11 +67,11 @@ public class NewDataPoint {
         }
     }
 
-    public long getChannelID() {
+    public String getChannelID() {
         return _channelID;
     }
-    
-     public long getDatapointId() {
+
+    public long getDatapointId() {
         return _datapointID;
     }
 

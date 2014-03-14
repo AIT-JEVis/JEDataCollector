@@ -6,6 +6,7 @@ package org.jevis.jedatacollector.service.inputHandler;
 
 import java.io.File;
 import java.util.List;
+import javax.xml.soap.SOAPMessage;
 
 /**
  *
@@ -20,16 +21,20 @@ public class InputFactory {
                 return null;
             }
             Object o = tmp.get(0);
-            if (o instanceof List) {
-                return new StringInputHandler((List) input);
+            if (o instanceof String) {
+                return new StringInputHandler((List<String>) input);
             }
-            if (o instanceof Object[]) {
-                return new ArrayInputHandler((Object[]) input);
+
+            if (o instanceof SOAPMessage) {
+                return new SOAPMessageInputHandler((List<SOAPMessage>) input);
             }
             return null;
         }
+        if (input instanceof Object[]) {
+            return new ArrayInputHandler((Object[]) input);
+        }
         if (input instanceof File) {
-            return new FileInputHandler((File)input);
+            return new FileInputHandler((File) input);
         }
         return null;
 
