@@ -13,7 +13,6 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.IOUtils;
-import org.jevis.jedatacollector.data.NewDataPoint;
 
 /**
  *
@@ -23,11 +22,11 @@ public abstract class InputHandler implements Iterable<Object> {
 
     protected Object _rawInput;
     protected List<InputStream> _inputStream;
-    protected NewDataPoint _datapoint;
-    protected String[] _lineInput;
+    protected String[] _tmpInput;
 
-    public InputHandler() {
+    public InputHandler(Object rawInput) {
         _inputStream = new ArrayList<InputStream>();
+        _rawInput = rawInput;
     }
 
     public void setInput(Object input) {
@@ -56,13 +55,12 @@ public abstract class InputHandler implements Iterable<Object> {
         return stringInput.toArray(inputArray);
     }
 
-    //not very nice
-    public void setLineInput(String[] input) {
-        _lineInput = input;
+    public void setTmpInput(String[] input) {
+        _tmpInput = input;
     }
 
-    public String[] getLineInput() {
-        return _lineInput;
+    public String[] getTmpInput() {
+        return _tmpInput;
     }
 
     public void setInputStream(List<InputStream> input) {
@@ -70,15 +68,11 @@ public abstract class InputHandler implements Iterable<Object> {
     }
 
     public String getStringInput() {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         for (InputStream s : _inputStream) {
             String inputStreamString = new Scanner(s, "UTF-8").useDelimiter("\\A").next();
             buffer.append(inputStreamString);
         }
         return buffer.toString();
-    }
-
-    public void setDataPoint(NewDataPoint dp) {
-        _datapoint = dp;
     }
 }

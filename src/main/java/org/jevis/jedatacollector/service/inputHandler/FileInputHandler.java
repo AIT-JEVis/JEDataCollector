@@ -15,8 +15,7 @@ import java.util.logging.Logger;
 public class FileInputHandler extends InputHandler {
 
     public FileInputHandler(File file) {
-        _rawInput = file;
-        this.convertInput();
+        super(file);
     }
 
     //input is file

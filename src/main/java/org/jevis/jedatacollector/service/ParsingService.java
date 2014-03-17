@@ -23,7 +23,6 @@ public class ParsingService {
         boolean validValue = parser.getValueParser().isValueValid();
         return validValue;
     }
-//    private IParsing _parser;
     private DataCollectorParser _fileParser;
 
     public ParsingService(Request request) {
@@ -40,10 +39,6 @@ public class ParsingService {
             }
             _fileParser.createSampleContainers(_fileParser.getJEVisParser(), datapoints);
         }
-        //initilize of the FileParser.. in the future this should be from a factory and not with the IParsingObject
-    }
-
-    public ParsingService() {
     }
 
 //    /**

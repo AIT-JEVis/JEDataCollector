@@ -19,6 +19,7 @@ import org.jevis.jedatacollector.service.ConnectionService;
 import org.jevis.jedatacollector.service.ParsingService;
 import org.jevis.jedatacollector.service.inputHandler.InputHandler;
 import org.jevis.jedatacollector.parsingNew.Result;
+import org.jevis.jedatacollector.service.inputHandler.InputFactory;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
@@ -40,6 +41,9 @@ public class DataCollector {
         } else {
             DateTimeZone.setDefault(DateTimeZone.UTC);
         }
+        if (req.getInputHandler() != null) {
+            _inputHandler = req.getInputHandler();
+        }
         System.out.println("Default Timezone " + DateTimeZone.getDefault());
     }
     //TODO validate EACH Step.. for example "Exist all information for the conenction, parsing...?
@@ -56,8 +60,8 @@ public class DataCollector {
         }
         if (_request.needImport()) {
             importData();
+            System.out.println("Alles importiert");
         }
-        System.out.println("Alles importiert");
     }
 
     public void parse() throws FetchingException {
@@ -137,15 +141,22 @@ public class DataCollector {
                 until = _request.getUntil();
             }
         }
-        _inputHandler = _connection.sendSamplesRequest(from, until, _request.getSpecificDatapoint());
-//        _inputHandler.convertInput();
-    }
+        List<Object> rawResult = _connection.sendSamplesRequest(from, until, _request.getSpecificDatapoint());
 
-    public void setParsingService(ParsingService ps) {
-        _parsingService = ps;
-    }
+        initializeInputConverter(rawResult);
 
-    public void setInputConverter(InputHandler handler) {
-        _inputHandler = handler;
+    }
+//    public void setParsingService(ParsingService ps) {
+//        _parsingService = ps;
+//    }
+//
+//    public void setInputConverter(InputHandler handler) {
+//        _inputHandler = handler;
+//    }
+
+    private void initializeInputConverter(List<Object> rawResult) {
+        System.out.println("###Initialisiere InputConverter###");
+        _inputHandler = InputFactory.getInputConverter(rawResult);
+        _inputHandler.convertInput(); //this should happn in the converter
     }
 }

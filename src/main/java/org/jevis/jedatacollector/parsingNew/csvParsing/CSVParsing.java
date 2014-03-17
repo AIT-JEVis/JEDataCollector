@@ -65,7 +65,7 @@ public class CSVParsing extends DataCollectorParser {
             }
 
             //line noch setzen im InputConverter als temp oder so
-            ic.setLineInput(line);
+            ic.setTmpInput(line);
 
             DateTime dateTime;
             Double value;

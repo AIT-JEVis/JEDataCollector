@@ -50,7 +50,7 @@ public class ValueCSVParser implements GeneralValueParser {
     public void parse(InputHandler ic) {
         _valueValid = false;
         _outofBounce = false;
-        String[] line = ic.getLineInput();
+        String[] line = ic.getTmpInput();
         String sVal = null;
         try {
             sVal = line[_valueIndex];

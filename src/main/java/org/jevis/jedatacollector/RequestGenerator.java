@@ -11,6 +11,7 @@ import org.jevis.jedatacollector.data.Data;
 import org.jevis.jedatacollector.data.Equipment;
 import org.jevis.jedatacollector.data.NewDataPoint;
 import org.jevis.jedatacollector.parsingNew.DataCollectorParser;
+import org.jevis.jedatacollector.service.inputHandler.InputHandler;
 import org.joda.time.DateTime;
 
 /**
@@ -55,12 +56,14 @@ public class RequestGenerator {
         return requests;
     }
 
-    public static Request createOnlyParsingRequest() {
+    public static Request createOnlyParsingRequest(DataCollectorParser fileParser,InputHandler input) {
         Request req = new DefaultRequest();
         req.setNeedConnection(false);
         req.setNeedImport(false);
         req.setNeedParsing(true);
         req.setParser(null);
+        req.setParser(fileParser);
+        req.setInputHandler(input);
         return req;
     }
 

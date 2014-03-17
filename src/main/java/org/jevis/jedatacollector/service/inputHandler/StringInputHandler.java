@@ -14,11 +14,7 @@ import java.util.List;
 public class StringInputHandler extends InputHandler {
 
     public StringInputHandler(List input) {
-        super();
-        System.out.println("--new Stringinputconvterter--");
-        _rawInput = input;
-        System.out.println("--RawInputsize--" + input.size());
-        this.convertInput();
+        super(input);
     }
     //input is List<List<String>>
 

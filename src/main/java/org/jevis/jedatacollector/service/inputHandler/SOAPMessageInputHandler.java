@@ -21,9 +21,8 @@ public class SOAPMessageInputHandler extends InputHandler {
     private List<Document> _document;
 
     public SOAPMessageInputHandler(List<SOAPMessage> input) {
-        _rawInput = input;
+        super(input);
         _document = new ArrayList<Document>();
-        this.convertInput();
     }
 
     @Override

@@ -12,6 +12,7 @@ import org.jevis.jedatacollector.data.Equipment;
 import org.jevis.jedatacollector.data.NewDataPoint;
 import org.jevis.jedatacollector.parsingNew.DataCollectorParser;
 import org.jevis.jedatacollector.service.ParsingService;
+import org.jevis.jedatacollector.service.inputHandler.InputHandler;
 import org.joda.time.DateTime;
 
 /**
@@ -31,6 +32,7 @@ public class DefaultRequest implements Request {
     private boolean _needParsing;
     private DateTime _from;
     private DateTime _until;
+    public InputHandler _inputHandler;
 
     public boolean needConnection() {
         return _needConnection;
@@ -114,5 +116,13 @@ public class DefaultRequest implements Request {
 
     public DateTime getUntil() {
         return _until;
+    }
+
+    public void setInputHandler(InputHandler input) {
+        _inputHandler = input;
+    }
+
+    public InputHandler getInputHandler() {
+        return _inputHandler;
     }
 }

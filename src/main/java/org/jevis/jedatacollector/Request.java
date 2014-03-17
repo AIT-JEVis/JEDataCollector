@@ -10,6 +10,7 @@ import org.jevis.jedatacollector.data.Equipment;
 import org.jevis.jedatacollector.data.NewDataPoint;
 import org.jevis.jedatacollector.parsingNew.DataCollectorParser;
 import org.jevis.jedatacollector.service.ParsingService;
+import org.jevis.jedatacollector.service.inputHandler.InputHandler;
 import org.joda.time.DateTime;
 
 /**
@@ -59,4 +60,8 @@ public interface Request {
     public void setUntil(DateTime until);
     
     public DateTime getUntil();
+    
+    public void setInputHandler(InputHandler input);
+    
+    public InputHandler getInputHandler();
 }

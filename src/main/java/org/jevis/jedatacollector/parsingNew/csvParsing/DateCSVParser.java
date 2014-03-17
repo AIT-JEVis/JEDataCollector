@@ -60,7 +60,7 @@ public class DateCSVParser implements GeneralDateParser {
 
     @Override
     public void parse(InputHandler ic) {
-        String[] line = ic.getLineInput();
+        String[] line = ic.getTmpInput();
         String date = line[_dateIndex];
 //        String dateFormat = _dateFormat;
 

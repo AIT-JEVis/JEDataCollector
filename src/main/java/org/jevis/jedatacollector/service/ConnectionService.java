@@ -31,7 +31,7 @@ public class ConnectionService {
         System.out.println("---Verbinden erfolgreich---");
     }
 
-    public InputHandler sendSamplesRequest(DateTime from, DateTime until, NewDataPoint dp) throws FetchingException {
+    public List<Object> sendSamplesRequest(DateTime from, DateTime until, NewDataPoint dp) throws FetchingException {
         System.out.println("---Send Sample Request---");
 
 //        Calendar fromAfter = GregorianCalendar.getInstance();
@@ -41,11 +41,8 @@ public class ConnectionService {
 //        toAfter.setTimeZone(timeZone);
 //        TimeSet timeSet = new TimeSet(new Date(fromAfter.getTimeInMillis()), new Date(toAfter.getTimeInMillis()));
         List<Object> answer = _connection.sendSampleRequest(dp, from, until);  //TODO dp in den converter
-        System.out.println("###Initialisiere InputConverter###");
-        InputHandler inputConverter = InputFactory.getInputConverter(answer);
-        inputConverter.setInput(answer);
-        inputConverter.setDataPoint(dp);
-        return inputConverter;
+        return answer;
+        
     }
 //    /**
 //     * Get Samples from the connected device with the specified time set and

@@ -14,8 +14,7 @@ import java.util.List;
 public class ArrayInputHandler extends InputHandler {
 
     public ArrayInputHandler(Object[] input) {
-        _rawInput = input;
-//        convertInput();
+        super(input);
     }
 
     //rawInput ist Object[]
