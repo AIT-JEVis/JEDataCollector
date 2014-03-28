@@ -20,10 +20,10 @@ import org.w3c.dom.NodeList;
  *
  * @author bf
  */
-public class SOAPConnectionTest {
+public class ILONSOAPConnectionTest {
 
-    public void test_alphaConnect() throws Exception {
-        String template = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?> <SOAP-ENV:Envelope      SOAP-ENV:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"     xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\"> <SOAP-ENV:Body><DataLogger_Read xmlns=\"http://wsdl.echelon.com/web_services_ns/ilon100/v3.0/message/\">      <DATA>        <Log>          <UCPTpointName>*DATAPOINT*</UCPTpointName>          <UCPTindex>*DATALOGGER*</UCPTindex>          <UCPTstart>*DATE_FROM*</UCPTstart>          <UCPTstop>*DATE_TO*</UCPTstop>          <UCPTcount>50</UCPTcount>        </Log>      </DATA>    </DataLogger_Read></SOAP-ENV:Body> </SOAP-ENV:Envelope>";
+    public void test_iLONConnect() throws Exception {
+        String template = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?> <SOAP-ENV:Envelope      SOAP-ENV:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\" xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\"><SOAP-ENV:Body><DataLogger_Read xmlns=\"http://wsdl.echelon.com/web_services_ns/ilon100/v3.0/message/\"><DATA><Log><UCPTpointName>*DATAPOINT*</UCPTpointName><UCPTindex>*DATALOGGER*</UCPTindex><UCPTstart>*DATE_FROM*</UCPTstart><UCPTstop>*DATE_TO*</UCPTstop><UCPTcount>50</UCPTcount></Log></DATA></DataLogger_Read></SOAP-ENV:Body> </SOAP-ENV:Envelope>";
         DatacollectorConnection connection = new SOAPConnection(template, "http://192.168.2.209/WSDL/iLON100.WSDL", "yyyy-MM-dd'T'HH:mm:ss'Z'", "0", 2l, 60l, null);
 
         DateTime until = new DateTime();

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+
+<SOAP-ENV:Envelope      SOAP-ENV:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\" xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
+<SOAP-ENV:Body>
+<DataLogger_Read xmlns=\"http://wsdl.echelon.com/web_services_ns/ilon100/v3.0/message/\">
+<DATA>
+<Log>
+<UCPTpointName>*DATAPOINT*</UCPTpointName>
+<UCPTindex>*DATALOGGER*</UCPTindex>
+<UCPTstart>*DATE_FROM*</UCPTstart>
+<UCPTstop>*DATE_TO*</UCPTstop>
+<UCPTcount>50</UCPTcount>
+</Log>
+</DATA>
+</DataLogger_Read>
+</SOAP-ENV:Body> 
+</SOAP-ENV:Envelope>

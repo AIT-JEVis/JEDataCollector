@@ -4,10 +4,15 @@
  */
 package org.jevis.jedatacollector;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.FileAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
+import org.apache.log4j.PropertyConfigurator;
 import org.jevis.jedatacollector.exception.FetchingException;
 import org.jevis.jeapi.*;
 import org.jevis.jeapi.sql.JEVisDataSourceSQL;
@@ -20,6 +25,7 @@ import org.jevis.jedatacollector.data.Data;
 public class TestMain {
 
     private JEVisDataSource _client;
+//    private final Logger _logger = Logger.getLogger(getClass());
     private static final String EQUIPMENT = "Datalogger";
     private static final String PARSER = "Parser";
     private static final String CONNECTION = "Connection";
@@ -29,15 +35,29 @@ public class TestMain {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        System.out.println("###starte DataLogger###");
+            System.out.println("###starte DataLogger###");
+            
+            //Parse the parameter from commandline
+            DataLoggerCommandLine cmd = DataLoggerCommandLine.getInstance();
+            cmd.parse(args);
+     
+            PropertyConfigurator.configure("log4j.properties");
+            
+            Logger.getRootLogger().info("Info");
+            Logger.getRootLogger().error("Warning");
+            
+            if(cmd.needHelp()){
+                cmd.showHelp();
+                System.exit(0);
+            }
 
-        TestMain adf = new TestMain(true);
-//        adf.getDataSamples();
-//        adf.createNewSample();
-        JEVisObject equip = adf.getEquipment();
+            TestMain adf = new TestMain(true);
+    //        adf.getDataSamples();
+    //        adf.createNewSample();
+            JEVisObject equip = adf.getEquipment();
 
 
-        adf.fetch(equip);
+            adf.fetch(equip);
 
     }
 
@@ -49,7 +69,7 @@ public class TestMain {
                 _client = new JEVisDataSourceSQL("192.168.2.55", "3306", "jevis", "jevis", "jevistest", "Sys Admin", "jevis");
                 _client.connect("Sys Admin", "jevis");
             } catch (JEVisException ex) {
-                Logger.getLogger(TestMain.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(TestMain.class.getName()).log(Level.ERROR, null, ex);
             }
             System.out.println("Verbinden zum Config erfolgreich");
         }
@@ -80,7 +100,7 @@ public class TestMain {
                     }
 
                 } else {
-                    Logger.getLogger(TestMain.class.getName()).log(Level.SEVERE, null, t);
+                    Logger.getLogger(TestMain.class.getName()).log(Level.ERROR, null, t);
                 }
             }
         }
@@ -129,7 +149,7 @@ public class TestMain {
         try {
             logger = _client.getObject(54l);
         } catch (JEVisException ex) {
-            Logger.getLogger(TestMain.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(TestMain.class.getName()).log(Level.ERROR, null, ex);
         }
         return logger;
     }
@@ -145,7 +165,7 @@ public class TestMain {
             datapoints.add(client.getObject(60l)); //TODO stimmt so nicht
             data = new Data(parser, connection, equipment, datapoints);
         } catch (JEVisException ex) {
-            Logger.getLogger(DataCollector.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DataCollector.class.getName()).log(Level.ERROR, null, ex);
         }
         return data;
     }

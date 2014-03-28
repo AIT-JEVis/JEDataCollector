@@ -23,6 +23,10 @@ public abstract class InputHandler implements Iterable<Object> {
     protected Object _rawInput;
     protected List<InputStream> _inputStream;
     protected String[] _tmpInput;
+    private String[] _stringArrayOutput;
+    private boolean _stringArrayOutputParsed;
+    private String _stringOutput;
+    private boolean _stringOutputParsed;
 
     public InputHandler(Object rawInput) {
         _inputStream = new ArrayList<InputStream>();
@@ -41,18 +45,22 @@ public abstract class InputHandler implements Iterable<Object> {
     }
 
     public String[] getStringArrayInput() {
-        List<String> stringInput = new ArrayList<String>();
-        for (InputStream s : _inputStream) {
-            try {
-                //            String inputStreamString = new Scanner(s, "UTF-8").useDelimiter("\\A").next();
-                String inputStreamString = IOUtils.toString(s, "UTF-8");
-                stringInput.add(inputStreamString);
-            } catch (IOException ex) {
-                Logger.getLogger(InputHandler.class.getName()).log(Level.SEVERE, null, ex);
+        if (!_stringArrayOutputParsed) {
+            List<String> stringInput = new ArrayList<String>();
+            for (InputStream s : _inputStream) {
+                try {
+                    //            String inputStreamString = new Scanner(s, "UTF-8").useDelimiter("\\A").next();
+                    String inputStreamString = IOUtils.toString(s, "UTF-8");
+                    stringInput.add(inputStreamString);
+                } catch (IOException ex) {
+                    Logger.getLogger(InputHandler.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
+            String[] inputArray = new String[stringInput.size()];
+            _stringArrayOutput = stringInput.toArray(inputArray);
+            _stringArrayOutputParsed = true;
         }
-        String[] inputArray = new String[stringInput.size()];
-        return stringInput.toArray(inputArray);
+        return _stringArrayOutput;
     }
 
     public void setTmpInput(String[] input) {
@@ -68,11 +76,16 @@ public abstract class InputHandler implements Iterable<Object> {
     }
 
     public String getStringInput() {
-        StringBuilder buffer = new StringBuilder();
-        for (InputStream s : _inputStream) {
-            String inputStreamString = new Scanner(s, "UTF-8").useDelimiter("\\A").next();
-            buffer.append(inputStreamString);
+        if (!_stringOutputParsed) {
+
+            StringBuilder buffer = new StringBuilder();
+            for (InputStream s : _inputStream) {
+                String inputStreamString = new Scanner(s, "UTF-8").useDelimiter("\\A").next();
+                buffer.append(inputStreamString);
+            }
+            _stringOutput =  buffer.toString();
+            _stringOutputParsed = true;
         }
-        return buffer.toString();
+        return _stringOutput;
     }
 }

@@ -4,6 +4,7 @@
  */
 package org.jevis.jedatacollector.ConnectionTests;
 
+import junit.framework.Assert;
 import org.jevis.jedatacollector.DataCollector;
 import org.jevis.jedatacollector.Request;
 import org.jevis.jedatacollector.RequestGenerator;
@@ -11,7 +12,10 @@ import org.jevis.jedatacollector.connection.DatacollectorConnection;
 import org.jevis.jedatacollector.connection.FTP.FTPConnection;
 import org.jevis.jedatacollector.data.NewDataPoint;
 import org.jevis.jedatacollector.exception.FetchingException;
+import org.jevis.jedatacollector.service.inputHandler.SOAPMessageInputHandler;
 import org.joda.time.DateTime;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 
 /**
  *
@@ -29,20 +33,9 @@ public class FTPConnectionTest {
         DataCollector collector = new DataCollector(request);
         collector.run();
 
-        System.out.println(collector.getInputHandler().getStringArrayInput()[0]);
-        System.out.println(collector.getInputHandler().getStringArrayInput()[1]);
-        System.out.println(collector.getInputHandler().getStringArrayInput()[2]);
-        System.out.println(collector.getInputHandler().getStringArrayInput()[3]);
-        System.out.println(collector.getInputHandler().getStringArrayInput()[4]);
+        String[] stringArrayInput = collector.getInputHandler().getStringArrayInput();
+        
+        Assert.assertTrue(stringArrayInput.length == 3007);
 
-//        Document doc = ((SOAPMessageInputHandler) collector.getInputHandler()).getDocument().get(0);
-//        NodeList nodeNames = doc.getElementsByTagName("UCPTpointName");
-//        NodeList nodeDates = doc.getElementsByTagName("UCPTlogTime");
-//        NodeList nodeValues = doc.getElementsByTagName("UCPTvalue");
-//        Assert.assertTrue(nodeNames.getLength() > 0);
-//        Assert.assertTrue(nodeDates.getLength() > 0);
-//        Assert.assertTrue(nodeValues.getLength() > 0);
-//        Assert.assertTrue(nodeNames.getLength() == nodeDates.getLength());
-//        Assert.assertTrue(nodeValues.getLength() == nodeDates.getLength());
     }
 }

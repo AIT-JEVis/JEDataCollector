@@ -4,32 +4,6 @@
  */
 package org.jevis.jedatacollector.XMLParsingTest;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import junit.framework.Assert;
-import org.jevis.jedatacollector.DataCollector;
-import org.jevis.jedatacollector.Request;
-import org.jevis.jedatacollector.RequestGenerator;
-import org.jevis.jedatacollector.parsingNew.DataCollectorParser;
-import org.jevis.jedatacollector.parsingNew.GeneralDatapointParser;
-import org.jevis.jedatacollector.parsingNew.GeneralDateParser;
-import org.jevis.jedatacollector.parsingNew.GeneralValueParser;
-import org.jevis.jedatacollector.parsingNew.Result;
-import org.jevis.jedatacollector.parsingNew.SampleParserContainer;
-import org.jevis.jedatacollector.parsingNew.csvParsing.ValueCSVParser;
-import org.jevis.jedatacollector.parsingNew.xmlParsing.DatapointXMLParsing;
-import org.jevis.jedatacollector.parsingNew.xmlParsing.DateXMLParsing;
-import org.jevis.jedatacollector.parsingNew.xmlParsing.ValueXMLParsing;
-import org.jevis.jedatacollector.parsingNew.xmlParsing.XMLParsingNew;
-import org.jevis.jedatacollector.service.ParsingService;
-import org.jevis.jedatacollector.service.inputHandler.FileInputHandler;
-import org.jevis.jedatacollector.service.inputHandler.InputHandler;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-
 /**
  *
  * @author bf

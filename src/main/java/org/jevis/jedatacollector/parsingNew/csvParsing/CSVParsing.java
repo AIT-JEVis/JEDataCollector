@@ -56,7 +56,7 @@ public class CSVParsing extends DataCollectorParser {
     @Override
     public void parse(InputHandler ic) {
         System.out.println("File Parsing starts");
-        String[] stringArrayInput = ic.getStringArrayInput().clone();
+        String[] stringArrayInput = ic.getStringArrayInput();
         System.out.println("Sampleparserlist " + _sampleParsers.size());
         for (int i = _headerLines; i < stringArrayInput.length; i++) {
             String line[] = stringArrayInput[i].split(String.valueOf(_delim),-1);
