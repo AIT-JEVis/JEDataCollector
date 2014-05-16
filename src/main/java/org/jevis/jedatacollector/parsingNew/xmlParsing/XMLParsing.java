@@ -4,7 +4,6 @@
  */
 package org.jevis.jedatacollector.parsingNew.xmlParsing;
 
-import org.jevis.jedatacollector.parsing.XML.*;
 import com.sun.org.apache.xerces.internal.jaxp.datatype.XMLGregorianCalendarImpl;
 import java.io.IOException;
 import java.io.StringReader;

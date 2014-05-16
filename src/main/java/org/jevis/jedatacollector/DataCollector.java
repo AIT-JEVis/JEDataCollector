@@ -5,6 +5,7 @@
 package org.jevis.jedatacollector;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,14 +34,14 @@ public class DataCollector {
     protected ConnectionService _connection;
     protected InputHandler _inputHandler;
     protected Request _request;
+    protected DateTime _lastDateInUTC;
+
+    public DataCollector() {
+    }
 
     public DataCollector(Request req) {
         _request = req;
-        if (_request.getEquipment() != null) {
-            DateTimeZone.setDefault(_request.getEquipment().getTimezone());
-        } else {
-            DateTimeZone.setDefault(DateTimeZone.UTC);
-        }
+
         if (req.getInputHandler() != null) {
             _inputHandler = req.getInputHandler();
         }
@@ -92,6 +93,7 @@ public class DataCollector {
 //            JEVisAttribute attribute = online.getAttribute(rawAttributeType);
 //            List<JEVisSample> sampleList = new ArrayList<JEVisSample>();
 
+
             //look into all results and map the sample to the online node
             for (Result s : results) {
                 //                DateTime time = s.getCal();
@@ -102,7 +104,7 @@ public class DataCollector {
                 NewDataPoint dataPoint = _request.getData().getDataPointPerOnlineID(datapoint);
                 JEVisObject onlineData = dataPoint.getJEVisOnlineData();
                 List<JEVisSample> samples = onlineToSampleMap.get(dataPoint.getJEVisOnlineData());
-                DateTime convertedDate = s.getDate().toDateTime(DateTimeZone.UTC);
+                DateTime convertedDate = convertTime(_request.getEquipment().getTimezone(), s.getDate());
                 JEVisSample sample = onlineData.getAttribute("Raw Data").buildSample(convertedDate, s.getValue());
                 samples.add(sample);
             }
@@ -116,6 +118,34 @@ public class DataCollector {
         } catch (JEVisException ex) {
             Logger.getLogger(DataCollector.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    public DateTime convertTime(DateTimeZone from, DateTime time) {
+        long timeInMillis = time.getMillis();
+        DateTime dateTime = new DateTime(timeInMillis, from);
+        long nextTransition = from.nextTransition(timeInMillis) - timeInMillis;
+        long currentOffset = from.getOffset(timeInMillis);
+//        from.getStandardOffset(timeInMillis);
+        DateTime tmpTime = dateTime;
+        if (_lastDateInUTC != null) {
+            tmpTime = convertTimeInTransitionRange(from, dateTime, _lastDateInUTC);
+        }
+        dateTime = tmpTime.toDateTime(DateTimeZone.UTC);
+        _lastDateInUTC = dateTime;
+        return dateTime;
+    }
+
+    public DateTime convertTimeInTransitionRange(DateTimeZone from, DateTime currentDate, DateTime lastDate) {
+
+        long timeBetween = currentDate.getMillis() - lastDate.getMillis();
+        if(timeBetween!=240000){
+            System.out.println("###############################NICHT GLEICH!!!!!!!!!");
+            System.out.println(timeBetween);
+            System.out.println("c "+currentDate);
+            System.out.println("l "+lastDate);
+        }
+//        long timeBetween = 240000;
+        return lastDate.plusMillis((int) timeBetween);
     }
 
     public List<Result> getResults() {

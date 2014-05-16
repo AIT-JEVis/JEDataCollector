@@ -4,7 +4,13 @@
  */
 package org.jevis.jedatacollector.ConnectionTests;
 
-import junit.framework.Assert;
+import java.io.File;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import org.jevis.jedatacollector.DataCollector;
 import org.jevis.jedatacollector.Request;
 import org.jevis.jedatacollector.RequestGenerator;
@@ -14,34 +20,46 @@ import org.jevis.jedatacollector.data.NewDataPoint;
 import org.jevis.jedatacollector.service.inputHandler.SOAPMessageInputHandler;
 import org.joda.time.DateTime;
 import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
 
 /**
  *
  * @author bf
  */
 public class LinxSOAPConnectionTest {
-     public void test_alphaConnect() throws Exception {
-        String template = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?> <SOAP-ENV:Envelope      SOAP-ENV:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\" xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\"><SOAP-ENV:Body><DataLogger_Read xmlns=\"http://wsdl.echelon.com/web_services_ns/ilon100/v3.0/message/\"><DATA><Log><UCPTpointName>*DATAPOINT*</UCPTpointName><UCPTindex>*DATALOGGER*</UCPTindex><UCPTstart>*DATE_FROM*</UCPTstart><UCPTstop>*DATE_TO*</UCPTstop><UCPTcount>50</UCPTcount></Log></DATA></DataLogger_Read></SOAP-ENV:Body> </SOAP-ENV:Envelope>";
-        DatacollectorConnection connection = new SOAPConnection(template, "http://192.168.2.209/WSDL/iLON100.WSDL", "yyyy-MM-dd'T'HH:mm:ss'Z'", "0", 2l, 60l, null);
+
+    public void test_alphaConnect() throws Exception {
+        String template = "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">\n"
+                + "    <SOAP-ENV:Header/>\n"
+                + "    <SOAP-ENV:Body>\n"
+                + "        <LogRead xmlns=\"http://www.loytec.com/wsdl/XMLDL/1.0/\" NumItems=\"500\" ReturnCompleteSet=\"false\" StartDateTime=\"2014-04-15T10:30:00\">\n"
+                + "            <ReqBase logHandle=\"00/var/lib/dpal/trend-10C5.bin\"/>\n"
+                + "        </LogRead>\n"
+                + "    </SOAP-ENV:Body>\n"
+                + "</SOAP-ENV:Envelope>";
+        DatacollectorConnection connection = new SOAPConnection(template, "http://admin:envidatec4u@192.168.2.254/DL", "yyyy-MM-dd'T'HH:mm:ss'Z'", "0", 2l, 60l, null);
 
         DateTime until = new DateTime();
-        DateTime from = until.minusDays(10);
+        DateTime from = until.minusDays(15);
+        System.out.println("from "+from);
+        System.out.println("until "+until);
         NewDataPoint datapoint = new NewDataPoint("NVE_VIVA24nvoSteamTemp", "0");
 
         Request request = RequestGenerator.createConnectionRequestWithTimeperiod(connection, datapoint, from, until);
 
         DataCollector collector = new DataCollector(request);
         collector.run();
-
         Document doc = ((SOAPMessageInputHandler) collector.getInputHandler()).getDocument().get(0);
-        NodeList nodeNames = doc.getElementsByTagName("UCPTpointName");
-        NodeList nodeDates = doc.getElementsByTagName("UCPTlogTime");
-        NodeList nodeValues = doc.getElementsByTagName("UCPTvalue");
-        Assert.assertTrue(nodeNames.getLength() > 0);
-        Assert.assertTrue(nodeDates.getLength() > 0);
-        Assert.assertTrue(nodeValues.getLength() > 0);
-        Assert.assertTrue(nodeNames.getLength() == nodeDates.getLength());
-        Assert.assertTrue(nodeValues.getLength() == nodeDates.getLength());
+//        DOMSource domSource = new DOMSource(doc);
+//        StringWriter writer = new StringWriter();
+//        StreamResult result = new StreamResult(writer);
+//        TransformerFactory tf = TransformerFactory.newInstance();
+//        Transformer transformer = tf.newTransformer();
+//        transformer.transform(domSource, result);
+//        System.out.println(writer.toString());
+        Transformer transformer = TransformerFactory.newInstance().newTransformer();
+        Result output = new StreamResult(new File("linx.xml"));
+        Source input = new DOMSource(doc);
+
+        transformer.transform(input, output);
     }
 }

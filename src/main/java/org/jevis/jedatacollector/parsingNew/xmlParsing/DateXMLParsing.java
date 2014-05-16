@@ -7,6 +7,9 @@ package org.jevis.jedatacollector.parsingNew.xmlParsing;
 import org.jevis.jedatacollector.parsingNew.GeneralDateParser;
 import org.jevis.jedatacollector.service.inputHandler.InputHandler;
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.w3c.dom.Node;
 
 /**
  *
@@ -14,23 +17,93 @@ import org.joda.time.DateTime;
  */
 public class DateXMLParsing implements GeneralDateParser {
 
-    public DateXMLParsing(String ucpTlogTime) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private String _dateFormat;
+    private String _dateTag;
+    private boolean _dateAttribute;
+    private String _timeFormat;
+    private String _timeTag;
+    private boolean _timeAttribute;
+    private DateTime _dateTime;
+
+    public DateXMLParsing(String dateFormat, String dateTag, boolean dateAttribute, String timeFormat, String timeTag, boolean timeAttribute) {
+        _dateFormat = dateFormat;
+        _dateTag = dateTag;
+        _dateAttribute = dateAttribute;
+        _timeFormat = timeFormat;
+        _timeTag = timeTag;
+        _timeAttribute = timeAttribute;
     }
 
+    public DateXMLParsing(String dateFormat, String dateTag, boolean dateAttribute) {
+        _dateFormat = dateFormat;
+        _dateTag = dateTag;
+        _dateAttribute = dateAttribute;
+    }
+
+    @Override
     public String getTimeFormat() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return _dateFormat;
     }
 
+    @Override
     public String getDateFormat() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return _dateFormat;
     }
 
+    @Override
     public DateTime getDateTime() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return _dateTime;
     }
 
+    @Override
     public void parse(InputHandler ic) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Node xmlInput = ic.getXMLInput();
+
+        //get the pattern
+        String pattern = _dateFormat;
+        if (_timeFormat != null) {
+            pattern += " " + _timeFormat;
+        }
+
+        //get the date
+        String date = null;
+        if (_dateAttribute) {
+            date = xmlInput.getAttributes().getNamedItem(_dateTag).getNodeValue();
+        } else {
+            for (int i = 0; i < xmlInput.getChildNodes().getLength(); i++) {
+                Node currentNode = xmlInput.getChildNodes().item(i);
+                String currentName = currentNode.getNodeName();
+                if (currentName.equals(_dateTag)) {
+                    date = currentNode.getNodeValue();
+                }
+            }
+        }
+        
+        //get the time
+        String time = null;
+        if (_timeAttribute) {
+            time = xmlInput.getAttributes().getNamedItem(_timeTag).getNodeValue();
+        } else {
+            for (int i = 0; i < xmlInput.getChildNodes().getLength(); i++) {
+                Node currentNode = xmlInput.getChildNodes().item(i);
+                String currentName = currentNode.getNodeName();
+                if (currentName.equals(_timeTag)) {
+                    time = currentNode.getNodeValue();
+                }
+            }
+        }
+        
+        //save the date and time
+        String dateAndTime = "";
+        if(date!=null){
+            dateAndTime = date;
+        }
+        
+        if(time!=null){
+            dateAndTime = dateAndTime + time;
+        }
+
+        DateTimeFormatter fmt = DateTimeFormat.forPattern(pattern);
+        _dateTime = fmt.parseDateTime(dateAndTime);
     }
 }

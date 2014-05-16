@@ -29,4 +29,14 @@ public class JevisAttributes {
     public static String DATE_CSV_TIMEINDEX = "timeindex";
     public static String DATE_CSV_DATEINDEX = "dateindex";
     public static String MAPPING_VALUE_SPECIFICATION = "Value Specification";
+    //XML
+    public static String XML_GENERAL_TAG = "General Tag";
+    public static String XML_SPECIFICATION_TAG = "Specification Tag";
+    public static String XML_SPECIFICATION_ATTRIBUTE = "Specification in Attribute";
+    public static String XMl_VALUE_TAG = "Value Tag";
+    public static String XML_VALUE_ATTRIBUTE = "Value in Attribute";
+    public static String XML_DATE_TAG = "Date Tag";
+    public static String XML_DATE_ATTRIBUTE = "Date in Attribute";
+    public static String XML_TIME_TAG = "Time Tag";
+    public static String XML_TIME_ATTRIBUTE = "Time in Attribute";
 }

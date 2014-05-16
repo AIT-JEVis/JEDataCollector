@@ -4,64 +4,91 @@
  */
 package org.jevis.jedatacollector;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.FileAppender;
+import org.apache.commons.cli.Option;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
 import org.apache.log4j.PropertyConfigurator;
 import org.jevis.jedatacollector.exception.FetchingException;
 import org.jevis.jeapi.*;
 import org.jevis.jeapi.sql.JEVisDataSourceSQL;
+import org.jevis.jecommon.cli.JEVisCommandLine;
 import org.jevis.jedatacollector.data.Data;
 
 /**
  *
  * @author broder
  */
-public class TestMain {
+public class Launcher {
+
+    private static void configureLogger(Level debugLevel) {
+        PropertyConfigurator.configure("log4j.properties");
+        Logger.getRootLogger().setLevel(debugLevel);
+    }
 
     private JEVisDataSource _client;
-//    private final Logger _logger = Logger.getLogger(getClass());
-    private static final String EQUIPMENT = "Datalogger";
-    private static final String PARSER = "Parser";
-    private static final String CONNECTION = "Connection";
-    private static final String DATAPOINT = "Datapoint";
+    private Logger _logger;
+    
+    //Command line Parameter
+    public static String SINGLE = "single";
+    public static String DRY = "dry";
+    public static String OUTPUT = "output";
+    public static String QUERY_SERVER = "query-server";
+    public static String QUERY_USER = "query-user";
+    public static String QUERY_PASS = "query-pass";
+    public static String DATA_SOURCE = "data-source";
+    public static String DATA_POINT = "data-point";
+    public static String EQUIPMENT = "equipment";
+    public static String FROM = "from";
+    public static String UNTIL = "until";
+    public static String PROTOCOL = "protocol";
+    public static String CSV = "csv";
+
+    private static void createCommandLine(String[] args) {
+        JEVisCommandLine cmd = JEVisCommandLine.getInstance();
+        //Execution Control
+        cmd.addOption(new Option(SINGLE, false, "Invokes Single Mode, usefull for debug mode"));
+        cmd.addOption(new Option(DRY, false, "starts a dry run -> fetching data without DB import"));
+        cmd.addOption(new Option(OUTPUT, true, "the outputfile is saved under this path"));
+        //Fetch Job Parameters
+        cmd.addOption(new Option("qs", QUERY_SERVER, true, "Defines the server url for the device request"));
+        cmd.addOption(new Option("qu", QUERY_USER, true, "Defines a user for authentication"));
+        cmd.addOption(new Option("qp", QUERY_PASS, true, "Defines a password for authentication"));
+        cmd.addOption(new Option("ds", DATA_SOURCE, true, "Forces a specific data source"));
+        cmd.addOption(new Option("dp", DATA_POINT, true, "Forces a specific data point"));
+        cmd.addOption(new Option("e", EQUIPMENT, true, "Forces a specific equipment"));
+        cmd.addOption(new Option(FROM, true, "Forces the \"from\" timestamp in UTC format"));
+        cmd.addOption(new Option(UNTIL, true, "Forces the \"until\" timestamp in UTC format"));
+        cmd.addOption(new Option(PROTOCOL, true, "Forces the protocol type"));
+        cmd.addOption(new Option(CSV, true, "Forces the CSV format"));
+        //Create Options
+
+        cmd.parse(args);
+    }
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-            System.out.println("###starte DataLogger###");
-            
-            //Parse the parameter from commandline
-            DataLoggerCommandLine cmd = DataLoggerCommandLine.getInstance();
-            cmd.parse(args);
-     
-            PropertyConfigurator.configure("log4j.properties");
-            
-            Logger.getRootLogger().info("Info");
-            Logger.getRootLogger().error("Warning");
-            
-            if(cmd.needHelp()){
-                cmd.showHelp();
-                System.exit(0);
-            }
+        System.out.println("###starte DataLogger###");
 
-            TestMain adf = new TestMain(true);
-    //        adf.getDataSamples();
-    //        adf.createNewSample();
-            JEVisObject equip = adf.getEquipment();
+        createCommandLine(args);
+
+        configureLogger(JEVisCommandLine.getInstance().getDebugLevel());
+        
+
+        Launcher adf = new Launcher(true);
+        //        adf.getDataSamples();
+        //        adf.createNewSample();
+        JEVisObject equip = adf.getEquipment();
 
 
-            adf.fetch(equip);
+        adf.fetch(equip);
 
     }
 
-    public TestMain(boolean connect) {
+    public Launcher(boolean connect) {
 //        JevLoginHandler.createDirectLogin(user, pass, host);
         if (connect) {
             System.out.println("Verbinden zum Config");
@@ -69,7 +96,7 @@ public class TestMain {
                 _client = new JEVisDataSourceSQL("192.168.2.55", "3306", "jevis", "jevis", "jevistest", "Sys Admin", "jevis");
                 _client.connect("Sys Admin", "jevis");
             } catch (JEVisException ex) {
-                Logger.getLogger(TestMain.class.getName()).log(Level.ERROR, null, ex);
+                Logger.getLogger(Launcher.class.getName()).log(Level.ERROR, null, ex);
             }
             System.out.println("Verbinden zum Config erfolgreich");
         }
@@ -78,6 +105,10 @@ public class TestMain {
     //TODO vllt diesen job nur für jevis und nen anderen für andere....
     //TODO Threads pro Equipment oder pro Anfrage (bei VIDA geht es nicht)
     public void fetch(JEVisObject equip) {
+        Logger.getLogger(this.getClass()).log(Level.INFO, "INFO LAUNCHER");
+        Logger.getLogger(this.getClass()).log(Level.WARN, "WARN LAUNCHER");
+        Logger.getLogger(this.getClass()).log(Level.ALL, "ALL LAUNCHER");
+        Test test = new Test();
         Data data = getJEVisData(equip);
 
         List<Request> requests = RequestGenerator.createJEVisRequests(data);
@@ -100,7 +131,7 @@ public class TestMain {
                     }
 
                 } else {
-                    Logger.getLogger(TestMain.class.getName()).log(Level.ERROR, null, t);
+                    Logger.getLogger(Launcher.class.getName()).log(Level.ERROR, null, t);
                 }
             }
         }
@@ -142,14 +173,13 @@ public class TestMain {
 //        return jobCollector;
 //
 //    }
-    
     private JEVisObject getEquipment() {
         //hier muss er sich eigentl alle möglichen holen!!
         JEVisObject logger = null;
         try {
             logger = _client.getObject(54l);
         } catch (JEVisException ex) {
-            Logger.getLogger(TestMain.class.getName()).log(Level.ERROR, null, ex);
+            Logger.getLogger(Launcher.class.getName()).log(Level.ERROR, null, ex);
         }
         return logger;
     }

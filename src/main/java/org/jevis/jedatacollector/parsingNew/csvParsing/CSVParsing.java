@@ -59,13 +59,13 @@ public class CSVParsing extends DataCollectorParser {
         String[] stringArrayInput = ic.getStringArrayInput();
         System.out.println("Sampleparserlist " + _sampleParsers.size());
         for (int i = _headerLines; i < stringArrayInput.length; i++) {
-            String line[] = stringArrayInput[i].split(String.valueOf(_delim),-1);
+            String line[] = stringArrayInput[i].split(String.valueOf(_delim), -1);
             if (_quote != null) {
                 line = removeQuotes(line);
             }
 
             //line noch setzen im InputConverter als temp oder so
-            ic.setTmpInput(line);
+            ic.setCSVInput(line);
 
             DateTime dateTime;
             Double value;
@@ -80,14 +80,14 @@ public class CSVParsing extends DataCollectorParser {
                 GeneralDatapointParser dpParser = parser.getDpParser();
                 dpParser.parse(ic);
                 datapoint = dpParser.getDatapoint();
-              
-                
-                if(((ValueCSVParser)valueParser).outOfBounce()){
-                    System.out.println("Date "+ dateTime);
-                    System.out.println("Value "+ value);
+
+
+                if (((ValueCSVParser) valueParser).outOfBounce()) {
+                    System.out.println("Date " + dateTime);
+                    System.out.println("Value " + value);
                 }
                 boolean valueIsValid = ParsingService.checkValue(parser);
-                if(!valueIsValid){
+                if (!valueIsValid) {
                     continue;
                 }
                 _results.add(new Result(datapoint, value, dateTime));
@@ -126,11 +126,37 @@ public class CSVParsing extends DataCollectorParser {
         }
     }
 
-    public SampleParserContainer extractSampleContainer(JEVisObject mapping, JEVisObject dateObject, JEVisObject valueObject) {
-        SampleParserContainer container = null;
+//    public SampleParserContainer extractSampleContainer(JEVisObject mapping, JEVisObject dateObject, JEVisObject valueObject) {
+//        SampleParserContainer container = null;
+//        try {
+//            //DateObject 
+//
+//
+//
+//           
+//
+//            //ValueObject
+//            GeneralValueParser valueParser = null;
+//            JEVisClass valueClass = valueObject.getJEVisClass();
+//            JEVisType seperatorDecimalType = valueClass.getType(JevisAttributes.VALUE_DECIMSEPERATOR);
+//            JEVisType seperatorThousandType = valueClass.getType(JevisAttributes.VALUE_THOUSANDSEPERATOR);
+//
+//            String seperatorDecimal = valueObject.getAttribute(seperatorDecimalType).getLatestSample().getValueAsString();
+//            System.out.println("sepDecimal" + seperatorDecimal);
+//            String seperatorThousand = valueObject.getAttribute(seperatorThousandType).getLatestSample().getValueAsString();
+//            System.out.println("sepThousand" + seperatorThousand);
+//            valueParser = new ValueCSVParser(indexValue, seperatorDecimal, seperatorThousand);
+//
+//            container = new SampleParserContainer(datapointParser, dateParser, valueParser);
+//        } catch (JEVisException ex) {
+//            Logger.getLogger(DataCollectorParser.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//        return container;
+//    }
+    @Override
+    public GeneralDateParser initializeDateParser(JEVisObject dateObject, JEVisObject valueObject, JEVisObject mapping) {
+        DateCSVParser dateParser = null;
         try {
-            //DateObject 
-            DateCSVParser dateParser = null;
             JEVisClass dateClass = dateObject.getJEVisClass();
             System.out.println("Dateobjectid " + dateObject.getID());
 
@@ -156,14 +182,21 @@ public class CSVParsing extends DataCollectorParser {
             System.out.println("Timeindex" + timeIndex);
 
             dateParser = new DateCSVParser(time, timeIndex, date, dateIndex);
+        } catch (JEVisException ex) {
+            Logger.getLogger(CSVParsing.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return dateParser;
+    }
 
-
-            //Mappingclass
+    @Override
+    public GeneralDatapointParser initializeDatapointParser(JEVisObject dateObject, JEVisObject valueObject, JEVisObject mapping) {
             GeneralDatapointParser datapointParser = null;
+        try {
+            //Mappingclass
             JEVisClass mappingClass = mapping.getJEVisClass();
             JEVisType indexValueType = mappingClass.getType(JevisAttributes.MAPPING_VALUE_SPECIFICATION);
-//            JEVisType indexDatapointType = mappingClass.getType("Index Datapoint");
-//            JEVisType datapointInFileType = mappingClass.getType("infile");
+            //            JEVisType indexDatapointType = mappingClass.getType("Index Datapoint");
+            //            JEVisType datapointInFileType = mappingClass.getType("infile");
             JEVisType datapointType = mappingClass.getType(JevisAttributes.MAPPING_ONLINEID);
 
             int indexValue = -1;
@@ -171,24 +204,42 @@ public class CSVParsing extends DataCollectorParser {
                 indexValue = (int) (long) mapping.getAttribute(indexValueType).getLatestSample().getValueAsLong();
             }
             System.out.println("IndexValue" + indexValue);
-//            int indexDatapoint = 0;
-//            if (mapping.getAttribute(indexDatapointType) != null) {
-//                indexDatapoint = Integer.parseInt((String) mapping.getAttribute(indexDatapointType).getLatestSample().getValue());
-//            }
+            //            int indexDatapoint = 0;
+            //            if (mapping.getAttribute(indexDatapointType) != null) {
+            //                indexDatapoint = Integer.parseInt((String) mapping.getAttribute(indexDatapointType).getLatestSample().getValue());
+            //            }
             long datapoint = -1;
             if (mapping.getAttribute(datapointType) != null) {
                 datapoint = mapping.getAttribute(datapointType).getLatestSample().getValueAsLong();
             }
             System.out.println("Datapoint" + datapoint);
-//            boolean inFile = false;
-//            if (mapping.getAttribute(datapointInFileType) != null) {
-//                inFile = Boolean.parseBoolean((String) mapping.getAttribute(datapointInFileType).getLatestSample().getValue());
-//            }
+            //            boolean inFile = false;
+            //            if (mapping.getAttribute(datapointInFileType) != null) {
+            //                inFile = Boolean.parseBoolean((String) mapping.getAttribute(datapointInFileType).getLatestSample().getValue());
+            //            }
             //entweder den einen oder den anderen Parser!!!!!
             datapointParser = new DatapointFixCSVParser(false, datapoint);
+        } catch (JEVisException ex) {
+            Logger.getLogger(CSVParsing.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return datapointParser;
+    }
 
+    @Override
+    public GeneralValueParser initializeValueParser(JEVisObject dateObject, JEVisObject valueObject, JEVisObject mapping) {
+        GeneralValueParser valueParser = null;
+        try {
+            //get the index from the mapping object
+                JEVisClass mappingClass = mapping.getJEVisClass();
+            JEVisType indexValueType = mappingClass.getType(JevisAttributes.MAPPING_VALUE_SPECIFICATION);
+            //            JEVisType indexDatapointType = mappingClass.getType("Index Datapoint");
+            //            JEVisType datapointInFileType = mappingClass.getType("infile");
+            int indexValue = -1;
+            if (mapping.getAttribute(indexValueType) != null) {
+                indexValue = (int) (long) mapping.getAttribute(indexValueType).getLatestSample().getValueAsLong();
+            }
+            
             //ValueObject
-            GeneralValueParser valueParser = null;
             JEVisClass valueClass = valueObject.getJEVisClass();
             JEVisType seperatorDecimalType = valueClass.getType(JevisAttributes.VALUE_DECIMSEPERATOR);
             JEVisType seperatorThousandType = valueClass.getType(JevisAttributes.VALUE_THOUSANDSEPERATOR);
@@ -196,13 +247,12 @@ public class CSVParsing extends DataCollectorParser {
             String seperatorDecimal = valueObject.getAttribute(seperatorDecimalType).getLatestSample().getValueAsString();
             System.out.println("sepDecimal" + seperatorDecimal);
             String seperatorThousand = valueObject.getAttribute(seperatorThousandType).getLatestSample().getValueAsString();
-            System.out.println("sepThousand" + seperatorThousand);
+            System.out.println("sepThousand " + seperatorThousand);
             valueParser = new ValueCSVParser(indexValue, seperatorDecimal, seperatorThousand);
-
-            container = new SampleParserContainer(datapointParser, dateParser, valueParser);
         } catch (JEVisException ex) {
-            Logger.getLogger(DataCollectorParser.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CSVParsing.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return container;
+        return valueParser;
     }
+
 }

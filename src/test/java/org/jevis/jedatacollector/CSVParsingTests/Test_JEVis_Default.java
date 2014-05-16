@@ -89,10 +89,10 @@ public class Test_JEVis_Default {
         DateTimeFormatter dtf = DateTimeFormat.forPattern("dd-MM-yyyy HH:mm:ss");
 
         List<DateTime> expectedDateTimes = new ArrayList<DateTime>();
-        expectedDateTimes.add(dtf.parseDateTime("13-07-2012 00:00:00").toDateTime(DateTimeZone.UTC));
-        expectedDateTimes.add(dtf.parseDateTime("13-07-2012 00:15:00").toDateTime(DateTimeZone.UTC));
-        expectedDateTimes.add(dtf.parseDateTime("13-07-2012 00:30:00").toDateTime(DateTimeZone.UTC));
-        expectedDateTimes.add(dtf.parseDateTime("13-07-2012 00:45:00").toDateTime(DateTimeZone.UTC));
+        expectedDateTimes.add(dtf.parseDateTime("13-07-2012 00:00:00"));
+        expectedDateTimes.add(dtf.parseDateTime("13-07-2012 00:15:00"));
+        expectedDateTimes.add(dtf.parseDateTime("13-07-2012 00:30:00"));
+        expectedDateTimes.add(dtf.parseDateTime("13-07-2012 00:45:00"));
 
         Assert.assertEquals(expectedValues.size(), realValues.size());
         Assert.assertEquals(expectedDateTimes.size(), realDateTimes.size());

@@ -60,22 +60,21 @@ public class DateCSVParser implements GeneralDateParser {
 
     @Override
     public void parse(InputHandler ic) {
-        String[] line = ic.getTmpInput();
+        String[] line = ic.getCSVInput();
         String date = line[_dateIndex];
 //        String dateFormat = _dateFormat;
 
         String pattern = _dateFormat;
-        String string = date;
+        String format = date;
 
         if (_timeFormat != null && _timeIndex != -1) {
             String time = line[_timeIndex];
             pattern += " " + _timeFormat;
-            string += " " + time;
+            format += " " + time;
         }
 
-        
         DateTimeFormatter fmt = DateTimeFormat.forPattern(pattern);
-        _dateTime = fmt.parseDateTime(string);
+        _dateTime = fmt.parseDateTime(format);
         System.out.println("Current time "+_dateTime);
 //        DateTimeZone.setDefault(DateTimeZone.forTimeZone(TimeZone.getTimeZone("CET")));
     }

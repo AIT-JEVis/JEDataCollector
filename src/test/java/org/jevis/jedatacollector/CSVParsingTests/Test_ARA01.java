@@ -90,14 +90,14 @@ public class Test_ARA01 {
         DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
 
         List<DateTime> expectedDateTimes = new ArrayList<DateTime>();
-        expectedDateTimes.add(dtf.parseDateTime("2002-05-15 12:20:23").toDateTime(DateTimeZone.UTC));
-        expectedDateTimes.add(dtf.parseDateTime("2002-05-15 12:35:23").toDateTime(DateTimeZone.UTC));
-        expectedDateTimes.add(dtf.parseDateTime("2002-05-15 12:50:23").toDateTime(DateTimeZone.UTC));
-        expectedDateTimes.add(dtf.parseDateTime("2002-05-15 13:05:23").toDateTime(DateTimeZone.UTC));
-        expectedDateTimes.add(dtf.parseDateTime("2002-05-15 13:20:27").toDateTime(DateTimeZone.UTC));
-        expectedDateTimes.add(dtf.parseDateTime("2002-05-15 13:35:27").toDateTime(DateTimeZone.UTC));
-        expectedDateTimes.add(dtf.parseDateTime("2002-05-15 13:50:27").toDateTime(DateTimeZone.UTC));
-        expectedDateTimes.add(dtf.parseDateTime("2002-05-15 14:05:27").toDateTime(DateTimeZone.UTC));
+        expectedDateTimes.add(dtf.parseDateTime("2002-05-15 12:20:23"));
+        expectedDateTimes.add(dtf.parseDateTime("2002-05-15 12:35:23"));
+        expectedDateTimes.add(dtf.parseDateTime("2002-05-15 12:50:23"));
+        expectedDateTimes.add(dtf.parseDateTime("2002-05-15 13:05:23"));
+        expectedDateTimes.add(dtf.parseDateTime("2002-05-15 13:20:27"));
+        expectedDateTimes.add(dtf.parseDateTime("2002-05-15 13:35:27"));
+        expectedDateTimes.add(dtf.parseDateTime("2002-05-15 13:50:27"));
+        expectedDateTimes.add(dtf.parseDateTime("2002-05-15 14:05:27"));
 
         Assert.assertEquals(expectedValues.size(), realValues.size());
         Assert.assertEquals(expectedDateTimes.size(), realDateTimes.size());

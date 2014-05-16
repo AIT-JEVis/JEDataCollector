@@ -13,6 +13,7 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.IOUtils;
+import org.w3c.dom.Node;
 
 /**
  *
@@ -22,11 +23,12 @@ public abstract class InputHandler implements Iterable<Object> {
 
     protected Object _rawInput;
     protected List<InputStream> _inputStream;
-    protected String[] _tmpInput;
+    protected String[] _csvInput;
     private String[] _stringArrayOutput;
     private boolean _stringArrayOutputParsed;
     private String _stringOutput;
     private boolean _stringOutputParsed;
+    private Node _xmlInput;
 
     public InputHandler(Object rawInput) {
         _inputStream = new ArrayList<InputStream>();
@@ -42,6 +44,10 @@ public abstract class InputHandler implements Iterable<Object> {
     @Override
     public Iterator iterator() {
         return _inputStream.iterator();
+    }
+    
+    public Object getRawInput(){
+        return _rawInput;
     }
 
     public String[] getStringArrayInput() {
@@ -63,12 +69,20 @@ public abstract class InputHandler implements Iterable<Object> {
         return _stringArrayOutput;
     }
 
-    public void setTmpInput(String[] input) {
-        _tmpInput = input;
+    public void setCSVInput(String[] input) {
+        _csvInput = input;
     }
 
-    public String[] getTmpInput() {
-        return _tmpInput;
+    public String[] getCSVInput() {
+        return _csvInput;
+    }
+    
+     public void setXMLInput(Node input) {
+        _xmlInput = input;
+    }
+
+    public Node getXMLInput() {
+        return _xmlInput;
     }
 
     public void setInputStream(List<InputStream> input) {

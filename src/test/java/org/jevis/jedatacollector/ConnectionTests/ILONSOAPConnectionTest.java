@@ -4,6 +4,13 @@
  */
 package org.jevis.jedatacollector.ConnectionTests;
 
+import java.io.File;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import junit.framework.Assert;
 import org.jevis.jedatacollector.DataCollector;
 import org.jevis.jedatacollector.Request;
@@ -36,6 +43,13 @@ public class ILONSOAPConnectionTest {
         collector.run();
 
         Document doc = ((SOAPMessageInputHandler) collector.getInputHandler()).getDocument().get(0);
+
+        Transformer transformer = TransformerFactory.newInstance().newTransformer();
+        Result output = new StreamResult(new File("ilon.xml"));
+        Source input = new DOMSource(doc);
+
+        transformer.transform(input, output);
+
         NodeList nodeNames = doc.getElementsByTagName("UCPTpointName");
         NodeList nodeDates = doc.getElementsByTagName("UCPTlogTime");
         NodeList nodeValues = doc.getElementsByTagName("UCPTvalue");

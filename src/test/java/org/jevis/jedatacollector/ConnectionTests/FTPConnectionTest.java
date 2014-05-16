@@ -12,10 +12,7 @@ import org.jevis.jedatacollector.connection.DatacollectorConnection;
 import org.jevis.jedatacollector.connection.FTP.FTPConnection;
 import org.jevis.jedatacollector.data.NewDataPoint;
 import org.jevis.jedatacollector.exception.FetchingException;
-import org.jevis.jedatacollector.service.inputHandler.SOAPMessageInputHandler;
 import org.joda.time.DateTime;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
 
 /**
  *

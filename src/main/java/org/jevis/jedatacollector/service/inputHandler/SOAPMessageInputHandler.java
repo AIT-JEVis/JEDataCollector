@@ -27,6 +27,7 @@ public class SOAPMessageInputHandler extends InputHandler {
 
     @Override
     public void convertInput() {
+
         List<SOAPMessage> input = (List<SOAPMessage>) _rawInput;
         for (SOAPMessage m : input) {
             try {

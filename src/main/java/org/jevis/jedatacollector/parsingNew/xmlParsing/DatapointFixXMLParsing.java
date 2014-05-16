@@ -2,33 +2,28 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.jevis.jedatacollector.parsingNew.csvParsing;
+package org.jevis.jedatacollector.parsingNew.xmlParsing;
 
 import org.jevis.jedatacollector.parsingNew.GeneralDatapointParser;
 import org.jevis.jedatacollector.service.inputHandler.InputHandler;
 
 /**
  *
- * @author broder
+ * @author bf
  */
-public class DatapointFixCSVParser implements GeneralDatapointParser {
+public class DatapointFixXMLParsing implements GeneralDatapointParser {
 
-    private boolean _inFile;
-    private int _index;
+    private boolean _isInFile;
     private long _datapoint;
 
-    public DatapointFixCSVParser(boolean incsv, long datapoint) {
-        _inFile = incsv;
+    public DatapointFixXMLParsing(boolean incsv, long datapoint) {
+        _isInFile = incsv;
         _datapoint = datapoint;
-    }
-
-    public int getDatapointIndex() {
-        return _index;
     }
 
     @Override
     public boolean isInFile() {
-        return _inFile;
+        return _isInFile;
     }
 
     @Override
@@ -38,6 +33,6 @@ public class DatapointFixCSVParser implements GeneralDatapointParser {
 
     @Override
     public void parse(InputHandler ic) {
-        // no parsing necessary
+        //no parsing necessary
     }
 }
