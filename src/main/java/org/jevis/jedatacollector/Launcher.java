@@ -14,7 +14,22 @@ import org.jevis.jedatacollector.exception.FetchingException;
 import org.jevis.jeapi.*;
 import org.jevis.jeapi.sql.JEVisDataSourceSQL;
 import org.jevis.jecommon.cli.JEVisCommandLine;
+import org.jevis.jedatacollector.CLIProperties.ConnectionCLIParser;
+import org.jevis.jedatacollector.CLIProperties.ParsingCLIParser;
+import org.jevis.jedatacollector.connection.DatacollectorConnection;
+import org.jevis.jedatacollector.connection.HTTP.HTTPConnection;
 import org.jevis.jedatacollector.data.Data;
+import org.jevis.jedatacollector.data.NewDataPoint;
+import org.jevis.jedatacollector.parsingNew.DataCollectorParser;
+import org.jevis.jedatacollector.parsingNew.GeneralDateParser;
+import org.jevis.jedatacollector.parsingNew.GeneralMappingParser;
+import org.jevis.jedatacollector.parsingNew.GeneralValueParser;
+import org.jevis.jedatacollector.parsingNew.SampleParserContainer;
+import org.jevis.jedatacollector.parsingNew.csvParsing.CSVParsing;
+import org.jevis.jedatacollector.parsingNew.csvParsing.DateCSVParser;
+import org.jevis.jedatacollector.parsingNew.csvParsing.MappingFixCSVParser;
+import org.jevis.jedatacollector.parsingNew.csvParsing.ValueCSVParser;
+import org.joda.time.DateTimeZone;
 
 /**
  *
@@ -26,10 +41,8 @@ public class Launcher {
         PropertyConfigurator.configure("log4j.properties");
         Logger.getRootLogger().setLevel(debugLevel);
     }
-
     private JEVisDataSource _client;
     private Logger _logger;
-    
     //Command line Parameter
     public static String SINGLE = "single";
     public static String DRY = "dry";
@@ -44,6 +57,10 @@ public class Launcher {
     public static String UNTIL = "until";
     public static String PROTOCOL = "protocol";
     public static String CSV = "csv";
+    public static String CONNETION_FILE = "connection";
+    public static String PARSING_FILE = "parsing";
+    public static String OUTPUT_FILE = "path";
+    public static String OUTPUT_DATAPOINT = "dp";
 
     private static void createCommandLine(String[] args) {
         JEVisCommandLine cmd = JEVisCommandLine.getInstance();
@@ -62,6 +79,12 @@ public class Launcher {
         cmd.addOption(new Option(UNTIL, true, "Forces the \"until\" timestamp in UTC format"));
         cmd.addOption(new Option(PROTOCOL, true, "Forces the protocol type"));
         cmd.addOption(new Option(CSV, true, "Forces the CSV format"));
+
+        cmd.addOption(new Option(OUTPUT_FILE, true, "Saves the output under the given path"));
+        cmd.addOption(new Option(OUTPUT_DATAPOINT, true, "Saves the output under the given datapoint in the jevis system"));
+        cmd.addOption(new Option(CONNETION_FILE, true, "Path of the connection file"));
+        cmd.addOption(new Option(PARSING_FILE, true, "Path of the parsing file"));
+
         //Create Options
 
         cmd.parse(args);
@@ -76,20 +99,26 @@ public class Launcher {
         createCommandLine(args);
 
         configureLogger(JEVisCommandLine.getInstance().getDebugLevel());
-        
 
-        Launcher adf = new Launcher(true);
+
+        Launcher launcher = new Launcher(true);
         //        adf.getDataSamples();
         //        adf.createNewSample();
-        JEVisObject equip = adf.getEquipment();
+        JEVisObject equip = launcher.getEquipment();
 
-
-        adf.fetch(equip);
+        //hier müssen verschiedene Modi an und abgestellt werden können
+        boolean single = true;
+        if (single) {
+            launcher.fetchCLIJob();
+        } else {
+            launcher.fetchEquipmentJob(equip);
+        }
 
     }
 
     public Launcher(boolean connect) {
 //        JevLoginHandler.createDirectLogin(user, pass, host);
+
         if (connect) {
             System.out.println("Verbinden zum Config");
             try {
@@ -102,9 +131,32 @@ public class Launcher {
         }
     }
 
+    private void fetchCLIJob() {
+        JEVisCommandLine cmd = JEVisCommandLine.getInstance();
+        String connectionFile = cmd.getValue(CONNETION_FILE);
+        ConnectionCLIParser con = new ConnectionCLIParser(connectionFile);
+        String parsingFile = cmd.getValue(PARSING_FILE);
+        ParsingCLIParser par = new ParsingCLIParser(parsingFile);
+        long outputDp = Long.parseLong(cmd.getValue(OUTPUT_DATAPOINT));
+
+        DatacollectorConnection connection = new HTTPConnection(con.getIP(), con.getPath(), con.getPort(), con.getConnectionTimeout(), con.getReadTimeout());
+        DataCollectorParser fileParser = new CSVParsing(par.getQuote(), par.getDelim(), par.getHeaderlines());
+
+        GeneralMappingParser datapointParser = new MappingFixCSVParser(false, outputDp);
+        GeneralDateParser dateParser = new DateCSVParser(null, null, par.getDateformat(), par.getDateIndex(), DateTimeZone.UTC);
+        GeneralValueParser valueParser = new ValueCSVParser(par.getValueIndex(), par.getDecimalSep(), par.getThousandSep());
+
+        SampleParserContainer sampleContainer = new SampleParserContainer(datapointParser, dateParser, valueParser);
+        fileParser.addSampleContainer(sampleContainer);
+
+        NewDataPoint datapoint = new NewDataPoint("60", null);
+        Request request = RequestGenerator.createCLIRequest(connection, fileParser, datapoint);
+        executeRequest(request);
+    }
     //TODO vllt diesen job nur für jevis und nen anderen für andere....
     //TODO Threads pro Equipment oder pro Anfrage (bei VIDA geht es nicht)
-    public void fetch(JEVisObject equip) {
+
+    private void fetchEquipmentJob(JEVisObject equip) {
         Logger.getLogger(this.getClass()).log(Level.INFO, "INFO LAUNCHER");
         Logger.getLogger(this.getClass()).log(Level.WARN, "WARN LAUNCHER");
         Logger.getLogger(this.getClass()).log(Level.ALL, "ALL LAUNCHER");
@@ -114,25 +166,29 @@ public class Launcher {
         List<Request> requests = RequestGenerator.createJEVisRequests(data);
 
         for (Request request : requests) {
-            DataCollector datalogger = new DataCollector(request);
-            try {
-                datalogger.run();
+            executeRequest(request);
+        }
+    }
 
-            } catch (Throwable t) {
-                if (t instanceof FetchingException) {
-                    FetchingException fe = (FetchingException) t;
+    private void executeRequest(Request request) {
+        DataCollector datalogger = new DataCollector(request);
+        try {
+            datalogger.run();
 
-                    if (fe.createAlarm()) {
-                        System.out.println(fe.getMsg());
+        } catch (Throwable t) {
+            if (t instanceof FetchingException) {
+                FetchingException fe = (FetchingException) t;
+
+                if (fe.createAlarm()) {
+                    System.out.println(fe.getMsg());
 //                    setStatusFailed(n);
 //                    setAlarm(n, fe);
-                    } else {
-//                    JevHandler.printDebug(fe.getMsg(), 2);
-                    }
-
                 } else {
-                    Logger.getLogger(Launcher.class.getName()).log(Level.ERROR, null, t);
+//                    JevHandler.printDebug(fe.getMsg(), 2);
                 }
+
+            } else {
+                Logger.getLogger(Launcher.class.getName()).log(Level.ERROR, null, t);
             }
         }
     }

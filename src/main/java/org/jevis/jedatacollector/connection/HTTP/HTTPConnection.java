@@ -220,6 +220,7 @@ public class HTTPConnection implements DatacollectorConnection {
 
             }
         }
+        System.out.println("outputsize "+res.size());
         return res;
     }
 

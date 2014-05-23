@@ -56,7 +56,7 @@ public class RequestGenerator {
         return requests;
     }
 
-    public static Request createOnlyParsingRequest(DataCollectorParser fileParser,InputHandler input) {
+    public static Request createOnlyParsingRequest(DataCollectorParser fileParser, InputHandler input) {
         Request req = new DefaultRequest();
         req.setNeedConnection(false);
         req.setNeedImport(false);
@@ -73,6 +73,17 @@ public class RequestGenerator {
         request.setConnection(connection);
         request.setParser(parsing);
         request.setNeedImport(false);
+        request.setNeedParsing(true);
+        return request;
+    }
+
+    public static Request createCLIRequest(DatacollectorConnection connection, DataCollectorParser parsing, NewDataPoint dataPoint) {
+        Request request = new DefaultRequest();
+        request.setNeedConnection(true);
+        request.setConnection(connection);
+        request.setParser(parsing);
+        request.setNeedImport(true);
+        request.setSpecificDatapoint(dataPoint);
         request.setNeedParsing(true);
         return request;
     }

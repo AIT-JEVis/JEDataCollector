@@ -31,7 +31,6 @@ public class FTPConnectionTest {
         collector.run();
 
         String[] stringArrayInput = collector.getInputHandler().getStringArrayInput();
-        
         Assert.assertTrue(stringArrayInput.length == 3007);
 
     }
