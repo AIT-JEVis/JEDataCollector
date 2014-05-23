@@ -42,7 +42,7 @@ public class ILONSOAPConnectionTest {
         DataCollector collector = new DataCollector(request);
         collector.run();
 
-        Document doc = ((SOAPMessageInputHandler) collector.getInputHandler()).getDocument().get(0);
+        Document doc = ((SOAPMessageInputHandler) collector.getInputHandler()).getDocuments().get(0);
 
         Transformer transformer = TransformerFactory.newInstance().newTransformer();
         Result output = new StreamResult(new File("ilon.xml"));

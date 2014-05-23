@@ -4,7 +4,6 @@
  */
 package org.jevis.jedatacollector.parsingNew.csvParsing;
 
-import java.util.TimeZone;
 import org.jevis.jedatacollector.parsingNew.GeneralDateParser;
 import org.jevis.jedatacollector.service.inputHandler.InputHandler;
 import org.joda.time.DateTime;
@@ -23,8 +22,9 @@ public class DateCSVParser implements GeneralDateParser {
     private Integer _timeIndex;
     private Integer _dateIndex;
     private DateTime _dateTime;
+    private DateTimeZone _timeZone;
 
-    public DateCSVParser(String timeFormat, Integer timeIndex, String dateFormat, Integer dateIndex) {
+    public DateCSVParser(String timeFormat, Integer timeIndex, String dateFormat, Integer dateIndex, DateTimeZone timezone) {
         _timeFormat = timeFormat;
         _dateFormat = dateFormat;
         if (timeIndex != null) {
@@ -33,6 +33,7 @@ public class DateCSVParser implements GeneralDateParser {
         if (dateIndex != null) {
             _dateIndex = dateIndex - 1;
         }
+        _timeZone = timezone;
     }
 
     @Override
@@ -77,5 +78,10 @@ public class DateCSVParser implements GeneralDateParser {
         _dateTime = fmt.parseDateTime(format);
         System.out.println("Current time "+_dateTime);
 //        DateTimeZone.setDefault(DateTimeZone.forTimeZone(TimeZone.getTimeZone("CET")));
+    }
+
+    @Override
+    public DateTimeZone getTimeZone() {
+        return _timeZone;
     }
 }

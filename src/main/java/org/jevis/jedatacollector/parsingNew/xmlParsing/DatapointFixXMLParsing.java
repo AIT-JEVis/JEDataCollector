@@ -4,14 +4,14 @@
  */
 package org.jevis.jedatacollector.parsingNew.xmlParsing;
 
-import org.jevis.jedatacollector.parsingNew.GeneralDatapointParser;
+import org.jevis.jedatacollector.parsingNew.GeneralMappingParser;
 import org.jevis.jedatacollector.service.inputHandler.InputHandler;
 
 /**
  *
  * @author bf
  */
-public class DatapointFixXMLParsing implements GeneralDatapointParser {
+public class DatapointFixXMLParsing implements GeneralMappingParser {
 
     private boolean _isInFile;
     private long _datapoint;
@@ -34,5 +34,15 @@ public class DatapointFixXMLParsing implements GeneralDatapointParser {
     @Override
     public void parse(InputHandler ic) {
         //no parsing necessary
+    }
+
+    @Override
+    public String getMappingValue() {
+        return null; //no mapping value
+    }
+
+    @Override
+    public boolean isMappingSuccessfull() {
+        return true; //no mapping needed
     }
 }

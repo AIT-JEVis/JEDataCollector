@@ -11,11 +11,11 @@ package org.jevis.jedatacollector.parsingNew;
  */
 public class SampleParserContainer {
 
-    private GeneralDatapointParser _dpParser;
+    private GeneralMappingParser _dpParser;
     private GeneralDateParser _dateParser;
     private GeneralValueParser _valueParser;
 
-    public SampleParserContainer(GeneralDatapointParser _dpParser, GeneralDateParser _dateParser, GeneralValueParser _valueParser) {
+    public SampleParserContainer(GeneralMappingParser _dpParser, GeneralDateParser _dateParser, GeneralValueParser _valueParser) {
         this._dpParser = _dpParser;
         this._dateParser = _dateParser;
         this._valueParser = _valueParser;
@@ -25,7 +25,7 @@ public class SampleParserContainer {
         return _dateParser;
     }
 
-    public GeneralDatapointParser getDpParser() {
+    public GeneralMappingParser getDpParser() {
         return _dpParser;
     }
 

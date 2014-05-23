@@ -5,6 +5,7 @@
 package org.jevis.jedatacollector.parsingNew;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 /**
  *
@@ -17,4 +18,6 @@ public interface GeneralDateParser extends GeneralParser {
     public String getDateFormat();
 
     public DateTime getDateTime();
+    
+    public DateTimeZone getTimeZone();
 }

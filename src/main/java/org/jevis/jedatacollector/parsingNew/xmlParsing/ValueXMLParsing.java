@@ -56,13 +56,13 @@ public class ValueXMLParsing implements GeneralValueParser {
         String sVal = null;
         try {
             if (_valueAttribute) {
-                sVal = xmlInput.getAttributes().getNamedItem(_valueTag).getNodeValue();
+                sVal = xmlInput.getAttributes().getNamedItem(_valueTag).getTextContent();
             } else {
                 for (int i = 0; i < xmlInput.getChildNodes().getLength(); i++) {
                     Node currentNode = xmlInput.getChildNodes().item(i);
                     String currentName = currentNode.getNodeName();
                     if (currentName.equals(_valueTag)) {
-                        sVal = currentNode.getNodeValue();
+                        sVal = currentNode.getTextContent();
                     }
                 }
             }

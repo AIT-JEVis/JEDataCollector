@@ -4,6 +4,7 @@
  */
 package org.jevis.jedatacollector.parsingNew.xmlParsing;
 
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jevis.jeapi.JEVisClass;
@@ -12,16 +13,14 @@ import org.jevis.jeapi.JEVisObject;
 import org.jevis.jeapi.JEVisType;
 import org.jevis.jedatacollector.data.JevisAttributes;
 import org.jevis.jedatacollector.parsingNew.DataCollectorParser;
-import org.jevis.jedatacollector.parsingNew.GeneralDatapointParser;
+import org.jevis.jedatacollector.parsingNew.GeneralMappingParser;
 import org.jevis.jedatacollector.parsingNew.GeneralDateParser;
 import org.jevis.jedatacollector.parsingNew.GeneralValueParser;
 import org.jevis.jedatacollector.parsingNew.Result;
 import org.jevis.jedatacollector.parsingNew.SampleParserContainer;
 import org.jevis.jedatacollector.parsingNew.csvParsing.CSVParsing;
-import org.jevis.jedatacollector.parsingNew.csvParsing.ValueCSVParser;
 import org.jevis.jedatacollector.service.ParsingService;
 import org.jevis.jedatacollector.service.inputHandler.InputHandler;
-import org.jevis.jedatacollector.service.inputHandler.SOAPMessageInputHandler;
 import org.joda.time.DateTime;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -38,40 +37,69 @@ public class XMLParsingNew extends DataCollectorParser {
     private String _specificationTag;
     private Boolean _specificationInAttribute;
 
-    public XMLParsingNew(String generalTag, String specificationTag, boolean specificationInAttribute){
+    public XMLParsingNew(String generalTag, String specificationTag, Boolean specificationInAttribute) {
         _generalTag = generalTag;
         _specificationTag = specificationTag;
         _specificationInAttribute = specificationInAttribute;
     }
-    
+
     @Override
     public void parse(InputHandler ic) {
-         System.out.println("XMl File Parsing starts");
+        System.out.println("XMl File Parsing starts");
         System.out.println("Sampleparserlist " + _sampleParsers.size());
-        for(Document d: ((SOAPMessageInputHandler) ic).getDocument()){
-             NodeList elementsByTagName = d.getElementsByTagName(_generalTag);
-             
-             //iterate over all nodes with the element name
-             for (int i = 0; i<elementsByTagName.getLength();i++){
-                 Node currentNode = elementsByTagName.item(i);
-                 
-                 //check if the node is the correct node
-                 boolean isCorrectNode = true; //eigentl false
-                 if (_specificationTag!=null){
-                     if(_specificationInAttribute){
-                         NamedNodeMap attributes = currentNode.getAttributes();
-                         for (int j = 0; j<attributes.getLength();j++){
-                         }
-                     }else{
-                         
-                     }
-                 }
-                 
-                 //parse the correct node
-                 if(isCorrectNode){
-                     
-                 }
-             }
+        List<Document> documents = ic.getDocuments();
+        for (Document d : documents) {
+            NodeList elementsByTagName = d.getElementsByTagName(_generalTag);
+
+            //iterate over all nodes with the element name
+            for (int i = 0; i < elementsByTagName.getLength(); i++) {
+                Node currentNode = elementsByTagName.item(i);
+                ic.setXMLInput(currentNode);
+
+                //single parsing
+                boolean isCorrectNode = true; //eigentl false
+                DateTime dateTime;
+                Double value;
+                Long datapoint;
+                if (_specificationTag == null) {
+                    //should only be one sample parser
+                    for (SampleParserContainer parser : _sampleParsers) {
+                        GeneralDateParser dateParser = parser.getDateParser();
+                        dateParser.parse(ic);
+                        dateTime = dateParser.getDateTime();
+                        GeneralValueParser valueParser = parser.getValueParser();
+                        valueParser.parse(ic);
+                        value = valueParser.getValue();
+                        GeneralMappingParser dpParser = parser.getDpParser();
+                        dpParser.parse(ic);
+                        datapoint = dpParser.getDatapoint();
+
+                        //should be in an extra method
+                        boolean valueIsValid = ParsingService.checkValue(parser);
+                        if (!valueIsValid) {
+                            continue;
+                        }
+
+                        boolean datapointIsValid = ParsingService.checkDatapoint(parser);
+                        if (!datapointIsValid) {
+                            continue;
+                        }
+                        _results.add(new Result(datapoint, value, dateTime));
+                    }
+                } else {
+                    //multi parsing
+                    if (_specificationInAttribute) {
+                        NamedNodeMap attributes = currentNode.getAttributes();
+                        for (int j = 0; j < attributes.getLength(); j++) {
+                        }
+                    } else {
+                    }
+                }
+
+                //parse the correct node
+                if (isCorrectNode) {
+                }
+            }
         }
     }
 
@@ -136,8 +164,8 @@ public class XMLParsingNew extends DataCollectorParser {
     }
 
     @Override
-    public GeneralDatapointParser initializeDatapointParser(JEVisObject date, JEVisObject value, JEVisObject mapping) {
-        GeneralDatapointParser datapointParser = null;
+    public GeneralMappingParser initializeDatapointParser(JEVisObject date, JEVisObject value, JEVisObject mapping) {
+        GeneralMappingParser datapointParser = null;
         try {
             //Mappingclass
             JEVisClass mappingClass = mapping.getJEVisClass();

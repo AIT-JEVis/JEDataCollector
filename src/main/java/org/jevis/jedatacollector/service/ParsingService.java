@@ -23,6 +23,10 @@ public class ParsingService {
         boolean validValue = parser.getValueParser().isValueValid();
         return validValue;
     }
+
+    public static boolean checkDatapoint(SampleParserContainer parser) {
+        return parser.getDpParser().isMappingSuccessfull();
+    }
     private DataCollectorParser _fileParser;
 
     public ParsingService(Request request) {

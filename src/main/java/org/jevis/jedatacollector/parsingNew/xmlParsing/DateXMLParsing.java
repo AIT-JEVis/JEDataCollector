@@ -7,6 +7,7 @@ package org.jevis.jedatacollector.parsingNew.xmlParsing;
 import org.jevis.jedatacollector.parsingNew.GeneralDateParser;
 import org.jevis.jedatacollector.service.inputHandler.InputHandler;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.w3c.dom.Node;
@@ -25,7 +26,7 @@ public class DateXMLParsing implements GeneralDateParser {
     private boolean _timeAttribute;
     private DateTime _dateTime;
 
-    public DateXMLParsing(String dateFormat, String dateTag, boolean dateAttribute, String timeFormat, String timeTag, boolean timeAttribute) {
+    public DateXMLParsing(String dateFormat, String dateTag, Boolean dateAttribute, String timeFormat, String timeTag, Boolean timeAttribute) {
         _dateFormat = dateFormat;
         _dateTag = dateTag;
         _dateAttribute = dateAttribute;
@@ -68,13 +69,14 @@ public class DateXMLParsing implements GeneralDateParser {
         //get the date
         String date = null;
         if (_dateAttribute) {
-            date = xmlInput.getAttributes().getNamedItem(_dateTag).getNodeValue();
+            date = xmlInput.getAttributes().getNamedItem(_dateTag).getTextContent();
         } else {
             for (int i = 0; i < xmlInput.getChildNodes().getLength(); i++) {
                 Node currentNode = xmlInput.getChildNodes().item(i);
                 String currentName = currentNode.getNodeName();
                 if (currentName.equals(_dateTag)) {
-                    date = currentNode.getNodeValue();
+                    date = currentNode.getTextContent();
+                    break;
                 }
             }
         }
@@ -82,13 +84,14 @@ public class DateXMLParsing implements GeneralDateParser {
         //get the time
         String time = null;
         if (_timeAttribute) {
-            time = xmlInput.getAttributes().getNamedItem(_timeTag).getNodeValue();
+            time = xmlInput.getAttributes().getNamedItem(_timeTag).getTextContent();
         } else {
             for (int i = 0; i < xmlInput.getChildNodes().getLength(); i++) {
                 Node currentNode = xmlInput.getChildNodes().item(i);
                 String currentName = currentNode.getNodeName();
                 if (currentName.equals(_timeTag)) {
-                    time = currentNode.getNodeValue();
+                    time = currentNode.getTextContent();
+                    break;
                 }
             }
         }
@@ -105,5 +108,10 @@ public class DateXMLParsing implements GeneralDateParser {
 
         DateTimeFormatter fmt = DateTimeFormat.forPattern(pattern);
         _dateTime = fmt.parseDateTime(dateAndTime);
+    }
+
+    @Override
+    public DateTimeZone getTimeZone() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

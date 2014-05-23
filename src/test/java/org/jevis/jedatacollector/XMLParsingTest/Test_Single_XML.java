@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.jevis.jedatacollector.CSVParsingTests;
+package org.jevis.jedatacollector.XMLParsingTest;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -12,17 +12,20 @@ import org.jevis.jedatacollector.DataCollector;
 import org.jevis.jedatacollector.Request;
 import org.jevis.jedatacollector.RequestGenerator;
 import org.jevis.jedatacollector.parsingNew.DataCollectorParser;
-import org.jevis.jedatacollector.parsingNew.GeneralMappingParser;
 import org.jevis.jedatacollector.parsingNew.GeneralDateParser;
+import org.jevis.jedatacollector.parsingNew.GeneralMappingParser;
 import org.jevis.jedatacollector.parsingNew.GeneralValueParser;
 import org.jevis.jedatacollector.parsingNew.Result;
 import org.jevis.jedatacollector.parsingNew.SampleParserContainer;
 import org.jevis.jedatacollector.parsingNew.csvParsing.CSVParsing;
-import org.jevis.jedatacollector.parsingNew.csvParsing.MappingFixCSVParser;
-import org.jevis.jedatacollector.parsingNew.csvParsing.DateCSVParser;
-import org.jevis.jedatacollector.parsingNew.csvParsing.ValueCSVParser;
+import org.jevis.jedatacollector.parsingNew.xmlParsing.DatapointFixXMLParsing;
+import org.jevis.jedatacollector.parsingNew.xmlParsing.DateXMLParsing;
+import org.jevis.jedatacollector.parsingNew.xmlParsing.ValueXMLParsing;
+import org.jevis.jedatacollector.parsingNew.xmlParsing.XMLParsingNew;
+import org.jevis.jedatacollector.service.ParsingService;
 import org.jevis.jedatacollector.service.inputHandler.FileInputHandler;
 import org.jevis.jedatacollector.service.inputHandler.InputHandler;
+import org.jevis.jedatacollector.service.inputHandler.SOAPMessageInputHandler;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
@@ -32,36 +35,33 @@ import org.joda.time.format.DateTimeFormatter;
  *
  * @author bf
  */
-public class Test_JEVis_Default {
+public class Test_Single_XML {
 
     /**
-     * Testcases: JEvisDefault Format Date and Time: seperated Value: thousand
-     * sep = , and dec sep = .
+     * Testcases: ARA01 Format Date and Time: seperated Value: thousand sep = ,
+     * and dec sep = .
      *
      */
-    public void test_JEVisDefault() throws Exception {
+    public void test_ilon_envidatec() throws Exception {
         System.out.println("parse");
-        File file = new File("src/test/java/org/jevis/jedatacollector/CSVParsingTests/JEVis_DEFAULT_example.csv");
-
+        System.out.println(DateTimeFormat.longDateTime().print(546216445l));
+        System.out.println(DateTimeFormat.mediumDateTime());
+        File file = new File("src/test/java/org/jevis/jedatacollector/XMLParsingTest/XML_single_normal.xml");
         InputHandler inputHandler = new FileInputHandler(file);
         inputHandler.convertInput();
 
-//        instance.setInputConverter(inputHandler);
-        DataCollectorParser fileParser = new CSVParsing("\"", ";", 1);
-
-        GeneralMappingParser datapointParser = new MappingFixCSVParser(false, 22);
-        GeneralDateParser dateParser = new DateCSVParser(null, null, "dd-MM-yyyy HH:mm:ss", 1, DateTimeZone.UTC);
-        GeneralValueParser valueParser = new ValueCSVParser(2, ".", null);
+        DataCollectorParser fileParser = new XMLParsingNew("Element", null, null);
+        GeneralMappingParser datapointParser = new DatapointFixXMLParsing(false, 1234l);
+        GeneralDateParser dateParser = new DateXMLParsing("yyyy-MM-dd HH:mm:ss.SSSZ", "UCPTlogTime", false, null, null, false);
+        GeneralValueParser valueParser = new ValueXMLParsing("UCPTvalue", false, ".", ",");
 
         SampleParserContainer sampleContainer = new SampleParserContainer(datapointParser, dateParser, valueParser);
         fileParser.addSampleContainer(sampleContainer);
 
-//        ParsingService ps = new ParsingService();
-//        ps.setFileParser(fileParser);
-//        IParsing parser = new SinglePointCSV("dd.MM.yyyy", "HH:mm:ss", 3, 2, 1, ";", ",", ".", null, 2); //der Parser
-//        instance.setParsingService(ps);
         Request request = RequestGenerator.createOnlyParsingRequest(fileParser, inputHandler);
+
         DataCollector instance = new DataCollector(request);
+
         instance.run();
 
         List<Result> resultList = instance.getResults();
@@ -75,24 +75,28 @@ public class Test_JEVis_Default {
         }
 
         List expectedValues = new ArrayList<Double>();
-        expectedValues.add(129599.99999999852);
-        expectedValues.add(144000.00000000332);
-        expectedValues.add(129599.99999999852);
-        expectedValues.add(143999.99999999694);
+        expectedValues.add(44.0);
+        expectedValues.add(44.0);
+        expectedValues.add(44.0);
+        expectedValues.add(45.0);
+        expectedValues.add(44.0);
 
         List expectedDatapoints = new ArrayList<String>();
-        expectedDatapoints.add(22l);
-        expectedDatapoints.add(22l);
-        expectedDatapoints.add(22l);
-        expectedDatapoints.add(22l);
+        expectedDatapoints.add(1234l);
+        expectedDatapoints.add(1234l);
+        expectedDatapoints.add(1234l);
+        expectedDatapoints.add(1234l);
+        expectedDatapoints.add(1234l);
 
-        DateTimeFormatter dtf = DateTimeFormat.forPattern("dd-MM-yyyy HH:mm:ss");
+        DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS");
+//        DateTimeFormatter dtf = DateTimeFormat.fullDate();
 
         List<DateTime> expectedDateTimes = new ArrayList<DateTime>();
-        expectedDateTimes.add(dtf.parseDateTime("13-07-2012 00:00:00"));
-        expectedDateTimes.add(dtf.parseDateTime("13-07-2012 00:15:00"));
-        expectedDateTimes.add(dtf.parseDateTime("13-07-2012 00:30:00"));
-        expectedDateTimes.add(dtf.parseDateTime("13-07-2012 00:45:00"));
+        expectedDateTimes.add(dtf.parseDateTime("2012-12-14 01:03:00.391"));
+        expectedDateTimes.add(dtf.parseDateTime("2012-12-14 01:04:00.391"));
+        expectedDateTimes.add(dtf.parseDateTime("2012-12-14 01:05:00.441"));
+        expectedDateTimes.add(dtf.parseDateTime("2012-12-14 01:06:00.401"));
+        expectedDateTimes.add(dtf.parseDateTime("2012-12-14 01:07:00.501"));
 
         Assert.assertEquals(expectedValues.size(), realValues.size());
         Assert.assertEquals(expectedDateTimes.size(), realDateTimes.size());

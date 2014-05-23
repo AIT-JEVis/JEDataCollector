@@ -86,7 +86,7 @@ public abstract class DataCollectorParser {
 
             GeneralDateParser dateParser = null;
             GeneralValueParser valueParser = null;
-            GeneralDatapointParser datapointParser = null;
+            GeneralMappingParser datapointParser = null;
             for (JEVisObject o : mappingObjects) {
                 datapointParser = initializeDatapointParser(dateObject, valueObject, o);
                 dateParser = initializeDateParser(dateObject, valueObject, o);
@@ -101,7 +101,7 @@ public abstract class DataCollectorParser {
 //    abstract public SampleParserContainer extractSampleContainer(JEVisObject mapping, JEVisObject dateObject, JEVisObject valueObject);
     abstract public GeneralDateParser initializeDateParser(JEVisObject dateObject, JEVisObject valueObject, JEVisObject datapointObject);
 
-    abstract public GeneralDatapointParser initializeDatapointParser(JEVisObject dateObject, JEVisObject valueObject, JEVisObject datapointObject);
+    abstract public GeneralMappingParser initializeDatapointParser(JEVisObject dateObject, JEVisObject valueObject, JEVisObject datapointObject);
 
     abstract public GeneralValueParser initializeValueParser(JEVisObject dateObject, JEVisObject valueObject, JEVisObject datapointObject);
 }

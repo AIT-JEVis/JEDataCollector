@@ -12,13 +12,13 @@ import org.jevis.jedatacollector.DataCollector;
 import org.jevis.jedatacollector.Request;
 import org.jevis.jedatacollector.RequestGenerator;
 import org.jevis.jedatacollector.parsingNew.DataCollectorParser;
-import org.jevis.jedatacollector.parsingNew.GeneralDatapointParser;
+import org.jevis.jedatacollector.parsingNew.GeneralMappingParser;
 import org.jevis.jedatacollector.parsingNew.GeneralDateParser;
 import org.jevis.jedatacollector.parsingNew.GeneralValueParser;
 import org.jevis.jedatacollector.parsingNew.Result;
 import org.jevis.jedatacollector.parsingNew.SampleParserContainer;
 import org.jevis.jedatacollector.parsingNew.csvParsing.CSVParsing;
-import org.jevis.jedatacollector.parsingNew.csvParsing.DatapointFixCSVParser;
+import org.jevis.jedatacollector.parsingNew.csvParsing.MappingFixCSVParser;
 import org.jevis.jedatacollector.parsingNew.csvParsing.DateCSVParser;
 import org.jevis.jedatacollector.parsingNew.csvParsing.ValueCSVParser;
 import org.jevis.jedatacollector.service.inputHandler.FileInputHandler;
@@ -43,8 +43,8 @@ public class Test_ARA01 {
 
         DataCollectorParser fileParser = new CSVParsing(null, ";", 2);
 
-        GeneralDatapointParser datapointParser = new DatapointFixCSVParser(false, 22);
-        GeneralDateParser dateParser = new DateCSVParser("HH:mm:ss", 2, "dd.MM.yyyy", 3);
+        GeneralMappingParser datapointParser = new MappingFixCSVParser(false, 22);
+        GeneralDateParser dateParser = new DateCSVParser("HH:mm:ss", 2, "dd.MM.yyyy", 3, DateTimeZone.UTC);
         GeneralValueParser valueParser = new ValueCSVParser(1, ".", ",");
 
         SampleParserContainer sampleContainer = new SampleParserContainer(datapointParser, dateParser, valueParser);

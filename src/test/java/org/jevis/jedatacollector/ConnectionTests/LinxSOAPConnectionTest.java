@@ -48,7 +48,7 @@ public class LinxSOAPConnectionTest {
 
         DataCollector collector = new DataCollector(request);
         collector.run();
-        Document doc = ((SOAPMessageInputHandler) collector.getInputHandler()).getDocument().get(0);
+        Document doc = ((SOAPMessageInputHandler) collector.getInputHandler()).getDocuments().get(0);
 //        DOMSource domSource = new DOMSource(doc);
 //        StringWriter writer = new StringWriter();
 //        StreamResult result = new StreamResult(writer);

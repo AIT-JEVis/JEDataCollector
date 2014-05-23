@@ -13,15 +13,16 @@ import org.jevis.jedatacollector.connection.DatacollectorConnection;
 import org.jevis.jedatacollector.connection.FTP.FTPConnection;
 import org.jevis.jedatacollector.exception.FetchingException;
 import org.jevis.jedatacollector.parsingNew.DataCollectorParser;
-import org.jevis.jedatacollector.parsingNew.GeneralDatapointParser;
+import org.jevis.jedatacollector.parsingNew.GeneralMappingParser;
 import org.jevis.jedatacollector.parsingNew.GeneralDateParser;
 import org.jevis.jedatacollector.parsingNew.GeneralValueParser;
 import org.jevis.jedatacollector.parsingNew.Result;
 import org.jevis.jedatacollector.parsingNew.SampleParserContainer;
 import org.jevis.jedatacollector.parsingNew.csvParsing.CSVParsing;
-import org.jevis.jedatacollector.parsingNew.csvParsing.DatapointFixCSVParser;
+import org.jevis.jedatacollector.parsingNew.csvParsing.MappingFixCSVParser;
 import org.jevis.jedatacollector.parsingNew.csvParsing.DateCSVParser;
 import org.jevis.jedatacollector.parsingNew.csvParsing.ValueCSVParser;
+import org.joda.time.DateTimeZone;
 
 /**
  *
@@ -33,8 +34,8 @@ public class FTP_CSV_Loytec {
         DatacollectorConnection connection = new FTPConnection("", "/data/", "Trend_L1_1_UI1_Input_10C6.csv", "192.168.2.254", "admin", "envidatec4u", 200l, 2l);
         DataCollectorParser fileParser = new CSVParsing(null, ",", 7);
 
-        GeneralDatapointParser datapointParser = new DatapointFixCSVParser(false, 22);
-        GeneralDateParser dateParser = new DateCSVParser(null, null, "yyyy-MM-dd HH:mm:ss", 5);
+        GeneralMappingParser datapointParser = new MappingFixCSVParser(false, 22);
+        GeneralDateParser dateParser = new DateCSVParser(null, null, "yyyy-MM-dd HH:mm:ss", 5, DateTimeZone.UTC);
         GeneralValueParser valueParser = new ValueCSVParser(6, ".", null);
 
         SampleParserContainer sampleContainer = new SampleParserContainer(datapointParser, dateParser, valueParser);

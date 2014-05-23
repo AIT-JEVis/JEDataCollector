@@ -4,20 +4,20 @@
  */
 package org.jevis.jedatacollector.parsingNew.csvParsing;
 
-import org.jevis.jedatacollector.parsingNew.GeneralDatapointParser;
+import org.jevis.jedatacollector.parsingNew.GeneralMappingParser;
 import org.jevis.jedatacollector.service.inputHandler.InputHandler;
 
 /**
  *
  * @author broder
  */
-public class DatapointFixCSVParser implements GeneralDatapointParser {
+public class MappingFixCSVParser implements GeneralMappingParser {
 
     private boolean _inFile;
     private int _index;
     private long _datapoint;
 
-    public DatapointFixCSVParser(boolean incsv, long datapoint) {
+    public MappingFixCSVParser(boolean incsv, long datapoint) {
         _inFile = incsv;
         _datapoint = datapoint;
     }
@@ -39,5 +39,15 @@ public class DatapointFixCSVParser implements GeneralDatapointParser {
     @Override
     public void parse(InputHandler ic) {
         // no parsing necessary
+    }
+
+    @Override
+    public String getMappingValue() {
+        return null; //has no mapping value, cause the onlineId is fix
+    }
+
+    @Override
+    public boolean isMappingSuccessfull() {
+        return true;
     }
 }

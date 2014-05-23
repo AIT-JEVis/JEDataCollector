@@ -4,17 +4,17 @@
  */
 package org.jevis.jedatacollector.parsingNew;
 
-import org.jevis.jedatacollector.service.inputHandler.InputHandler;
-
 /**
  *
  * @author broder
  */
-public interface GeneralDatapointParser extends GeneralParser{
+public interface GeneralMappingParser extends GeneralParser{
 
     public boolean isInFile();
 
     public long getDatapoint();
     
- 
+    public String getMappingValue();
+    
+    public boolean isMappingSuccessfull();
 }

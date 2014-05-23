@@ -1,0 +1,67 @@
+<root>
+<Element>
+    <UCPTpointName>NVE_VIVA24nvoSteamTemp</UCPTpointName>
+    <UCPTlocation>Subsystem 1.VIVA24</UCPTlocation>
+    <LogSourceAddress>
+        <UCPTsubnet>1</UCPTsubnet>
+        <UCPTnodeID>2</UCPTnodeID>
+    </LogSourceAddress>
+    <UCPTlogTime>2012-12-14 01:03:00.391+01:00</UCPTlogTime>
+    <UCPTvalue>44.0</UCPTvalue>
+    <UCPTunit>°C</UCPTunit>
+    <UCPTpointStatus>AL_NO_CONDITION</UCPTpointStatus>
+    <UCPTpriority>255</UCPTpriority>
+</Element>
+<Element>
+    <UCPTpointName>NVE_VIVA24nvoSteamTemp</UCPTpointName>
+    <UCPTlocation>Subsystem 1.VIVA24</UCPTlocation>
+    <LogSourceAddress>
+        <UCPTsubnet>1</UCPTsubnet>
+        <UCPTnodeID>2</UCPTnodeID>
+    </LogSourceAddress>
+    <UCPTlogTime>2012-12-14 01:04:00.391+01:00</UCPTlogTime>
+    <UCPTvalue>44.0</UCPTvalue>
+    <UCPTunit>°C</UCPTunit>
+    <UCPTpointStatus>AL_NO_CONDITION</UCPTpointStatus>
+    <UCPTpriority>255</UCPTpriority>
+</Element>
+<Element>
+    <UCPTpointName>NVE_VIVA24nvoSteamTemp</UCPTpointName>
+    <UCPTlocation>Subsystem 1.VIVA24</UCPTlocation>
+    <LogSourceAddress>
+        <UCPTsubnet>1</UCPTsubnet>
+        <UCPTnodeID>2</UCPTnodeID>
+    </LogSourceAddress>
+    <UCPTlogTime>2012-12-14 01:05:00.441+01:00</UCPTlogTime>
+    <UCPTvalue>44.0</UCPTvalue>
+    <UCPTunit>°C</UCPTunit>
+    <UCPTpointStatus>AL_NO_CONDITION</UCPTpointStatus>
+    <UCPTpriority>255</UCPTpriority>
+</Element>
+<Element>
+    <UCPTpointName>NVE_VIVA24nvoSteamTemp</UCPTpointName>
+    <UCPTlocation>Subsystem 1.VIVA24</UCPTlocation>
+    <LogSourceAddress>
+        <UCPTsubnet>1</UCPTsubnet>
+        <UCPTnodeID>2</UCPTnodeID>
+    </LogSourceAddress>
+    <UCPTlogTime>2012-12-14 01:06:00.401+01:00</UCPTlogTime>
+    <UCPTvalue>45.0</UCPTvalue>
+    <UCPTunit>°C</UCPTunit>
+    <UCPTpointStatus>AL_NO_CONDITION</UCPTpointStatus>
+    <UCPTpriority>255</UCPTpriority>
+</Element>
+<Element>
+    <UCPTpointName>NVE_VIVA24nvoSteamTemp</UCPTpointName>
+    <UCPTlocation>Subsystem 1.VIVA24</UCPTlocation>
+    <LogSourceAddress>
+        <UCPTsubnet>1</UCPTsubnet>
+        <UCPTnodeID>2</UCPTnodeID>
+    </LogSourceAddress>
+    <UCPTlogTime>2012-12-14 01:07:00.501+01:00</UCPTlogTime>
+    <UCPTvalue>44.0</UCPTvalue>
+    <UCPTunit>°C</UCPTunit>
+    <UCPTpointStatus>AL_NO_CONDITION</UCPTpointStatus>
+    <UCPTpriority>255</UCPTpriority>
+</Element>
+</root>

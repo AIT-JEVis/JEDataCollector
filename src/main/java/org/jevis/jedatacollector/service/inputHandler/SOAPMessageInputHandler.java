@@ -18,11 +18,8 @@ import org.w3c.dom.Document;
  */
 public class SOAPMessageInputHandler extends InputHandler {
 
-    private List<Document> _document;
-
     public SOAPMessageInputHandler(List<SOAPMessage> input) {
         super(input);
-        _document = new ArrayList<Document>();
     }
 
     @Override
@@ -38,7 +35,4 @@ public class SOAPMessageInputHandler extends InputHandler {
         }
     }
 
-    public List<Document> getDocument() {
-        return _document;
-    }
 }

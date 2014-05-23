@@ -17,10 +17,10 @@ import org.jevis.jedatacollector.connection.HTTP.HTTPConnection;
 import org.jevis.jedatacollector.parsingNew.DataCollectorParser;
 import org.jevis.jedatacollector.parsingNew.Result;
 import org.jevis.jedatacollector.parsingNew.csvParsing.CSVParsing;
-import org.jevis.jedatacollector.parsingNew.csvParsing.DatapointFixCSVParser;
+import org.jevis.jedatacollector.parsingNew.csvParsing.MappingFixCSVParser;
 import org.jevis.jedatacollector.parsingNew.csvParsing.DateCSVParser;
 import org.jevis.jedatacollector.parsingNew.csvParsing.ValueCSVParser;
-import org.jevis.jedatacollector.parsingNew.GeneralDatapointParser;
+import org.jevis.jedatacollector.parsingNew.GeneralMappingParser;
 import org.jevis.jedatacollector.parsingNew.GeneralDateParser;
 import org.jevis.jedatacollector.parsingNew.GeneralValueParser;
 import org.jevis.jedatacollector.parsingNew.SampleParserContainer;
@@ -55,8 +55,8 @@ public class HttpAlpha_CsvVida {
         DatacollectorConnection connection = new HTTPConnection("192.168.2.55", "/Parsing/JEVis_DEFAULT_example.csv", 80, 300, 30);
         DataCollectorParser fileParser = new CSVParsing("\"", ";", 1);
 
-        GeneralDatapointParser datapointParser = new DatapointFixCSVParser(false, 22);
-        GeneralDateParser dateParser = new DateCSVParser(null, null, "dd-MM-yyyy HH:mm:ss", 1);
+        GeneralMappingParser datapointParser = new MappingFixCSVParser(false, 22);
+        GeneralDateParser dateParser = new DateCSVParser(null, null, "dd-MM-yyyy HH:mm:ss", 1, DateTimeZone.UTC);
         GeneralValueParser valueParser = new ValueCSVParser(2, ".", null);
 
         SampleParserContainer sampleContainer = new SampleParserContainer(datapointParser, dateParser, valueParser);

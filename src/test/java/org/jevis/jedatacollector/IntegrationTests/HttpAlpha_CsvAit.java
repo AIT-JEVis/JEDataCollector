@@ -17,10 +17,10 @@ import org.jevis.jedatacollector.connection.HTTP.HTTPConnection;
 import org.jevis.jedatacollector.parsingNew.DataCollectorParser;
 import org.jevis.jedatacollector.parsingNew.Result;
 import org.jevis.jedatacollector.parsingNew.csvParsing.CSVParsing;
-import org.jevis.jedatacollector.parsingNew.csvParsing.DatapointFixCSVParser;
+import org.jevis.jedatacollector.parsingNew.csvParsing.MappingFixCSVParser;
 import org.jevis.jedatacollector.parsingNew.csvParsing.DateCSVParser;
 import org.jevis.jedatacollector.parsingNew.csvParsing.ValueCSVParser;
-import org.jevis.jedatacollector.parsingNew.GeneralDatapointParser;
+import org.jevis.jedatacollector.parsingNew.GeneralMappingParser;
 import org.jevis.jedatacollector.parsingNew.GeneralDateParser;
 import org.jevis.jedatacollector.parsingNew.GeneralValueParser;
 import org.jevis.jedatacollector.parsingNew.SampleParserContainer;
@@ -56,18 +56,18 @@ public class HttpAlpha_CsvAit {
         DatacollectorConnection connection = new HTTPConnection("192.168.2.55", "/Parsing/data-all.csv", 80, 300, 30);
         DataCollectorParser fileParser = new CSVParsing("\"", ";", 1);
 
-        GeneralDateParser dateParser = new DateCSVParser(null, null, "dd-MM-yyyy HH:mm.ss", 1);
-        GeneralDatapointParser datapointParser2 = new DatapointFixCSVParser(false, 2);
+        GeneralDateParser dateParser = new DateCSVParser(null, null, "dd-MM-yyyy HH:mm.ss", 1,DateTimeZone.UTC);
+        GeneralMappingParser datapointParser2 = new MappingFixCSVParser(false, 2);
         GeneralValueParser valueParser2 = new ValueCSVParser(2, ",", null);
-        GeneralDatapointParser datapointParser3 = new DatapointFixCSVParser(false, 3);
+        GeneralMappingParser datapointParser3 = new MappingFixCSVParser(false, 3);
         GeneralValueParser valueParser3 = new ValueCSVParser(3, ",", null);
-        GeneralDatapointParser datapointParser4 = new DatapointFixCSVParser(false, 4);
+        GeneralMappingParser datapointParser4 = new MappingFixCSVParser(false, 4);
         GeneralValueParser valueParser4 = new ValueCSVParser(4, ",", null);
-        GeneralDatapointParser datapointParser5 = new DatapointFixCSVParser(false, 5);
+        GeneralMappingParser datapointParser5 = new MappingFixCSVParser(false, 5);
         GeneralValueParser valueParser5= new ValueCSVParser(5, ",", null);
-        GeneralDatapointParser datapointParser6 = new DatapointFixCSVParser(false, 6);
+        GeneralMappingParser datapointParser6 = new MappingFixCSVParser(false, 6);
         GeneralValueParser valueParser6 = new ValueCSVParser(6, ",", null);
-        GeneralDatapointParser datapointParser22 = new DatapointFixCSVParser(false, 22);
+        GeneralMappingParser datapointParser22 = new MappingFixCSVParser(false, 22);
         GeneralValueParser valueParser22 = new ValueCSVParser(22, ",", null);
 
 
