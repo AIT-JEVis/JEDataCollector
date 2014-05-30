@@ -4,15 +4,14 @@
  */
 package org.jevis.jedatacollector.parsingNew.xmlParsing;
 
-import org.jevis.jedatacollector.parsing.XML.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.jevis.api.JEVisClass;
+import org.jevis.api.JEVisException;
+import org.jevis.api.JEVisObject;
+import org.jevis.api.JEVisType;
 import org.jevis.jedatacollector.exception.FetchingException;
 import org.jevis.jedatacollector.exception.FetchingExceptionType;
-import org.jevis.jeapi.JEVisType;
-import org.jevis.jeapi.JEVisObject;
-import org.jevis.jeapi.JEVisClass;
-import org.jevis.jeapi.JEVisException;
 import org.joda.time.DateTime;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;

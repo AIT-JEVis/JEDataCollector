@@ -14,7 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
-import org.jevis.jeapi.JEVisObject;
+import org.jevis.api.JEVisObject;
 import org.jevis.jedatacollector.connection.DatacollectorConnection;
 import org.jevis.jedatacollector.data.NewDataPoint;
 import org.jevis.jedatacollector.exception.FetchingException;
@@ -203,7 +203,9 @@ public class FTPConnection implements DatacollectorConnection {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             String query = _filePath + fileName;
             System.out.println("FTPQuery " + query);
-            _fc.retrieveFile(query, out);
+            boolean retrieveFile = _fc.retrieveFile(query, out);
+
+            System.out.println("Request status: " + retrieveFile);
 
             InputStream inputStream = new ByteArrayInputStream(out.toByteArray());
 

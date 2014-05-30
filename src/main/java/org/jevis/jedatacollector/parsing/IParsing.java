@@ -5,10 +5,10 @@
 package org.jevis.jedatacollector.parsing;
 
 import java.util.TimeZone;
+import org.jevis.api.JEVisObject;
 import org.jevis.jedatacollector.exception.FetchingException;
 import org.jevis.jedatacollector.service.ParsedData;
 import org.jevis.jedatacollector.service.inputHandler.InputHandler;
-import org.jevis.jeapi.JEVisObject;
 
 /**
  *

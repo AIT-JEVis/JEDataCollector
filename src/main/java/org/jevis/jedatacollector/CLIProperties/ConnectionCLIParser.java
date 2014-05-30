@@ -52,10 +52,10 @@ public class ConnectionCLIParser {
         return _connectionType;
     }
 
-    public int getPort(){
+    public int getPort() {
         return _port;
     }
-    
+
     public String getIP() {
         return _ip;
     }
@@ -70,5 +70,9 @@ public class ConnectionCLIParser {
 
     public Integer getReadTimeout() {
         return _readTimeout;
+    }
+
+    public String getDateFormat() {
+        return _dateFormat;
     }
 }

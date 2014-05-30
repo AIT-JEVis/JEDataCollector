@@ -6,16 +6,9 @@ package org.jevis.jedatacollector.parsing;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.jevis.jeapi.JEVisException;
-import org.jevis.jedatacollector.parsing.CSV.MultipleDataCoherentDataCSV;
-import org.jevis.jedatacollector.parsing.CSV.MultipleDataCoherentTimeCSV;
-import org.jevis.jedatacollector.parsing.CSV.MultipleDataCompact;
-import org.jevis.jedatacollector.parsing.CSV.SinglePointCSV;
-import org.jevis.jedatacollector.parsing.SQL.SQLParsing;
-import org.jevis.jedatacollector.parsing.XML.XMLParsingMultipleData;
-import org.jevis.jedatacollector.parsing.XML.XMLParsingSingleData;
+import org.jevis.api.JEVisException;
+import org.jevis.api.JEVisObject;
 import org.jevis.jedatacollector.exception.FetchingException;
-import org.jevis.jeapi.JEVisObject;
 import org.jevis.jedatacollector.parsingNew.DataCollectorParser;
 import org.jevis.jedatacollector.parsingNew.csvParsing.CSVParsing;
 

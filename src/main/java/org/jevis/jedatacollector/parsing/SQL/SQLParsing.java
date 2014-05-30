@@ -5,7 +5,7 @@
 package org.jevis.jedatacollector.parsing.SQL;
 
 import java.util.TimeZone;
-import org.jevis.jeapi.JEVisObject;
+import org.jevis.api.JEVisObject;
 import org.jevis.jedatacollector.parsing.IParsing;
 import org.jevis.jedatacollector.exception.FetchingException;
 import org.jevis.jedatacollector.service.inputHandler.InputHandler;

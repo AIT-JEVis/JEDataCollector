@@ -5,7 +5,7 @@
 package org.jevis.jedatacollector.connection.OPC;
 
 import java.util.List;
-import org.jevis.jeapi.JEVisObject;
+import org.jevis.api.JEVisObject;
 import org.jevis.jedatacollector.data.NewDataPoint;
 import org.jevis.jedatacollector.connection.DatacollectorConnection;
 import org.jevis.jedatacollector.exception.FetchingException;

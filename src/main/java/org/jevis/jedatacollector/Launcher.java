@@ -10,10 +10,12 @@ import org.apache.commons.cli.Option;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
+import org.jevis.api.JEVisDataSource;
+import org.jevis.api.JEVisException;
+import org.jevis.api.JEVisObject;
+import org.jevis.api.sql.JEVisDataSourceSQL;
+import org.jevis.commons.cli.JEVisCommandLine;
 import org.jevis.jedatacollector.exception.FetchingException;
-import org.jevis.jeapi.*;
-import org.jevis.jeapi.sql.JEVisDataSourceSQL;
-import org.jevis.jecommon.cli.JEVisCommandLine;
 import org.jevis.jedatacollector.CLIProperties.ConnectionCLIParser;
 import org.jevis.jedatacollector.CLIProperties.ParsingCLIParser;
 import org.jevis.jedatacollector.connection.DatacollectorConnection;
@@ -29,7 +31,10 @@ import org.jevis.jedatacollector.parsingNew.csvParsing.CSVParsing;
 import org.jevis.jedatacollector.parsingNew.csvParsing.DateCSVParser;
 import org.jevis.jedatacollector.parsingNew.csvParsing.MappingFixCSVParser;
 import org.jevis.jedatacollector.parsingNew.csvParsing.ValueCSVParser;
+import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 /**
  *
@@ -60,7 +65,7 @@ public class Launcher {
     public static String CONNETION_FILE = "connection";
     public static String PARSING_FILE = "parsing";
     public static String OUTPUT_FILE = "path";
-    public static String OUTPUT_DATAPOINT = "dp";
+    public static String OUTPUT_ONLINE = "dp";
 
     private static void createCommandLine(String[] args) {
         JEVisCommandLine cmd = JEVisCommandLine.getInstance();
@@ -81,7 +86,7 @@ public class Launcher {
         cmd.addOption(new Option(CSV, true, "Forces the CSV format"));
 
         cmd.addOption(new Option(OUTPUT_FILE, true, "Saves the output under the given path"));
-        cmd.addOption(new Option(OUTPUT_DATAPOINT, true, "Saves the output under the given datapoint in the jevis system"));
+        cmd.addOption(new Option(OUTPUT_ONLINE, true, "Saves the output under the given online node in the jevis system"));
         cmd.addOption(new Option(CONNETION_FILE, true, "Path of the connection file"));
         cmd.addOption(new Option(PARSING_FILE, true, "Path of the parsing file"));
 
@@ -137,20 +142,26 @@ public class Launcher {
         ConnectionCLIParser con = new ConnectionCLIParser(connectionFile);
         String parsingFile = cmd.getValue(PARSING_FILE);
         ParsingCLIParser par = new ParsingCLIParser(parsingFile);
-        long outputDp = Long.parseLong(cmd.getValue(OUTPUT_DATAPOINT));
+        long outputOnlineID = Long.parseLong(cmd.getValue(OUTPUT_ONLINE));
 
-        DatacollectorConnection connection = new HTTPConnection(con.getIP(), con.getPath(), con.getPort(), con.getConnectionTimeout(), con.getReadTimeout());
+        DateTimeFormatter dtf = DateTimeFormat.forPattern("ddMMyyyyHHmmss");
+        String fromString = cmd.getValue(FROM);
+        DateTime from = dtf.parseDateTime(fromString);
+        String untilString = cmd.getValue(UNTIL);
+        DateTime until = dtf.parseDateTime(untilString);
+
+        DatacollectorConnection connection = new HTTPConnection(con.getIP(), con.getPath(), con.getPort(), con.getConnectionTimeout(), con.getReadTimeout(), con.getDateFormat());
         DataCollectorParser fileParser = new CSVParsing(par.getQuote(), par.getDelim(), par.getHeaderlines());
 
-        GeneralMappingParser datapointParser = new MappingFixCSVParser(false, outputDp);
+        GeneralMappingParser datapointParser = new MappingFixCSVParser(false, outputOnlineID);
         GeneralDateParser dateParser = new DateCSVParser(null, null, par.getDateformat(), par.getDateIndex(), DateTimeZone.UTC);
         GeneralValueParser valueParser = new ValueCSVParser(par.getValueIndex(), par.getDecimalSep(), par.getThousandSep());
 
         SampleParserContainer sampleContainer = new SampleParserContainer(datapointParser, dateParser, valueParser);
         fileParser.addSampleContainer(sampleContainer);
 
-        NewDataPoint datapoint = new NewDataPoint("60", null);
-        Request request = RequestGenerator.createCLIRequest(connection, fileParser, datapoint);
+        NewDataPoint datapoint = new NewDataPoint("16", null);
+        Request request = RequestGenerator.createCLIRequest(connection, fileParser, datapoint, from, until);
         executeRequest(request);
     }
     //TODO vllt diesen job nur für jevis und nen anderen für andere....

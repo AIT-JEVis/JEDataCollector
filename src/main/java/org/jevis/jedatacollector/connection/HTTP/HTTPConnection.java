@@ -27,17 +27,16 @@ import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.util.EntityUtils;
+import org.jevis.api.JEVisAttribute;
+import org.jevis.api.JEVisClass;
+import org.jevis.api.JEVisException;
+import org.jevis.api.JEVisObject;
+import org.jevis.api.JEVisType;
 import org.jevis.jedatacollector.connection.ConnectionHelper;
 import org.jevis.jedatacollector.data.NewDataPoint;
 import org.jevis.jedatacollector.connection.DatacollectorConnection;
 import org.jevis.jedatacollector.exception.FetchingException;
 import org.jevis.jedatacollector.exception.FetchingExceptionType;
-import org.jevis.jeapi.JEVisAttribute;
-import org.jevis.jeapi.JEVisClass;
-import org.jevis.jeapi.JEVisException;
-
-import org.jevis.jeapi.JEVisObject;
-import org.jevis.jeapi.JEVisType;
 import org.joda.time.DateTime;
 
 /**
@@ -68,6 +67,15 @@ public class HTTPConnection implements DatacollectorConnection {
         _port = port;
         _connectionTimeout = connectionTimeout;
         _readTimeout = readTimeout;
+    }
+    
+       public HTTPConnection(String serverURL, String filePath, Integer port, Integer connectionTimeout, Integer readTimeout,String dateFormat) {
+        _serverURL = serverURL;
+        _filePath = filePath;
+        _port = port;
+        _connectionTimeout = connectionTimeout;
+        _readTimeout = readTimeout;
+        _dateFormat = dateFormat;
     }
 
     @Override

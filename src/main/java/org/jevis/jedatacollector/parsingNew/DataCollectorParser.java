@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.jevis.jeapi.JEVisException;
-import org.jevis.jeapi.JEVisObject;
+import org.jevis.api.JEVisException;
+import org.jevis.api.JEVisObject;
 import org.jevis.jedatacollector.data.JevisAttributes;
 import org.jevis.jedatacollector.service.inputHandler.InputHandler;
 

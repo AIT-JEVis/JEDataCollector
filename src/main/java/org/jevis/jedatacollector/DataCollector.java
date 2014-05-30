@@ -5,15 +5,14 @@
 package org.jevis.jedatacollector;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.jevis.jeapi.JEVisException;
-import org.jevis.jeapi.JEVisObject;
-import org.jevis.jeapi.JEVisSample;
+import org.jevis.api.JEVisException;
+import org.jevis.api.JEVisObject;
+import org.jevis.api.JEVisSample;
 import org.jevis.jedatacollector.data.NewDataPoint;
 import org.jevis.jedatacollector.exception.FetchingException;
 import org.jevis.jedatacollector.service.ConnectionService;

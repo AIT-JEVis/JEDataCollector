@@ -6,8 +6,8 @@ package org.jevis.jedatacollector.connection;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.jevis.jeapi.JEVisException;
-import org.jevis.jeapi.JEVisObject;
+import org.jevis.api.JEVisException;
+import org.jevis.api.JEVisObject;
 import org.jevis.jedatacollector.connection.HTTP.HTTPConnection;
 import org.jevis.jedatacollector.connection.SOAP.SOAPConnection;
 import org.jevis.jedatacollector.connection.SQL.SQLConnection;

@@ -77,10 +77,12 @@ public class RequestGenerator {
         return request;
     }
 
-    public static Request createCLIRequest(DatacollectorConnection connection, DataCollectorParser parsing, NewDataPoint dataPoint) {
+    public static Request createCLIRequest(DatacollectorConnection connection, DataCollectorParser parsing, NewDataPoint dataPoint, DateTime from, DateTime until) {
         Request request = new DefaultRequest();
         request.setNeedConnection(true);
         request.setConnection(connection);
+        request.setFrom(from);
+        request.setUntil(until);
         request.setParser(parsing);
         request.setNeedImport(true);
         request.setSpecificDatapoint(dataPoint);

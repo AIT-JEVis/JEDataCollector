@@ -6,7 +6,7 @@ package org.jevis.jedatacollector.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.jevis.jeapi.JEVisObject;
+import org.jevis.api.JEVisObject;
 import org.jevis.jedatacollector.Request;
 import org.jevis.jedatacollector.data.NewDataPoint;
 import org.jevis.jedatacollector.parsingNew.DataCollectorParser;

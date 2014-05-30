@@ -6,10 +6,10 @@ package org.jevis.jedatacollector.parsing.CSV;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.jevis.jeapi.JEVisClass;
-import org.jevis.jeapi.JEVisException;
-import org.jevis.jeapi.JEVisObject;
-import org.jevis.jeapi.JEVisType;
+import org.jevis.api.JEVisClass;
+import org.jevis.api.JEVisException;
+import org.jevis.api.JEVisObject;
+import org.jevis.api.JEVisType;
 
 
 
