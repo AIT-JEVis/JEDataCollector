@@ -21,7 +21,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>org.jevis.jedatacollector.TestMain</mainClass>
+                            <mainClass>org.jevis.jedatacollector.Launcher</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
@@ -58,12 +58,12 @@
         <dependency>
             <groupId>org.jevis.api</groupId>
             <artifactId>jeapi</artifactId>
-            <version>3.0.1-Alpha</version>
+            <version>3.0.1</version>
         </dependency>
         <dependency>
             <groupId>org.jevis.api.sql</groupId>
             <artifactId>jeapi-sql</artifactId>
-            <version>3.0.1-Alpha</version>
+            <version>3.0.1</version>
         </dependency>
         <dependency>
             <groupId>commons-net</groupId>
@@ -104,6 +104,11 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <version>1.7.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jevis.commons</groupId>
+            <artifactId>JECommons</artifactId>
+            <version>3.0</version>
         </dependency>
     </dependencies>
     

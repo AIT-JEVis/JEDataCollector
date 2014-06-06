@@ -35,7 +35,7 @@ public class ILONSOAPConnectionTest {
 
         DateTime until = new DateTime();
         DateTime from = until.minusDays(10);
-        NewDataPoint datapoint = new NewDataPoint("NVE_VIVA24nvoSteamTemp", "0");
+        NewDataPoint datapoint = new NewDataPoint("NVE_VIVA24nvoSteamTemp", "0", null);
 
         Request request = RequestGenerator.createConnectionRequestWithTimeperiod(connection, datapoint, from, until);
 

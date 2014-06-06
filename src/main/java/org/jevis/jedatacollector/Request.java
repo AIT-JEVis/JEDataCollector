@@ -4,6 +4,7 @@
  */
 package org.jevis.jedatacollector;
 
+import java.util.List;
 import org.jevis.jedatacollector.connection.DatacollectorConnection;
 import org.jevis.jedatacollector.data.Data;
 import org.jevis.jedatacollector.data.Equipment;
@@ -12,6 +13,7 @@ import org.jevis.jedatacollector.parsingNew.DataCollectorParser;
 import org.jevis.jedatacollector.service.ParsingService;
 import org.jevis.jedatacollector.service.inputHandler.InputHandler;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 /**
  *
@@ -64,4 +66,12 @@ public interface Request {
     public void setInputHandler(InputHandler input);
     
     public InputHandler getInputHandler();
+    
+    public void setDataPoints(List<NewDataPoint> dataPoints);
+    
+    public List<NewDataPoint> getDataPoints();
+
+    public DateTimeZone getTimezone();
+    
+    public void setTimeZone(DateTimeZone timeZone);
 }

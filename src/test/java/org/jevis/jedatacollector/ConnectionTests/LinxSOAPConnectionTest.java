@@ -42,7 +42,7 @@ public class LinxSOAPConnectionTest {
         DateTime from = until.minusDays(15);
         System.out.println("from "+from);
         System.out.println("until "+until);
-        NewDataPoint datapoint = new NewDataPoint("NVE_VIVA24nvoSteamTemp", "0");
+        NewDataPoint datapoint = new NewDataPoint("NVE_VIVA24nvoSteamTemp", "0",null);
 
         Request request = RequestGenerator.createConnectionRequestWithTimeperiod(connection, datapoint, from, until);
 

@@ -12,8 +12,6 @@ import java.net.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -27,6 +25,8 @@ import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.util.EntityUtils;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.jevis.api.JEVisAttribute;
 import org.jevis.api.JEVisClass;
 import org.jevis.api.JEVisException;
@@ -294,7 +294,7 @@ public class HTTPConnection implements DatacollectorConnection {
 //            _userName = "";
 //            _password = "";
         } catch (JEVisException ex) {
-            Logger.getLogger(HTTPConnection.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(HTTPConnection.class.getName()).log(Level.ERROR, null, ex);
         }
     }
 

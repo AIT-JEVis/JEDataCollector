@@ -74,7 +74,7 @@ public class HttpAlpha_CsvVida {
         for (Result r : resultList) {
             realValues.add(r.getValue());
             realDateTimes.add(r.getDate());
-            realDatapoints.add(r.getDatapoint());
+            realDatapoints.add(r.getOnlineID());
         }
 
         List expectedValues = new ArrayList<Double>();

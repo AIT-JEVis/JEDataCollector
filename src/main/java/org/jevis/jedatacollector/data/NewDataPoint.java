@@ -34,9 +34,10 @@ public class NewDataPoint {
     JEVisObject _onlineData;
 //    JEVisObject _dataPoint;
 
-    public NewDataPoint(String channelID, String dataLoggerName) {
+    public NewDataPoint(String channelID, String dataLoggerName, Long onlineID) {
         _channelID = channelID;
         _dataLoggerName = dataLoggerName;
+        _onlineID = onlineID;
     }
 
     public NewDataPoint(JEVisObject dp) {

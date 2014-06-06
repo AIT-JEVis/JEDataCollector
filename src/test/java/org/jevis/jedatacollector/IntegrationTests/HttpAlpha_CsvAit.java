@@ -98,22 +98,22 @@ public class HttpAlpha_CsvAit {
         List<Double> realValues22 = new ArrayList<Double>();
         for (Result r : resultList) {
             realDateTimes.add(r.getDate());
-            if (r.getDatapoint() == 2) {
+            if (r.getOnlineID() == 2) {
                 realValues2.add(r.getValue());
             }
-            if (r.getDatapoint() == 3) {
+            if (r.getOnlineID() == 3) {
                 realValues3.add(r.getValue());
             }
-            if (r.getDatapoint() == 4) {
+            if (r.getOnlineID() == 4) {
                 realValues4.add(r.getValue());
             }
-            if (r.getDatapoint() == 5) {
+            if (r.getOnlineID() == 5) {
                 realValues5.add(r.getValue());
             }
-            if (r.getDatapoint() == 6) {
+            if (r.getOnlineID() == 6) {
                 realValues6.add(r.getValue());
             }
-            if (r.getDatapoint() == 22) {
+            if (r.getOnlineID() == 22) {
                 realValues22.add(r.getValue());
             }
         }

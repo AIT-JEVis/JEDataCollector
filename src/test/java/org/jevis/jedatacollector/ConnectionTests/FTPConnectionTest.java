@@ -24,7 +24,7 @@ public class FTPConnectionTest {
         DatacollectorConnection connection = new FTPConnection("", "/data/trend/", "Trend_L1_1_UI1_Input_10C6.csv", "192.168.2.254", "admin", "envidatec4u", 200l, 2l);
         DateTime until = new DateTime();
         DateTime from = until.minusDays(10);
-        NewDataPoint datapoint = new NewDataPoint("test", "0");
+        NewDataPoint datapoint = new NewDataPoint("test", "0",null);
 
         Request request = RequestGenerator.createConnectionRequestWithTimeperiod(connection, datapoint, from, until);
         DataCollector collector = new DataCollector(request);

@@ -42,11 +42,11 @@ import org.joda.time.format.DateTimeFormatter;
  */
 public class Launcher {
 
-    private static void configureLogger(Level debugLevel) {
+    private static void initializeLogger(Level debugLevel) {
         PropertyConfigurator.configure("log4j.properties");
         Logger.getRootLogger().setLevel(debugLevel);
     }
-    private JEVisDataSource _client;
+    private static JEVisDataSource _client;
     private Logger _logger;
     //Command line Parameter
     public static String SINGLE = "single";
@@ -67,7 +67,7 @@ public class Launcher {
     public static String OUTPUT_FILE = "path";
     public static String OUTPUT_ONLINE = "dp";
 
-    private static void createCommandLine(String[] args) {
+    private static void initializeCommandLine(String[] args) {
         JEVisCommandLine cmd = JEVisCommandLine.getInstance();
         //Execution Control
         cmd.addOption(new Option(SINGLE, false, "Invokes Single Mode, usefull for debug mode"));
@@ -99,23 +99,21 @@ public class Launcher {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        System.out.println("###starte DataLogger###");
+        initializeCommandLine(args);
+        initializeLogger(JEVisCommandLine.getInstance().getDebugLevel());
 
-        createCommandLine(args);
-
-        configureLogger(JEVisCommandLine.getInstance().getDebugLevel());
-
+        //starts a new Logger
 
         Launcher launcher = new Launcher(true);
-        //        adf.getDataSamples();
-        //        adf.createNewSample();
-        JEVisObject equip = launcher.getEquipment();
-
+        Logger.getLogger(Launcher.class.getName()).log(Level.INFO, "Start DataCollector");
         //hier müssen verschiedene Modi an und abgestellt werden können
         boolean single = true;
         if (single) {
+            Logger.getLogger(Launcher.class.getName()).log(Level.INFO, "Start CLI Job");
             launcher.fetchCLIJob();
         } else {
+            Logger.getLogger(Launcher.class.getName()).log(Level.INFO, "Start Jevis Job");
+            JEVisObject equip = launcher.getEquipment();
             launcher.fetchEquipmentJob(equip);
         }
 
@@ -125,7 +123,7 @@ public class Launcher {
 //        JevLoginHandler.createDirectLogin(user, pass, host);
 
         if (connect) {
-            System.out.println("Verbinden zum Config");
+            Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Connect to JEConfig");
             try {
                 _client = new JEVisDataSourceSQL("192.168.2.55", "3306", "jevis", "jevis", "jevistest", "Sys Admin", "jevis");
                 _client.connect("Sys Admin", "jevis");
@@ -138,30 +136,44 @@ public class Launcher {
 
     private void fetchCLIJob() {
         JEVisCommandLine cmd = JEVisCommandLine.getInstance();
+        //Define the file for the connection (e.g. http)
         String connectionFile = cmd.getValue(CONNETION_FILE);
+        Logger.getLogger(this.getClass().getName()).log(Level.ALL, "ConnectionFile: " + connectionFile);
         ConnectionCLIParser con = new ConnectionCLIParser(connectionFile);
+        //Define the file for the parsing (e.g. csv)
         String parsingFile = cmd.getValue(PARSING_FILE);
+        Logger.getLogger(this.getClass().getName()).log(Level.ALL, "ParsingFile: " + parsingFile);
         ParsingCLIParser par = new ParsingCLIParser(parsingFile);
+        //the output online id from the jevis system
         long outputOnlineID = Long.parseLong(cmd.getValue(OUTPUT_ONLINE));
-
-        DateTimeFormatter dtf = DateTimeFormat.forPattern("ddMMyyyyHHmmss");
+        Logger.getLogger(this.getClass().getName()).log(Level.ALL, "Output Online ID: " + outputOnlineID);
+        //Define the date format and from/until date
+        String dateFormat = "ddMMyyyyHHmmss"; //TODO this should come from a parameter
+        Logger.getLogger(this.getClass().getName()).log(Level.ALL, "DateFormat: " + dateFormat);
+        DateTimeFormatter dtf = DateTimeFormat.forPattern(dateFormat);
         String fromString = cmd.getValue(FROM);
         DateTime from = dtf.parseDateTime(fromString);
+        Logger.getLogger(this.getClass().getName()).log(Level.ALL, "Timestamp from: " + fromString);
         String untilString = cmd.getValue(UNTIL);
         DateTime until = dtf.parseDateTime(untilString);
+        Logger.getLogger(this.getClass().getName()).log(Level.ALL, "Timestamp until: " + untilString);
 
         DatacollectorConnection connection = new HTTPConnection(con.getIP(), con.getPath(), con.getPort(), con.getConnectionTimeout(), con.getReadTimeout(), con.getDateFormat());
         DataCollectorParser fileParser = new CSVParsing(par.getQuote(), par.getDelim(), par.getHeaderlines());
 
         GeneralMappingParser datapointParser = new MappingFixCSVParser(false, outputOnlineID);
-        GeneralDateParser dateParser = new DateCSVParser(null, null, par.getDateformat(), par.getDateIndex(), DateTimeZone.UTC);
+        GeneralDateParser dateParser = new DateCSVParser(par.getTimeformat(), par.getTimeIndex(), par.getDateformat(), par.getDateIndex(), DateTimeZone.UTC);
         GeneralValueParser valueParser = new ValueCSVParser(par.getValueIndex(), par.getDecimalSep(), par.getThousandSep());
 
         SampleParserContainer sampleContainer = new SampleParserContainer(datapointParser, dateParser, valueParser);
         fileParser.addSampleContainer(sampleContainer);
 
-        NewDataPoint datapoint = new NewDataPoint("16", null);
-        Request request = RequestGenerator.createCLIRequest(connection, fileParser, datapoint, from, until);
+        String datapointID = "16"; //TODO this should come from a file
+        Logger.getLogger(this.getClass().getName()).log(Level.ALL, "Datapoint id: " + datapointID);
+        NewDataPoint datapoint = new NewDataPoint(datapointID, "VIDA350",outputOnlineID);
+        
+        DateTimeZone timeZone = DateTimeZone.getDefault(); //TODO this should come from a file
+        Request request = RequestGenerator.createCLIRequest(connection, fileParser, datapoint, from, until, timeZone);
         executeRequest(request);
     }
     //TODO vllt diesen job nur für jevis und nen anderen für andere....
@@ -171,7 +183,6 @@ public class Launcher {
         Logger.getLogger(this.getClass()).log(Level.INFO, "INFO LAUNCHER");
         Logger.getLogger(this.getClass()).log(Level.WARN, "WARN LAUNCHER");
         Logger.getLogger(this.getClass()).log(Level.ALL, "ALL LAUNCHER");
-        Test test = new Test();
         Data data = getJEVisData(equip);
 
         List<Request> requests = RequestGenerator.createJEVisRequests(data);
@@ -182,6 +193,7 @@ public class Launcher {
     }
 
     private void executeRequest(Request request) {
+        Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Execute Request");
         DataCollector datalogger = new DataCollector(request);
         try {
             datalogger.run();
@@ -266,25 +278,8 @@ public class Launcher {
         }
         return data;
     }
-//    private void createNewSample() {
-//        JEObjectType onlineNode = _client.getObjectType("Online");
-//        JEAttributeType attributeType = onlineNode.getAttributeType("Raw");
-//        JEObject online = _client.getObject(98l);
-//        JEAttribute attribute = online.getAttribute(attributeType);
-//        DateTime dateTime = new DateTime();
-//        DateTime minusDays = dateTime.minusDays(1);
-//        attribute.addSample(new JEDefaultSample(attribute, minusDays, "18"));
-//        _client.commitObject(online);
-//    }
-//
-//    private void getDataSamples() {
-//        JEObjectType onlineNode = _client.getObjectType("Online");
-//        JEAttributeType attributeType = onlineNode.getAttributeType("Raw");
-//        JEObject online = _client.getObject(98l);
-//        JEAttribute attribute = online.getAttribute(attributeType);
-//        List<JESample> allSamples = attribute.getAllSamples();
-////        attribute.deleteAllSample();
-////        _client.commitObject(online);
-//
-//    }
+    
+    public static JEVisDataSource getClient(){
+        return _client;
+    }
 }

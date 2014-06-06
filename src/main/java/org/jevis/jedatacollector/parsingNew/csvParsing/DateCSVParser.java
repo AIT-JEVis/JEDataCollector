@@ -4,6 +4,8 @@
  */
 package org.jevis.jedatacollector.parsingNew.csvParsing;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.jevis.jedatacollector.parsingNew.GeneralDateParser;
 import org.jevis.jedatacollector.service.inputHandler.InputHandler;
 import org.joda.time.DateTime;
@@ -73,10 +75,11 @@ public class DateCSVParser implements GeneralDateParser {
             pattern += " " + _timeFormat;
             format += " " + time;
         }
+        Logger.getLogger(this.getClass().getName()).log(Level.ALL, "complete time " + format);
+        Logger.getLogger(this.getClass().getName()).log(Level.ALL, "complete pattern " + pattern);
 
         DateTimeFormatter fmt = DateTimeFormat.forPattern(pattern);
         _dateTime = fmt.parseDateTime(format);
-        System.out.println("Current time "+_dateTime);
 //        DateTimeZone.setDefault(DateTimeZone.forTimeZone(TimeZone.getTimeZone("CET")));
     }
 

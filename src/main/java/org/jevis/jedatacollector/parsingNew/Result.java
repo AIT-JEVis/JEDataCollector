@@ -30,7 +30,7 @@ public class Result implements Comparable<Result> {
         return _date;
     }
 
-    public long getDatapoint() {
+    public long getOnlineID() {
         return _datapoint;
     }
 

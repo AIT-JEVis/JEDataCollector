@@ -100,14 +100,6 @@ public class Data {
         return _datasource;
     }
 
-    public NewDataPoint getDataPointPerOnlineID(long id) {
-        for (NewDataPoint dp : _datapoints) {
-            if (dp.getJEVisOnlineData().getID() == id) {
-                return dp;
-            }
-        }
-        return null;
-    }
 //    public OnlineData getOnlineData() {
 //        return _onlineData;
 //    }

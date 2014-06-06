@@ -14,6 +14,7 @@ import org.jevis.jedatacollector.parsingNew.DataCollectorParser;
 import org.jevis.jedatacollector.service.ParsingService;
 import org.jevis.jedatacollector.service.inputHandler.InputHandler;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 /**
  *
@@ -33,7 +34,10 @@ public class DefaultRequest implements Request {
     private DateTime _from;
     private DateTime _until;
     public InputHandler _inputHandler;
+    public List<NewDataPoint> _dataPoints;
+    public DateTimeZone _dateTimeZone;
 
+    @Override
     public boolean needConnection() {
         return _needConnection;
     }
@@ -124,5 +128,25 @@ public class DefaultRequest implements Request {
 
     public InputHandler getInputHandler() {
         return _inputHandler;
+    }
+
+    @Override
+    public void setDataPoints(List<NewDataPoint> dataPoints) {
+        _dataPoints = dataPoints;
+    }
+
+    @Override
+    public List<NewDataPoint> getDataPoints() {
+        return _dataPoints;
+    }
+
+    @Override
+    public DateTimeZone getTimezone() {
+        return _dateTimeZone;
+    }
+
+    @Override
+    public void setTimeZone(DateTimeZone timeZone) {
+        _dateTimeZone = timeZone;
     }
 }

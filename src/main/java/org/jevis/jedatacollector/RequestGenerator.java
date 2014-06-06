@@ -13,6 +13,7 @@ import org.jevis.jedatacollector.data.NewDataPoint;
 import org.jevis.jedatacollector.parsingNew.DataCollectorParser;
 import org.jevis.jedatacollector.service.inputHandler.InputHandler;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 /**
  *
@@ -77,7 +78,7 @@ public class RequestGenerator {
         return request;
     }
 
-    public static Request createCLIRequest(DatacollectorConnection connection, DataCollectorParser parsing, NewDataPoint dataPoint, DateTime from, DateTime until) {
+    public static Request createCLIRequest(DatacollectorConnection connection, DataCollectorParser parsing, NewDataPoint dataPoint, DateTime from, DateTime until, DateTimeZone timeZone) {
         Request request = new DefaultRequest();
         request.setNeedConnection(true);
         request.setConnection(connection);
@@ -86,7 +87,11 @@ public class RequestGenerator {
         request.setParser(parsing);
         request.setNeedImport(true);
         request.setSpecificDatapoint(dataPoint);
+        List<NewDataPoint> dataPoints = new ArrayList<NewDataPoint>();
+        dataPoints.add(dataPoint);
+        request.setDataPoints(dataPoints);
         request.setNeedParsing(true);
+        request.setTimeZone(timeZone);
         return request;
     }
 

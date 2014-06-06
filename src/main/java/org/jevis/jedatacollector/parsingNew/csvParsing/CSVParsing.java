@@ -5,8 +5,8 @@
 package org.jevis.jedatacollector.parsingNew.csvParsing;
 
 import java.util.TimeZone;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.jevis.api.JEVisClass;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
@@ -55,13 +55,19 @@ public class CSVParsing extends DataCollectorParser {
         _headerLines = h;
     }
 
+    /**
+     *
+     * @param ic
+     */
     @Override
     public void parse(InputHandler ic) {
-        System.out.println("File Parsing starts");
+        Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Start CSV parsing");
         String[] stringArrayInput = ic.getStringArrayInput();
-        System.out.println("Sampleparserlist " + _sampleParsers.size());
+        Logger.getLogger(this.getClass().getName()).log(Level.ALL, "Count of date/value/mapping variations" + _sampleParsers.size());
+        Logger.getLogger(this.getClass().getName()).log(Level.ALL, "Count of lines" + stringArrayInput.length);
         for (int i = _headerLines; i < stringArrayInput.length; i++) {
             String line[] = stringArrayInput[i].split(String.valueOf(_delim), -1);
+            Logger.getLogger(this.getClass().getName()).log(Level.ALL, "line: " + stringArrayInput[i]);
             if (_quote != null) {
                 line = removeQuotes(line);
             }
@@ -85,18 +91,24 @@ public class CSVParsing extends DataCollectorParser {
 
 
                 if (((ValueCSVParser) valueParser).outOfBounce()) {
-                    System.out.println("Date " + dateTime);
-                    System.out.println("Value " + value);
+                    Logger.getLogger(this.getClass().getName()).log(Level.WARN, "Date for value out of bounce: " + dateTime);
+                    Logger.getLogger(this.getClass().getName()).log(Level.WARN, "Value out of bounce: " + value);
                 }
                 boolean valueIsValid = ParsingService.checkValue(parser);
                 if (!valueIsValid) {
+                    Logger.getLogger(this.getClass().getName()).log(Level.WARN, "Date for value is invalid: " + dateTime);
+                    Logger.getLogger(this.getClass().getName()).log(Level.WARN, "Value is invalid: " + value);
                     continue;
                 }
-                
+
                 boolean datapointIsValid = ParsingService.checkDatapoint(parser);
                 if (!datapointIsValid) {
+                    Logger.getLogger(this.getClass().getName()).log(Level.WARN, "Datapoint is invalid: " + datapoint);
                     continue;
                 }
+                Logger.getLogger(this.getClass().getName()).log(Level.ALL, "Parsed DP" + datapoint);
+                Logger.getLogger(this.getClass().getName()).log(Level.ALL, "Parsed value" + value);
+                Logger.getLogger(this.getClass().getName()).log(Level.ALL, "Parsed date" + dateTime);
                 _results.add(new Result(datapoint, value, dateTime));
             }
         }
@@ -129,7 +141,7 @@ public class CSVParsing extends DataCollectorParser {
                 _headerLines = Integer.parseInt((String) pn.getAttribute(ignoreFirstNLines).getLatestSample().getValue());
             }
         } catch (JEVisException ex) {
-            Logger.getLogger(CSVParsing.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CSVParsing.class.getName()).log(Level.ERROR, null, ex);
         }
     }
 
@@ -194,7 +206,7 @@ public class CSVParsing extends DataCollectorParser {
 
             dateParser = new DateCSVParser(time, timeIndex, date, dateIndex, timezone);
         } catch (JEVisException ex) {
-            Logger.getLogger(CSVParsing.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CSVParsing.class.getName()).log(Level.ERROR, null, ex);
         }
         return dateParser;
     }
@@ -240,7 +252,7 @@ public class CSVParsing extends DataCollectorParser {
                 datapointParser = new MappingFixCSVParser(false, datapoint);
             }
         } catch (JEVisException ex) {
-            Logger.getLogger(CSVParsing.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CSVParsing.class.getName()).log(Level.ERROR, null, ex);
         }
         return datapointParser;
     }
@@ -270,7 +282,7 @@ public class CSVParsing extends DataCollectorParser {
             System.out.println("sepThousand " + seperatorThousand);
             valueParser = new ValueCSVParser(indexValue, seperatorDecimal, seperatorThousand);
         } catch (JEVisException ex) {
-            Logger.getLogger(CSVParsing.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CSVParsing.class.getName()).log(Level.ERROR, null, ex);
         }
         return valueParser;
     }

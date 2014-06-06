@@ -71,7 +71,7 @@ public class Test_JEVis_Default {
         for (Result r : resultList) {
             realValues.add(r.getValue());
             realDateTimes.add(r.getDate());
-            realDatapoints.add(r.getDatapoint());
+            realDatapoints.add(r.getOnlineID());
         }
 
         List expectedValues = new ArrayList<Double>();

@@ -82,8 +82,9 @@ public class DataCollector {
             Map<JEVisObject, List<JEVisSample>> onlineToSampleMap = new HashMap<JEVisObject, List<JEVisSample>>();
 
             //extract all online nodes and save them in a map
-            for (NewDataPoint dp : _request.getData().getDatapoints()) {
-                JEVisObject onlineData = dp.getJEVisOnlineData();
+            for (NewDataPoint dp : _request.getDataPoints()) {
+                Long onlineID = dp.getOnlineID();
+                JEVisObject onlineData = Launcher.getClient().getObject(onlineID);
                 onlineToSampleMap.put(onlineData, new ArrayList<JEVisSample>());
             }
 
@@ -99,11 +100,10 @@ public class DataCollector {
                 //                System.out.println("value " + s.getVal());
                 //                System.out.println("cal " + s.getCal());
                 //                sampleList.add(attribute.buildSample(time, s.getVal()));
-                long datapoint = s.getDatapoint();
-                NewDataPoint dataPoint = _request.getData().getDataPointPerOnlineID(datapoint);
-                JEVisObject onlineData = dataPoint.getJEVisOnlineData();
-                List<JEVisSample> samples = onlineToSampleMap.get(dataPoint.getJEVisOnlineData());
-                DateTime convertedDate = convertTime(_request.getEquipment().getTimezone(), s.getDate());
+                long onlineID = s.getOnlineID();
+                JEVisObject onlineData = Launcher.getClient().getObject(onlineID);
+                List<JEVisSample> samples = onlineToSampleMap.get(onlineData);
+                DateTime convertedDate = convertTime(_request.getTimezone(), s.getDate());
                 JEVisSample sample = onlineData.getAttribute("Raw Data").buildSample(convertedDate, s.getValue());
                 samples.add(sample);
             }
@@ -137,11 +137,11 @@ public class DataCollector {
     public DateTime convertTimeInTransitionRange(DateTimeZone from, DateTime currentDate, DateTime lastDate) {
 
         long timeBetween = currentDate.getMillis() - lastDate.getMillis();
-        if(timeBetween!=240000){
+        if (timeBetween != 240000) {
             System.out.println("###############################NICHT GLEICH!!!!!!!!!");
             System.out.println(timeBetween);
-            System.out.println("c "+currentDate);
-            System.out.println("l "+lastDate);
+            System.out.println("c " + currentDate);
+            System.out.println("l " + lastDate);
         }
 //        long timeBetween = 240000;
         return lastDate.plusMillis((int) timeBetween);
