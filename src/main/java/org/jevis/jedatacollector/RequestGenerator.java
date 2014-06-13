@@ -131,6 +131,7 @@ public class RequestGenerator {
 //                request.setData(data);
             request.setNeedImport(true);
             request.setNeedParsing(true);
+            request.setTimeZone(equipment.getTimezone());
             requests.add(request);
         }
         
