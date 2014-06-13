@@ -177,9 +177,9 @@ public class DataCollector {
         if (from == null) {
             from = new DateTime(0);
         }
-//        if (until == null) { //TODO nur zu testzwecken so
-            until = from.plusMinutes(45);
-//        }
+        if (until == null) { 
+            until = new DateTime();
+        }
         List<Object> rawResult = _connection.sendSamplesRequest(from, until, _request.getDataPoints().get(0));
 
         initializeInputConverter(rawResult);

@@ -34,7 +34,6 @@ public class CSVParsing extends DataCollectorParser {
     private int _headerLines;
     private int _dateIndex;
     private int _timeIndex;
-    private int _valueIndex;
 
     public CSVParsing(String quote, String delim, int headerlines) {
         _quote = quote;
@@ -42,13 +41,11 @@ public class CSVParsing extends DataCollectorParser {
         _headerLines = headerlines;
         _dateIndex = -1;
         _timeIndex = -1;
-        _valueIndex = -1;
     }
 
     public CSVParsing() {
         _dateIndex = -1;
         _timeIndex = -1;
-        _valueIndex = -1;
     }
 
     //this should be easier.. perhaps with a JEObject?
@@ -161,12 +158,6 @@ public class CSVParsing extends DataCollectorParser {
                 _timeIndex = (int) (long) pn.getAttribute(indexTimeType).getLatestSample().getValueAsLong();
             }
             System.out.println("Timeindex" + _timeIndex);
-
-            JEVisType indexValueType = jeClass.getType(JevisAttributes.MAPPING_VALUE_SPECIFICATION);
-            if (pn.getAttribute(indexValueType) != null) {
-                _valueIndex = (int) (long) pn.getAttribute(indexValueType).getLatestSample().getValueAsLong();
-            }
-            System.out.println("IndexValue" + _valueIndex);
         } catch (JEVisException ex) {
             Logger.getLogger(CSVParsing.class.getName()).log(Level.ERROR, null, ex);
         }
@@ -232,13 +223,18 @@ public class CSVParsing extends DataCollectorParser {
         try {
             //Mappingclass
             JEVisClass mappingClass = mappingObject.getJEVisClass();
+            JEVisType indexValueType = mappingClass.getType(JevisAttributes.MAPPING_VALUE_SPECIFICATION);
             //            JEVisType indexDatapointType = mappingClass.getType("Index Datapoint");
             //            JEVisType datapointInFileType = mappingClass.getType("infile");
             JEVisType datapointType = mappingClass.getType(JevisAttributes.MAPPING_ONLINEID);
             JEVisType mappingType = mappingClass.getType(JevisAttributes.MAPPING_VALUE_MAPPING);
             JEVisType mappingNecessaryType = mappingClass.getType(JevisAttributes.MAPPING_NECESSARY);
 
-
+            int indexValue = -1;
+            if (mappingObject.getAttribute(indexValueType) != null) {
+                indexValue = (int) (long) mappingObject.getAttribute(indexValueType).getLatestSample().getValueAsLong();
+            }
+            System.out.println("IndexValue" + indexValue);
             //            int indexDatapoint = 0;
             //            if (mapping.getAttribute(indexDatapointType) != null) {
             //                indexDatapoint = Integer.parseInt((String) mapping.getAttribute(indexDatapointType).getLatestSample().getValue());
@@ -261,7 +257,7 @@ public class CSVParsing extends DataCollectorParser {
             //            }
             //entweder den einen oder den anderen Parser!!!!! am besten als factory
             if (mappingNecessary) {
-                datapointParser = new MappingCSVParser(true, onlineID, mapping, _valueIndex);
+                datapointParser = new MappingCSVParser(true, onlineID, mapping, indexValue);
             } else {
                 datapointParser = new MappingFixCSVParser(false, onlineID);
             }
@@ -280,6 +276,11 @@ public class CSVParsing extends DataCollectorParser {
             JEVisType indexValueType = mappingClass.getType(JevisAttributes.MAPPING_VALUE_SPECIFICATION);
             //            JEVisType indexDatapointType = mappingClass.getType("Index Datapoint");
             //            JEVisType datapointInFileType = mappingClass.getType("infile");
+            int indexValue = -1;
+            if (mapping.getAttribute(indexValueType) != null) {
+                indexValue = (int) (long) mapping.getAttribute(indexValueType).getLatestSample().getValueAsLong();
+            }
+
             //ValueObject
             JEVisClass valueClass = valueObject.getJEVisClass();
             JEVisType seperatorDecimalType = valueClass.getType(JevisAttributes.VALUE_DECIMSEPERATOR);
@@ -289,7 +290,7 @@ public class CSVParsing extends DataCollectorParser {
             System.out.println("sepDecimal" + seperatorDecimal);
             String seperatorThousand = valueObject.getAttribute(seperatorThousandType).getLatestSample().getValueAsString();
             System.out.println("sepThousand " + seperatorThousand);
-            valueParser = new ValueCSVParser(_valueIndex, seperatorDecimal, seperatorThousand);
+            valueParser = new ValueCSVParser(indexValue, seperatorDecimal, seperatorThousand);
         } catch (JEVisException ex) {
             Logger.getLogger(CSVParsing.class.getName()).log(Level.ERROR, null, ex);
         }
