@@ -110,8 +110,8 @@ public class DateXMLParsing implements GeneralDateParser {
         _dateTime = fmt.parseDateTime(dateAndTime);
     }
 
-    @Override
-    public DateTimeZone getTimeZone() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+//    @Override
+//    public DateTimeZone getTimeZone() {
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//    }
 }

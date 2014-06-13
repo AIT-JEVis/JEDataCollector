@@ -159,6 +159,7 @@ public class HTTPConnection implements DatacollectorConnection {
                     String output;
 
                     while ((output = bufReader.readLine()) != null) {
+                        System.out.println(output);
                         if (firstLine && output.equals(" ")) {
                             firstLine = false;
                             continue;
@@ -250,15 +251,15 @@ public class HTTPConnection implements DatacollectorConnection {
             //        if(_password ==null)_password="";
 
             JEVisClass type = node.getJEVisClass();
-            JEVisType dateFormat = type.getType("dateformat");
-            JEVisType filePath = type.getType("filepath");
-            JEVisType server = type.getType("serverurl");
-            JEVisType port = type.getType("port");
-            JEVisType connectionTimeout = type.getType("connectiontimeout");
-            JEVisType readTimeout = type.getType("readtimeout");
-            JEVisType maxRequest = type.getType("maxrequestdays");
-            JEVisType user = type.getType("user");
-            JEVisType password = type.getType("password");
+            JEVisType dateFormat = type.getType("Date format");
+            JEVisType filePath = type.getType("File Path");
+            JEVisType server = type.getType("Server URL");
+            JEVisType port = type.getType("Port");
+            JEVisType connectionTimeout = type.getType("Connection timeout");
+            JEVisType readTimeout = type.getType("Read timeout");
+//            JEVisType maxRequest = type.getType("Maxrequestdays");
+            JEVisType user = type.getType("User");
+            JEVisType password = type.getType("Password");
 
             _id = node.getID();
             if (node.getAttribute(dateFormat).hasSample()) {
@@ -269,9 +270,9 @@ public class HTTPConnection implements DatacollectorConnection {
             _port = Integer.parseInt((String) node.getAttribute(port).getLatestSample().getValue());
             _connectionTimeout = Integer.parseInt((String) node.getAttribute(connectionTimeout).getLatestSample().getValue());
             _readTimeout = Integer.parseInt((String) node.getAttribute(readTimeout).getLatestSample().getValue());
-            if (node.getAttribute(maxRequest).hasSample()) {
-                _maximumDayRequest = Integer.parseInt((String) node.getAttribute(maxRequest).getLatestSample().getValue());
-            }
+//            if (node.getAttribute(maxRequest).hasSample()) {
+//                _maximumDayRequest = Integer.parseInt((String) node.getAttribute(maxRequest).getLatestSample().getValue());
+//            }
             JEVisAttribute userAttr = node.getAttribute(user);
             if (!userAttr.hasSample()) {
                 _userName = "";

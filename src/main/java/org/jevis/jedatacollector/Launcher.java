@@ -10,6 +10,7 @@ import org.apache.commons.cli.Option;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
+import org.jevis.api.JEVisClass;
 import org.jevis.api.JEVisDataSource;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
@@ -21,6 +22,7 @@ import org.jevis.jedatacollector.CLIProperties.ParsingCLIParser;
 import org.jevis.jedatacollector.connection.DatacollectorConnection;
 import org.jevis.jedatacollector.connection.HTTP.HTTPConnection;
 import org.jevis.jedatacollector.data.Data;
+import org.jevis.jedatacollector.data.Equipment;
 import org.jevis.jedatacollector.data.NewDataPoint;
 import org.jevis.jedatacollector.parsingNew.DataCollectorParser;
 import org.jevis.jedatacollector.parsingNew.GeneralDateParser;
@@ -47,6 +49,56 @@ public class Launcher {
         Logger.getRootLogger().setLevel(debugLevel);
     }
     private static JEVisDataSource _client;
+
+    private static List<Data> getAllJEvisData() {
+        List<JEVisObject> equipments;
+        List<Data> dataList = new ArrayList<Data>();
+        try {
+            JEVisClass jeVisClass = _client.getJEVisClass("VIDA350");
+            equipments = _client.getObjects(jeVisClass, true);
+
+            JEVisClass parser = _client.getJEVisClass("CSV");
+            JEVisClass connection = _client.getJEVisClass("HTTPCon");
+            JEVisClass datapoints = _client.getJEVisClass("Data Point Directory");
+            for (JEVisObject equip : equipments) {
+                List<JEVisObject> parserObject = equip.getChildren(parser, true);
+                List<JEVisObject> connectionObject = equip.getChildren(connection, true);
+                if (parserObject.size() != 1) {
+                    java.util.logging.Logger.getLogger(Launcher.class.getName()).log(java.util.logging.Level.SEVERE, null, "Number of Parsing Objects != 1");
+                    continue;
+                }
+                if (connectionObject.size() != 1) {
+                    java.util.logging.Logger.getLogger(Launcher.class.getName()).log(java.util.logging.Level.SEVERE, null, "Number of Connection Objects != 1");
+                    continue;
+                }
+
+                List<JEVisObject> datapointsDir = equip.getChildren(datapoints, true);
+                if (datapointsDir.size() != 1) {
+
+                    continue;
+                }
+                List<JEVisObject> datapointsJEVis = getDatapoints(datapointsDir.get(0));
+                Data data = new Data(parserObject.get(0), connectionObject.get(0), equip, datapointsJEVis);
+                dataList.add(data);
+            }
+        } catch (JEVisException ex) {
+            java.util.logging.Logger.getLogger(Launcher.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+
+        return dataList;
+    }
+
+    private static List<JEVisObject> getDatapoints(JEVisObject dpDir) {
+        List<JEVisObject> datapoints = new ArrayList<JEVisObject>();
+        try {
+            JEVisClass parser = _client.getJEVisClass("Data Point");
+            datapoints.addAll(dpDir.getChildren(parser, true));
+
+        } catch (JEVisException ex) {
+            java.util.logging.Logger.getLogger(Launcher.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        return datapoints;
+    }
     private Logger _logger;
     //Command line Parameter
     public static String SINGLE = "single";
@@ -104,34 +156,35 @@ public class Launcher {
 
         //starts a new Logger
 
-        Launcher launcher = new Launcher(true);
+        Launcher launcher = new Launcher();
+        launcher.connectAlphaServer();
+
+
         Logger.getLogger(Launcher.class.getName()).log(Level.INFO, "Start DataCollector");
         //hier müssen verschiedene Modi an und abgestellt werden können
-        boolean single = true;
+        boolean single = false;
         if (single) {
             Logger.getLogger(Launcher.class.getName()).log(Level.INFO, "Start CLI Job");
             launcher.fetchCLIJob();
         } else {
             Logger.getLogger(Launcher.class.getName()).log(Level.INFO, "Start Jevis Job");
-            JEVisObject equip = launcher.getEquipment();
-            launcher.fetchEquipmentJob(equip);
+            List<Data> dataList = getAllJEvisData();
+            launcher.fetchDataJobs(dataList);
         }
 
     }
 
-    public Launcher(boolean connect) {
-//        JevLoginHandler.createDirectLogin(user, pass, host);
-
-        if (connect) {
-            Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Connect to JEConfig");
-            try {
-                _client = new JEVisDataSourceSQL("192.168.2.55", "3306", "jevis", "jevis", "jevistest", "Sys Admin", "jevis");
-                _client.connect("Sys Admin", "jevis");
-            } catch (JEVisException ex) {
-                Logger.getLogger(Launcher.class.getName()).log(Level.ERROR, null, ex);
-            }
-            System.out.println("Verbinden zum Config erfolgreich");
+    private boolean connectAlphaServer() {
+        Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Connect to JEConfig");
+        try {
+            _client = new JEVisDataSourceSQL("192.168.2.55", "3306", "jevis", "jevis", "jevistest", "Sys Admin", "jevis");
+            _client.connect("Sys Admin", "jevis");
+        } catch (JEVisException ex) {
+            Logger.getLogger(Launcher.class.getName()).log(Level.ERROR, null, ex);
+            return false;
         }
+        System.out.println("Verbinden zum Config erfolgreich");
+        return true;
     }
 
     private void fetchCLIJob() {
@@ -162,7 +215,7 @@ public class Launcher {
         DataCollectorParser fileParser = new CSVParsing(par.getQuote(), par.getDelim(), par.getHeaderlines());
 
         GeneralMappingParser datapointParser = new MappingFixCSVParser(false, outputOnlineID);
-        GeneralDateParser dateParser = new DateCSVParser(par.getTimeformat(), par.getTimeIndex(), par.getDateformat(), par.getDateIndex(), DateTimeZone.UTC);
+        GeneralDateParser dateParser = new DateCSVParser(par.getTimeformat(), par.getTimeIndex(), par.getDateformat(), par.getDateIndex());
         GeneralValueParser valueParser = new ValueCSVParser(par.getValueIndex(), par.getDecimalSep(), par.getThousandSep());
 
         SampleParserContainer sampleContainer = new SampleParserContainer(datapointParser, dateParser, valueParser);
@@ -170,8 +223,8 @@ public class Launcher {
 
         String datapointID = "16"; //TODO this should come from a file
         Logger.getLogger(this.getClass().getName()).log(Level.ALL, "Datapoint id: " + datapointID);
-        NewDataPoint datapoint = new NewDataPoint(datapointID, "VIDA350",outputOnlineID);
-        
+        NewDataPoint datapoint = new NewDataPoint(datapointID, "VIDA350", outputOnlineID);
+
         DateTimeZone timeZone = DateTimeZone.getDefault(); //TODO this should come from a file
         Request request = RequestGenerator.createCLIRequest(connection, fileParser, datapoint, from, until, timeZone);
         executeRequest(request);
@@ -179,13 +232,29 @@ public class Launcher {
     //TODO vllt diesen job nur für jevis und nen anderen für andere....
     //TODO Threads pro Equipment oder pro Anfrage (bei VIDA geht es nicht)
 
-    private void fetchEquipmentJob(JEVisObject equip) {
-        Logger.getLogger(this.getClass()).log(Level.INFO, "INFO LAUNCHER");
-        Logger.getLogger(this.getClass()).log(Level.WARN, "WARN LAUNCHER");
-        Logger.getLogger(this.getClass()).log(Level.ALL, "ALL LAUNCHER");
-        Data data = getJEVisData(equip);
+//    private void fetchEquipmentJob(JEVisObject equip) {
+//        Logger.getLogger(this.getClass()).log(Level.INFO, "INFO LAUNCHER");
+//        Logger.getLogger(this.getClass()).log(Level.WARN, "WARN LAUNCHER");
+//        Logger.getLogger(this.getClass()).log(Level.ALL, "ALL LAUNCHER");
+//        Data data = getJEVisData(equip);
+//
+//        List<Request> requests = RequestGenerator.createJEVisRequests(data);
+//
+//        for (Request request : requests) {
+//            executeRequest(request);
+//        }
+//    }
 
-        List<Request> requests = RequestGenerator.createJEVisRequests(data);
+    private void fetchDataJobs(List<Data> dataList) {
+        List<Request> requests = new ArrayList<Request>();
+        for (Data data : dataList) {
+            if (data.getEquipment().isSingleConnection()) {
+                List<Request> createJEVisRequests = RequestGenerator.createJEVisSingleRequests(data);
+                requests.addAll(createJEVisRequests);
+
+            } else {
+            }
+        }
 
         for (Request request : requests) {
             executeRequest(request);
@@ -278,8 +347,8 @@ public class Launcher {
         }
         return data;
     }
-    
-    public static JEVisDataSource getClient(){
+
+    public static JEVisDataSource getClient() {
         return _client;
     }
 }

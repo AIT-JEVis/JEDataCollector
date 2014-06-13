@@ -18,7 +18,7 @@ import org.jevis.jedatacollector.parsingNew.csvParsing.CSVParsing;
  */
 public class ParsingFactory {
 
-    private static final String CSV_PARSER = ("CSVParser");
+    private static final String CSV_PARSER = ("CSV");
     private static final String CSV_MULTI_TIME_PARSER = ("CSV Multi Time");
     private static final String CSV_MULTI_DATA_PARSER = ("CSV Multi Data");
     private static final String MULTI_DATA_PARSER = ("Multi Data");

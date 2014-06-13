@@ -55,7 +55,9 @@ public class NewDataPoint {
             JEVisType valueSpecType = type.getType(VALUE_SPEC);
 
             _channelID = dp.getAttribute(channelIDType).getLatestSample().getValueAsString();
-            _dataLoggerName = (String) dp.getAttribute(dataLoggerNameType).getLatestSample().getValue();
+            if (dp.getAttribute(dataLoggerNameType).getLatestSample() != null) {
+                _dataLoggerName = dp.getAttribute(dataLoggerNameType).getLatestSample().getValueAsString();
+            }
 //            _fetchRate = (Integer) dp.getAttribute(fetchRateType).getLatestSample().getValue();
 //            _jobState = (String) dp.getAttribute(jobStateType).getLatestSample().getValue();
             _onlineID = dp.getAttribute(onlineIDType).getLatestSample().getValueAsLong();

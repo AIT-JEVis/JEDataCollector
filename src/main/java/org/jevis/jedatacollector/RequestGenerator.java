@@ -21,41 +21,41 @@ import org.joda.time.DateTimeZone;
  */
 public class RequestGenerator {
 
-    public static List<Request> createJEVisRequests(Data data) {
-        List<Request> requests = new ArrayList<Request>();
-
-        DatacollectorConnection connection = data.getConnection();
-        DataCollectorParser parsing = data.getParsing();
-        Equipment equipment = data.getEquipment();
-        List<NewDataPoint> datapoints = data.getDatapoints();
-
-        if (equipment.isSingleConnection()) {
-            for (NewDataPoint dp : datapoints) {
-                Request request = new DefaultRequest();
-                request.setNeedConnection(true);
-                request.setConnection(connection);
-                request.setParser(parsing);
-                request.setEquipment(equipment);
-                request.setSpecificDatapoint(dp);
-                request.setData(data);
-                request.setNeedImport(true);
-                request.setNeedParsing(true);
-                requests.add(request);
-            }
-        } else {
-            Request request = new DefaultRequest();
-            request.setNeedConnection(true);
-            request.setConnection(connection);
-            request.setParser(parsing);
-            request.setEquipment(equipment);
-            request.setSpecificDatapoint(null);
-            request.setNeedImport(true);
-            request.setNeedParsing(true);
-            requests.add(request);
-        }
-
-        return requests;
-    }
+//    public static List<Request> createJEVisRequests(Data data) {
+//        List<Request> requests = new ArrayList<Request>();
+//
+//        DatacollectorConnection connection = data.getConnection();
+//        DataCollectorParser parsing = data.getParsing();
+//        Equipment equipment = data.getEquipment();
+//        List<NewDataPoint> datapoints = data.getDatapoints();
+//
+//        if (equipment.isSingleConnection()) {
+//            for (NewDataPoint dp : datapoints) {
+//                Request request = new DefaultRequest();
+//                request.setNeedConnection(true);
+//                request.setConnection(connection);
+//                request.setParser(parsing);
+//                request.setEquipment(equipment);
+//                request.setSpecificDatapoint(dp);
+////                request.setData(data);
+//                request.setNeedImport(true);
+//                request.setNeedParsing(true);
+//                requests.add(request);
+//            }
+//        } else {
+//            Request request = new DefaultRequest();
+//            request.setNeedConnection(true);
+//            request.setConnection(connection);
+//            request.setParser(parsing);
+//            request.setEquipment(equipment);
+//            request.setSpecificDatapoint(null);
+//            request.setNeedImport(true);
+//            request.setNeedParsing(true);
+//            requests.add(request);
+//        }
+//
+//        return requests;
+//    }
 
     public static Request createOnlyParsingRequest(DataCollectorParser fileParser, InputHandler input) {
         Request req = new DefaultRequest();
@@ -86,7 +86,7 @@ public class RequestGenerator {
         request.setUntil(until);
         request.setParser(parsing);
         request.setNeedImport(true);
-        request.setSpecificDatapoint(dataPoint);
+//        request.setSpecificDatapoint(dataPoint);
         List<NewDataPoint> dataPoints = new ArrayList<NewDataPoint>();
         dataPoints.add(dataPoint);
         request.setDataPoints(dataPoints);
@@ -103,7 +103,37 @@ public class RequestGenerator {
         request.setNeedParsing(false);
         request.setFrom(from);
         request.setUntil(until);
-        request.setSpecificDatapoint(datapoint);
+        ArrayList<NewDataPoint> datapoints = new ArrayList<NewDataPoint>();
+        datapoints.add(datapoint);
+        request.setDataPoints(datapoints);
+//        request.setSpecificDatapoint(datapoint);
         return request;
+    }
+
+    static List<Request> createJEVisSingleRequests(Data data) {
+        List<Request> requests = new ArrayList<Request>();
+
+        DatacollectorConnection connection = data.getConnection();
+        DataCollectorParser parsing = data.getParsing();
+        Equipment equipment = data.getEquipment();
+        List<NewDataPoint> datapoints = data.getDatapoints();
+
+        for (NewDataPoint dp : datapoints) {
+            Request request = new DefaultRequest();
+            request.setNeedConnection(true);
+            request.setConnection(connection);
+            request.setParser(parsing);
+            request.setEquipment(equipment);
+            ArrayList<NewDataPoint> tmpDatapoints = new ArrayList<NewDataPoint>();
+            tmpDatapoints.add(dp);
+            request.setDataPoints(tmpDatapoints);
+//            request.setSpecificDatapoint(dp);
+//                request.setData(data);
+            request.setNeedImport(true);
+            request.setNeedParsing(true);
+            requests.add(request);
+        }
+        
+        return requests;
     }
 }

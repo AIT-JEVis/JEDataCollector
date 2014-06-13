@@ -10,9 +10,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.jevis.api.JEVisAttribute;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
 import org.jevis.api.JEVisSample;
+import org.jevis.jedatacollector.data.Data;
 import org.jevis.jedatacollector.data.NewDataPoint;
 import org.jevis.jedatacollector.exception.FetchingException;
 import org.jevis.jedatacollector.service.ConnectionService;
@@ -157,23 +159,49 @@ public class DataCollector {
     }
 
     private void getInput() throws FetchingException {
-        DateTime from = new DateTime(0);
-        DateTime until = new DateTime();
-        try {
-            from = _request.getData().getFrom(_request.getSpecificDatapoint()); //from is the time of the newest sample
-        } catch (NullPointerException ex) {
-            System.out.println("NO TIME FOUND -- get ALL DATA");
-            if (_request.getFrom() != null) {
-                from = _request.getFrom();
-            }
-            if (_request.getUntil() != null) {
-                until = _request.getUntil();
+        DateTime from = _request.getFrom();
+        DateTime until = _request.getUntil();
+        //get oldest timestamp from all online data rows
+
+        if (from == null) {
+            DateTime currentFrom;
+            for (NewDataPoint dp : _request.getDataPoints()) {
+                currentFrom = getFrom(dp);
+                if (from == null) {
+                    from = currentFrom;
+                } else if (from.isAfter(currentFrom)) {
+                    from = currentFrom;
+                }
             }
         }
-        List<Object> rawResult = _connection.sendSamplesRequest(from, until, _request.getSpecificDatapoint());
+        if (from == null) {
+            from = new DateTime(0);
+        }
+//        if (until == null) { //TODO nur zu testzwecken so
+            until = from.plusMinutes(45);
+//        }
+        List<Object> rawResult = _connection.sendSamplesRequest(from, until, _request.getDataPoints().get(0));
 
         initializeInputConverter(rawResult);
+    }
 
+    public DateTime getFrom(NewDataPoint dp) {
+        if (dp != null) {
+            try {
+                JEVisObject onlineData = Launcher.getClient().getObject(dp.getOnlineID());
+                JEVisAttribute attribute = onlineData.getAttribute("Raw Data"); //TODO iwo auslagern
+                if (attribute.getLatestSample() != null) {
+                    return attribute.getTimestampFromLastSample();
+                } else {
+                    //TODO iwas überlegen
+                }
+            } catch (JEVisException ex) {
+                Logger.getLogger(Data.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else {
+            //TODO wie oben das gleiche!
+        }
+        return null;
     }
 //    public void setParsingService(ParsingService ps) {
 //        _parsingService = ps;

@@ -44,7 +44,7 @@ public class Test_ARA01 {
         DataCollectorParser fileParser = new CSVParsing(null, ";", 2);
 
         GeneralMappingParser datapointParser = new MappingFixCSVParser(false, 22);
-        GeneralDateParser dateParser = new DateCSVParser("HH:mm:ss", 2, "dd.MM.yyyy", 3, DateTimeZone.UTC);
+        GeneralDateParser dateParser = new DateCSVParser("HH:mm:ss", 2, "dd.MM.yyyy", 3);
         GeneralValueParser valueParser = new ValueCSVParser(1, ".", ",");
 
         SampleParserContainer sampleContainer = new SampleParserContainer(datapointParser, dateParser, valueParser);

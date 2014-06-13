@@ -8,6 +8,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jevis.api.JEVisAttribute;
+import org.jevis.api.JEVisClass;
 import org.jevis.api.JEVisDataSource;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
@@ -52,6 +53,24 @@ public class Data {
         }
 //        _newParsingData = parser;
 //        loadOnlineData();
+    }
+
+    public Data(JEVisObject parser, JEVisObject connection, JEVisObject equipment) {
+        try {
+            _datasource = equipment.getDataSource();
+        } catch (JEVisException ex) {
+            Logger.getLogger(Data.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        _dataLoggerData = new Equipment(equipment);
+
+
+        _datapoints = new ArrayList<NewDataPoint>();
+        try {
+            _connection = ConnectionFactory.getConnection(connection);
+            _parsingData = ParsingFactory.getParsing(parser);
+        } catch (FetchingException ex) {
+            Logger.getLogger(Data.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
 //    public JEVisObject getJEVisParsingData(){
@@ -99,7 +118,6 @@ public class Data {
     public JEVisDataSource getDatasource() {
         return _datasource;
     }
-
 //    public OnlineData getOnlineData() {
 //        return _onlineData;
 //    }

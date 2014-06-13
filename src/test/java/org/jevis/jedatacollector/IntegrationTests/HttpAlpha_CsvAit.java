@@ -56,7 +56,7 @@ public class HttpAlpha_CsvAit {
         DatacollectorConnection connection = new HTTPConnection("192.168.2.55", "/Parsing/data-all.csv", 80, 300, 30);
         DataCollectorParser fileParser = new CSVParsing("\"", ";", 1);
 
-        GeneralDateParser dateParser = new DateCSVParser(null, null, "dd-MM-yyyy HH:mm.ss", 1,DateTimeZone.UTC);
+        GeneralDateParser dateParser = new DateCSVParser(null, null, "dd-MM-yyyy HH:mm.ss", 1);
         GeneralMappingParser datapointParser2 = new MappingFixCSVParser(false, 2);
         GeneralValueParser valueParser2 = new ValueCSVParser(2, ",", null);
         GeneralMappingParser datapointParser3 = new MappingFixCSVParser(false, 3);

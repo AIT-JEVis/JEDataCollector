@@ -35,7 +35,7 @@ public class FTP_CSV_Loytec {
         DataCollectorParser fileParser = new CSVParsing(null, ",", 7);
 
         GeneralMappingParser datapointParser = new MappingFixCSVParser(false, 22);
-        GeneralDateParser dateParser = new DateCSVParser(null, null, "yyyy-MM-dd HH:mm:ss", 5, DateTimeZone.UTC);
+        GeneralDateParser dateParser = new DateCSVParser(null, null, "yyyy-MM-dd HH:mm:ss", 5);
         GeneralValueParser valueParser = new ValueCSVParser(6, ".", null);
 
         SampleParserContainer sampleContainer = new SampleParserContainer(datapointParser, dateParser, valueParser);

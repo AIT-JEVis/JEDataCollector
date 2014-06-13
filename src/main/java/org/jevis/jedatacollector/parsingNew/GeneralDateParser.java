@@ -19,5 +19,5 @@ public interface GeneralDateParser extends GeneralParser {
 
     public DateTime getDateTime();
     
-    public DateTimeZone getTimeZone();
+//    public DateTimeZone getTimeZone();
 }

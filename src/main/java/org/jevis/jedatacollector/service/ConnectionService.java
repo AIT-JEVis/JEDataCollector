@@ -8,10 +8,7 @@ import java.util.*;
 import org.jevis.jedatacollector.data.NewDataPoint;
 import org.jevis.jedatacollector.connection.DatacollectorConnection;
 import org.jevis.jedatacollector.exception.FetchingException;
-import org.jevis.jedatacollector.service.inputHandler.InputHandler;
-import org.jevis.jedatacollector.service.inputHandler.InputFactory;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 
 /**
  *

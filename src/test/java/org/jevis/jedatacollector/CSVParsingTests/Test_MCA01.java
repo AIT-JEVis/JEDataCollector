@@ -47,7 +47,7 @@ public class Test_MCA01 {
         GeneralMappingParser datapointParser1 = new MappingCSVParser(true, 3333l, "3", 2);
         GeneralMappingParser datapointParser2 = new MappingCSVParser(true, 4444l, "4", 2);
         GeneralMappingParser datapointParser3 = new MappingCSVParser(true, 5555l, "5", 2);
-        GeneralDateParser dateParser = new DateCSVParser(null, null, "dd.MM.yyyy HH:mm:ss", 1, DateTimeZone.UTC);
+        GeneralDateParser dateParser = new DateCSVParser(null, null, "dd.MM.yyyy HH:mm:ss", 1);
         GeneralValueParser valueParser = new ValueCSVParser(3, ".", null);
 
         SampleParserContainer sampleContainer1 = new SampleParserContainer(datapointParser1, dateParser, valueParser);

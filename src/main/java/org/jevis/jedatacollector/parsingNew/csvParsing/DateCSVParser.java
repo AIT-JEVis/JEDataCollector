@@ -24,9 +24,9 @@ public class DateCSVParser implements GeneralDateParser {
     private Integer _timeIndex;
     private Integer _dateIndex;
     private DateTime _dateTime;
-    private DateTimeZone _timeZone;
+//    private DateTimeZone _timeZone;
 
-    public DateCSVParser(String timeFormat, Integer timeIndex, String dateFormat, Integer dateIndex, DateTimeZone timezone) {
+    public DateCSVParser(String timeFormat, Integer timeIndex, String dateFormat, Integer dateIndex) {
         _timeFormat = timeFormat;
         _dateFormat = dateFormat;
         if (timeIndex != null) {
@@ -35,7 +35,7 @@ public class DateCSVParser implements GeneralDateParser {
         if (dateIndex != null) {
             _dateIndex = dateIndex - 1;
         }
-        _timeZone = timezone;
+//        _timeZone = timezone;
     }
 
     @Override
@@ -83,8 +83,8 @@ public class DateCSVParser implements GeneralDateParser {
 //        DateTimeZone.setDefault(DateTimeZone.forTimeZone(TimeZone.getTimeZone("CET")));
     }
 
-    @Override
-    public DateTimeZone getTimeZone() {
-        return _timeZone;
-    }
+//    @Override
+//    public DateTimeZone getTimeZone() {
+//        return _timeZone;
+//    }
 }

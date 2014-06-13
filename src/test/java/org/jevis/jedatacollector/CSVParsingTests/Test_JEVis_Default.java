@@ -50,7 +50,7 @@ public class Test_JEVis_Default {
         DataCollectorParser fileParser = new CSVParsing("\"", ";", 1);
 
         GeneralMappingParser datapointParser = new MappingFixCSVParser(false, 22);
-        GeneralDateParser dateParser = new DateCSVParser(null, null, "dd-MM-yyyy HH:mm:ss", 1, DateTimeZone.UTC);
+        GeneralDateParser dateParser = new DateCSVParser(null, null, "dd-MM-yyyy HH:mm:ss", 1);
         GeneralValueParser valueParser = new ValueCSVParser(2, ".", null);
 
         SampleParserContainer sampleContainer = new SampleParserContainer(datapointParser, dateParser, valueParser);

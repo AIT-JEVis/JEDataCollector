@@ -20,7 +20,7 @@ import org.jevis.jedatacollector.exception.FetchingExceptionType;
  */
 public class ConnectionFactory {
 
-    private static final String HTTP_CONNECTION = ("HTTP");
+    private static final String HTTP_CONNECTION = ("HTTPCon");
     private static final String FTP_CONNECTION = ("FTP");
     private static final String SOAP_CONNECTION = ("SOAP");
     private static final String SQL_CONNECTION = ("SQL");

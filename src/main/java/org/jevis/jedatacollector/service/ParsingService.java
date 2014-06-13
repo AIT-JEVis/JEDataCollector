@@ -32,16 +32,20 @@ public class ParsingService {
     public ParsingService(Request request) {
         _fileParser = request.getParser();
         if (_fileParser.getSampleParserContianers().isEmpty()) {
+//            List<JEVisObject> datapoints = new ArrayList<JEVisObject>();
+//            JEVisObject dp = request.getSpecificDatapoint().getJEVisDatapoint();
+//            if (dp != null) {
+//                datapoints.add(dp);
+//            } else {
+//                for (NewDataPoint ndp : request.getData().getDatapoints()) {
+//                    datapoints.add(ndp.getJEVisDatapoint());
+//                }
+//            }
             List<JEVisObject> datapoints = new ArrayList<JEVisObject>();
-            JEVisObject dp = request.getSpecificDatapoint().getJEVisDatapoint();
-            if (dp != null) {
-                datapoints.add(dp);
-            } else {
-                for (NewDataPoint ndp : request.getData().getDatapoints()) {
-                    datapoints.add(ndp.getJEVisDatapoint());
-                }
+            for (NewDataPoint ndp : request.getDataPoints()) {
+                datapoints.add(ndp.getJEVisDatapoint());
             }
-            _fileParser.createSampleContainers(_fileParser.getJEVisParser(), datapoints);
+            _fileParser.createSampleContainers(_fileParser.getJEVisParser(),datapoints);
         }
     }
 

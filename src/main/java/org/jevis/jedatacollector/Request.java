@@ -35,9 +35,9 @@ public interface Request {
 
     public void setEquipment(Equipment equipment);
 
-    public void setSpecificDatapoint(NewDataPoint datapoint);
-
-    public NewDataPoint getSpecificDatapoint();
+//    public void setSpecificDatapoint(NewDataPoint datapoint);
+//
+//    public NewDataPoint getSpecificDatapoint();
 
     public Equipment getEquipment();
 

@@ -32,14 +32,23 @@ public class CSVParsing extends DataCollectorParser {
     private String _quote;
     private String _delim;
     private int _headerLines;
+    private int _dateIndex;
+    private int _timeIndex;
+    private int _valueIndex;
 
     public CSVParsing(String quote, String delim, int headerlines) {
         _quote = quote;
         _delim = delim;
         _headerLines = headerlines;
+        _dateIndex = -1;
+        _timeIndex = -1;
+        _valueIndex = -1;
     }
 
     public CSVParsing() {
+        _dateIndex = -1;
+        _timeIndex = -1;
+        _valueIndex = -1;
     }
 
     //this should be easier.. perhaps with a JEObject?
@@ -140,6 +149,24 @@ public class CSVParsing extends DataCollectorParser {
             if (pn.getAttribute(ignoreFirstNLines).getLatestSample() != null) {
                 _headerLines = Integer.parseInt((String) pn.getAttribute(ignoreFirstNLines).getLatestSample().getValue());
             }
+
+            JEVisType indexDateType = jeClass.getType(JevisAttributes.DATE_CSV_DATEINDEX);
+            JEVisType indexTimeType = jeClass.getType(JevisAttributes.DATE_CSV_TIMEINDEX);
+            if (pn.getAttribute(indexDateType) != null) {
+                _dateIndex = (int) (long) pn.getAttribute(indexDateType).getLatestSample().getValueAsLong();
+            }
+            System.out.println("Dateindex" + _dateIndex);
+
+            if (pn.getAttribute(indexTimeType) != null) {
+                _timeIndex = (int) (long) pn.getAttribute(indexTimeType).getLatestSample().getValueAsLong();
+            }
+            System.out.println("Timeindex" + _timeIndex);
+
+            JEVisType indexValueType = jeClass.getType(JevisAttributes.MAPPING_VALUE_SPECIFICATION);
+            if (pn.getAttribute(indexValueType) != null) {
+                _valueIndex = (int) (long) pn.getAttribute(indexValueType).getLatestSample().getValueAsLong();
+            }
+            System.out.println("IndexValue" + _valueIndex);
         } catch (JEVisException ex) {
             Logger.getLogger(CSVParsing.class.getName()).log(Level.ERROR, null, ex);
         }
@@ -182,29 +209,17 @@ public class CSVParsing extends DataCollectorParser {
             JEVisType dateFormatType = dateClass.getType(JevisAttributes.DATE_DATEFORMAT);
             JEVisType timeFormatType = dateClass.getType(JevisAttributes.DATE_TIMEFORMAT);
             JEVisType timeZoneType = dateClass.getType(JevisAttributes.DATE_TIMEZONE);
-            JEVisType indexDateType = dateClass.getType(JevisAttributes.DATE_CSV_DATEINDEX);
-            JEVisType indexTimeType = dateClass.getType(JevisAttributes.DATE_CSV_TIMEINDEX);
 
             String date = dateObject.getAttribute(dateFormatType).getLatestSample().getValueAsString();
             System.out.println("Date" + date);
             String time = dateObject.getAttribute(timeFormatType).getLatestSample().getValueAsString();
             System.out.println("Time" + time);
-            DateTimeZone timezone = DateTimeZone.forTimeZone(TimeZone.getTimeZone(dateObject.getAttribute(timeZoneType).getLatestSample().getValueAsString()));
+//            DateTimeZone timezone = DateTimeZone.forTimeZone(TimeZone.getTimeZone(dateObject.getAttribute(timeZoneType).getLatestSample().getValueAsString()));
 
 
-            int dateIndex = -1;
-            if (dateObject.getAttribute(indexDateType) != null) {
-                dateIndex = (int) (long) dateObject.getAttribute(indexDateType).getLatestSample().getValueAsLong();
-            }
-            System.out.println("Dateindex" + dateIndex);
 
-            int timeIndex = -1;
-            if (dateObject.getAttribute(indexTimeType) != null) {
-                timeIndex = (int) (long) dateObject.getAttribute(indexTimeType).getLatestSample().getValueAsLong();
-            }
-            System.out.println("Timeindex" + timeIndex);
 
-            dateParser = new DateCSVParser(time, timeIndex, date, dateIndex, timezone);
+            dateParser = new DateCSVParser(time, _timeIndex, date, _dateIndex);
         } catch (JEVisException ex) {
             Logger.getLogger(CSVParsing.class.getName()).log(Level.ERROR, null, ex);
         }
@@ -217,39 +232,38 @@ public class CSVParsing extends DataCollectorParser {
         try {
             //Mappingclass
             JEVisClass mappingClass = mappingObject.getJEVisClass();
-            JEVisType indexValueType = mappingClass.getType(JevisAttributes.MAPPING_VALUE_SPECIFICATION);
             //            JEVisType indexDatapointType = mappingClass.getType("Index Datapoint");
             //            JEVisType datapointInFileType = mappingClass.getType("infile");
             JEVisType datapointType = mappingClass.getType(JevisAttributes.MAPPING_ONLINEID);
             JEVisType mappingType = mappingClass.getType(JevisAttributes.MAPPING_VALUE_MAPPING);
             JEVisType mappingNecessaryType = mappingClass.getType(JevisAttributes.MAPPING_NECESSARY);
 
-            int indexValue = -1;
-            if (mappingObject.getAttribute(indexValueType) != null) {
-                indexValue = (int) (long) mappingObject.getAttribute(indexValueType).getLatestSample().getValueAsLong();
-            }
-            System.out.println("IndexValue" + indexValue);
+
             //            int indexDatapoint = 0;
             //            if (mapping.getAttribute(indexDatapointType) != null) {
             //                indexDatapoint = Integer.parseInt((String) mapping.getAttribute(indexDatapointType).getLatestSample().getValue());
             //            }
-            long datapoint = -1;
+            long onlineID = -1;
             if (mappingObject.getAttribute(datapointType) != null) {
-                datapoint = mappingObject.getAttribute(datapointType).getLatestSample().getValueAsLong();
+                onlineID = mappingObject.getAttribute(datapointType).getLatestSample().getValueAsLong();
             }
-            System.out.println("Datapoint" + datapoint);
+            System.out.println("Datapoint" + onlineID);
 
             String mapping = mappingObject.getAttribute(mappingType).getLatestSample().getValueAsString();
-            boolean mappingNecessary = mappingObject.getAttribute(mappingNecessaryType).getLatestSample().getValueAsBoolean();
+            boolean mappingNecessary = false;
+            if (mappingObject.getAttribute(mappingNecessaryType).getLatestSample() != null) {
+                mappingNecessary = mappingObject.getAttribute(mappingNecessaryType).getLatestSample().getValueAsBoolean();
+
+            }
             //            boolean inFile = false;
             //            if (mapping.getAttribute(datapointInFileType) != null) {
             //                inFile = Boolean.parseBoolean((String) mapping.getAttribute(datapointInFileType).getLatestSample().getValue());
             //            }
             //entweder den einen oder den anderen Parser!!!!! am besten als factory
             if (mappingNecessary) {
-                datapointParser = new MappingCSVParser(true, datapoint, mapping, indexValue);
+                datapointParser = new MappingCSVParser(true, onlineID, mapping, _valueIndex);
             } else {
-                datapointParser = new MappingFixCSVParser(false, datapoint);
+                datapointParser = new MappingFixCSVParser(false, onlineID);
             }
         } catch (JEVisException ex) {
             Logger.getLogger(CSVParsing.class.getName()).log(Level.ERROR, null, ex);
@@ -266,11 +280,6 @@ public class CSVParsing extends DataCollectorParser {
             JEVisType indexValueType = mappingClass.getType(JevisAttributes.MAPPING_VALUE_SPECIFICATION);
             //            JEVisType indexDatapointType = mappingClass.getType("Index Datapoint");
             //            JEVisType datapointInFileType = mappingClass.getType("infile");
-            int indexValue = -1;
-            if (mapping.getAttribute(indexValueType) != null) {
-                indexValue = (int) (long) mapping.getAttribute(indexValueType).getLatestSample().getValueAsLong();
-            }
-
             //ValueObject
             JEVisClass valueClass = valueObject.getJEVisClass();
             JEVisType seperatorDecimalType = valueClass.getType(JevisAttributes.VALUE_DECIMSEPERATOR);
@@ -280,7 +289,7 @@ public class CSVParsing extends DataCollectorParser {
             System.out.println("sepDecimal" + seperatorDecimal);
             String seperatorThousand = valueObject.getAttribute(seperatorThousandType).getLatestSample().getValueAsString();
             System.out.println("sepThousand " + seperatorThousand);
-            valueParser = new ValueCSVParser(indexValue, seperatorDecimal, seperatorThousand);
+            valueParser = new ValueCSVParser(_valueIndex, seperatorDecimal, seperatorThousand);
         } catch (JEVisException ex) {
             Logger.getLogger(CSVParsing.class.getName()).log(Level.ERROR, null, ex);
         }
