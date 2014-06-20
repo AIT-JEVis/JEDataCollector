@@ -4,7 +4,6 @@
  */
 package org.jevis.jedatacollector.parsingNew.csvParsing;
 
-import java.util.TimeZone;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.jevis.api.JEVisClass;
@@ -22,7 +21,6 @@ import org.jevis.jedatacollector.parsingNew.SampleParserContainer;
 import org.jevis.jedatacollector.service.ParsingService;
 import org.jevis.jedatacollector.service.inputHandler.InputHandler;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 
 /**
  *

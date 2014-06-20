@@ -13,7 +13,7 @@ import javax.xml.soap.SOAPMessage;
  *
  * @author Broder
  */
-public class InputFactory {
+public class InputHandlerFactory {
 
     public static InputHandler getInputConverter(Object input) {
         if (input instanceof List) {

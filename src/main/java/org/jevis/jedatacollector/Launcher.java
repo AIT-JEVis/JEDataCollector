@@ -69,6 +69,7 @@ public class Launcher {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        Logger.getLogger(Launcher.class.getName()).log(Level.INFO, "-------Start JEDataCollector r22-------");
         initializeCommandLine(args);
         initializeLogger(JEVisCommandLine.getInstance().getDebugLevel());
 
@@ -91,6 +92,8 @@ public class Launcher {
             requestJobs = launcher.fetchJEVisDataJobs();
         }
         launcher.excecuteRequsts(requestJobs);
+                Logger.getLogger(Launcher.class.getName()).log(Level.INFO, "########## Finish JEDataCollector #########");
+
     }
 
     private static List<JEVisObject> getDatapoints(JEVisObject dpDir) {
@@ -160,7 +163,7 @@ public class Launcher {
     }
 
     private static void initializeLogger(Level debugLevel) {
-        PropertyConfigurator.configure("log4j.properties");
+//        PropertyConfigurator.configure("log4j.properties");
         Logger.getRootLogger().setLevel(debugLevel);
     }
 

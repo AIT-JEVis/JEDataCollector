@@ -14,14 +14,13 @@ import org.jevis.api.JEVisAttribute;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
 import org.jevis.api.JEVisSample;
-import org.jevis.jedatacollector.data.Data;
 import org.jevis.jedatacollector.data.NewDataPoint;
 import org.jevis.jedatacollector.exception.FetchingException;
 import org.jevis.jedatacollector.service.ConnectionService;
 import org.jevis.jedatacollector.service.ParsingService;
 import org.jevis.jedatacollector.service.inputHandler.InputHandler;
 import org.jevis.jedatacollector.parsingNew.Result;
-import org.jevis.jedatacollector.service.inputHandler.InputFactory;
+import org.jevis.jedatacollector.service.inputHandler.InputHandlerFactory;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
@@ -111,8 +110,8 @@ public class DataCollector {
 
             for (JEVisObject o : onlineToSampleMap.keySet()) {
                 List<JEVisSample> samples = onlineToSampleMap.get(o);
-                Logger.getLogger(DataCollector.class.getName()).log(Level.ALL, "ID: " + o.getID());
-                Logger.getLogger(DataCollector.class.getName()).log(Level.ALL, "Number of imported Samples: " + samples.size());
+                Logger.getLogger(DataCollector.class.getName()).log(Level.INFO, "ID: " + o.getID());
+                Logger.getLogger(DataCollector.class.getName()).log(Level.INFO, "Number of imported Samples: " + samples.size());
                 o.getAttribute("Raw Data").addSamples(samples);
             }
         } catch (JEVisException ex) {
@@ -180,9 +179,6 @@ public class DataCollector {
         if (from == null) {
             from = new DateTime(0);
         }
-        if (until == null && from != null) {
-            until = new DateTime(from.getMillis() + 10000000);
-        }
         if (until == null) {
             until = new DateTime();
         }
@@ -220,7 +216,7 @@ public class DataCollector {
 
     private void initializeInputConverter(List<Object> rawResult) {
         Logger.getLogger(DataCollector.class.getName()).log(Level.INFO, "Initialize Input Converter");
-        _inputHandler = InputFactory.getInputConverter(rawResult);
+        _inputHandler = InputHandlerFactory.getInputConverter(rawResult);
         _inputHandler.convertInput(); //this should happn in the converter
     }
 }
