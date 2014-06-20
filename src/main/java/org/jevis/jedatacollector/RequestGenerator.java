@@ -12,6 +12,7 @@ import org.jevis.jedatacollector.data.Equipment;
 import org.jevis.jedatacollector.data.NewDataPoint;
 import org.jevis.jedatacollector.parsingNew.DataCollectorParser;
 import org.jevis.jedatacollector.service.inputHandler.InputHandler;
+import org.jevis.jedatacollector.service.outputHandler.OutputHandler;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
@@ -126,6 +127,7 @@ public class RequestGenerator {
         request.setNeedImport(true);
         request.setNeedParsing(true);
         request.setTimeZone(equipment.getTimezone());
+        request.setOutputType(OutputHandler.JEVIS_OUTPUT);
         return request;
     }
 }

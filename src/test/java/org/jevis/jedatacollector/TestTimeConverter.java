@@ -7,8 +7,8 @@ package org.jevis.jedatacollector;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
-import junit.framework.Assert;
 import junit.framework.TestCase;
+import org.jevis.jedatacollector.service.TimeConverter;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
@@ -54,7 +54,7 @@ public class TestTimeConverter extends TestCase {
         for (String date : _summerToWinterOriginal) {
             DateTime parseDateTime = dtf.parseDateTime(date);
             
-            DateTime newTime = test.convertTime(dateTimeZone, parseDateTime);
+            DateTime newTime = TimeConverter.convertTime(dateTimeZone, parseDateTime);
             realDatesUTC.add(newTime);
         }
         

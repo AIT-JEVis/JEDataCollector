@@ -12,10 +12,13 @@ import org.jevis.jedatacollector.parsingNew.Result;
  *
  * @author bf
  */
-public abstract class OutputHandler {
+public class FileOutputHandler extends OutputHandler{
 
-    public static String FILE_OUTPUT = "file";
-    public static String JEVIS_OUTPUT = "jevis";
-
-    abstract public void writeOutput(Request request, List<Result> results);
+    @Override
+    public void writeOutput(Request request, List<Result> results) {
+        for(Result r: results){
+            
+        }
+    }
+    
 }

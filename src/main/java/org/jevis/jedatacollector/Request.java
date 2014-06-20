@@ -74,4 +74,8 @@ public interface Request {
     public DateTimeZone getTimezone();
     
     public void setTimeZone(DateTimeZone timeZone);
+    
+    public void setOutputType(String importType);
+    
+     public String getOutputType();
 }

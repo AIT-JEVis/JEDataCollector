@@ -148,13 +148,9 @@ public class HTTPConnection implements DatacollectorConnection {
                     //                System.out.println("read timeout: " + _readTimeout.intValue() / 1000 + "s");
                     request.setReadTimeout(_readTimeout.intValue());
 
-                    System.out.println("start buffer reader");
                     InputStream inputStream = request.getInputStream();
-                    System.out.println("inputstream");
                     InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-                    System.out.println("inputstreamreader");
                     BufferedReader bufReader = new BufferedReader(inputStreamReader);
-                    System.out.println("end buffer reader");
                     boolean firstLine = true;
                     String output;
 

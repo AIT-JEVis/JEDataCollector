@@ -4,16 +4,12 @@
  */
 package org.jevis.jedatacollector;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.jevis.api.JEVisAttribute;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
-import org.jevis.api.JEVisSample;
 import org.jevis.jedatacollector.data.NewDataPoint;
 import org.jevis.jedatacollector.exception.FetchingException;
 import org.jevis.jedatacollector.service.ConnectionService;
@@ -21,8 +17,9 @@ import org.jevis.jedatacollector.service.ParsingService;
 import org.jevis.jedatacollector.service.inputHandler.InputHandler;
 import org.jevis.jedatacollector.parsingNew.Result;
 import org.jevis.jedatacollector.service.inputHandler.InputHandlerFactory;
+import org.jevis.jedatacollector.service.outputHandler.OutputHandler;
+import org.jevis.jedatacollector.service.outputHandler.OutputHandlerFactory;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 
 /**
  *
@@ -76,65 +73,11 @@ public class DataCollector {
     }
 
     public void importData() {
-        try {
-            List<Result> results = getResults();
-            Logger.getLogger(DataCollector.class.getName()).log(Level.ALL, "Number of results: " + results.size());
-            Map<JEVisObject, List<JEVisSample>> onlineToSampleMap = new HashMap<JEVisObject, List<JEVisSample>>();
-
-            //extract all online nodes and save them in a map
-            for (NewDataPoint dp : _request.getDataPoints()) {
-                Long onlineID = dp.getOnlineID();
-                JEVisObject onlineData = Launcher.getClient().getObject(onlineID);
-                onlineToSampleMap.put(onlineData, new ArrayList<JEVisSample>());
-            }
-
-//            JEVisClass onlineNode = online.getDataSource().getJEVisClass(OnlineData.ONLINE_DATAROW);
-//            JEVisType rawAttributeType = onlineNode.getType(OnlineData.SAMPLE_ATTRIBUTE);
-//            JEVisAttribute attribute = online.getAttribute(rawAttributeType);
-//            List<JEVisSample> sampleList = new ArrayList<JEVisSample>();
-
-
-            //look into all results and map the sample to the online node
-            for (Result s : results) {
-                //                DateTime time = s.getCal();
-                //                System.out.println("value " + s.getVal());
-                //                System.out.println("cal " + s.getCal());
-                //                sampleList.add(attribute.buildSample(time, s.getVal()));
-                long onlineID = s.getOnlineID();
-                JEVisObject onlineData = Launcher.getClient().getObject(onlineID);
-                List<JEVisSample> samples = onlineToSampleMap.get(onlineData);
-                DateTime convertedDate = convertTime(_request.getTimezone(), s.getDate());
-                JEVisSample sample = onlineData.getAttribute("Raw Data").buildSample(convertedDate, s.getValue());
-                samples.add(sample);
-            }
-
-            for (JEVisObject o : onlineToSampleMap.keySet()) {
-                List<JEVisSample> samples = onlineToSampleMap.get(o);
-                Logger.getLogger(DataCollector.class.getName()).log(Level.INFO, "ID: " + o.getID());
-                Logger.getLogger(DataCollector.class.getName()).log(Level.INFO, "Number of imported Samples: " + samples.size());
-                o.getAttribute("Raw Data").addSamples(samples);
-            }
-        } catch (JEVisException ex) {
-            Logger.getLogger(DataCollector.class.getName()).log(Level.ERROR, null, ex);
-        }
+       OutputHandler outputHandler = OutputHandlerFactory.getOutputHandler(_request.getOutputType());
+       outputHandler.writeOutput(_request, getResults());
     }
 
-    public DateTime convertTime(DateTimeZone from, DateTime time) {
-        long timeInMillis = time.getMillis();
-        DateTime dateTime = new DateTime(timeInMillis, from);
-        Logger.getLogger(DataCollector.class.getName()).log(Level.ALL, "DateTime before: " + dateTime);
-//        long nextTransition = from.nextTransition(timeInMillis) - timeInMillis;
-//        long currentOffset = from.getOffset(timeInMillis);
-//        from.getStandardOffset(timeInMillis);
-        DateTime tmpTime = dateTime;
-//        if (_lastDateInUTC != null) {
-//            tmpTime = convertTimeInTransitionRange(from, dateTime, _lastDateInUTC);
-//        }
-        dateTime = tmpTime.toDateTime(DateTimeZone.UTC);
-//        _lastDateInUTC = dateTime;
-       Logger.getLogger(DataCollector.class.getName()).log(Level.ALL, "DateTime after: " + dateTime);
-        return dateTime;
-    }
+
 
 //    public DateTime convertTimeInTransitionRange(DateTimeZone from, DateTime currentDate, DateTime lastDate) {
 //
