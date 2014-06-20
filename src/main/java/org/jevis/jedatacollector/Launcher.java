@@ -79,7 +79,6 @@ public class Launcher {
         launcher.connectAlphaServer();
 
 
-        Logger.getLogger(Launcher.class.getName()).log(Level.INFO, "Start DataCollector");
         //hier müssen verschiedene Modi an und abgestellt werden können
         List<Request> requestJobs = new ArrayList<Request>();
         boolean cliJob = false;
@@ -92,7 +91,7 @@ public class Launcher {
             requestJobs = launcher.fetchJEVisDataJobs();
         }
         launcher.excecuteRequsts(requestJobs);
-                Logger.getLogger(Launcher.class.getName()).log(Level.INFO, "########## Finish JEDataCollector #########");
+        Logger.getLogger(Launcher.class.getName()).log(Level.INFO, "########## Finish JEDataCollector #########");
 
     }
 
@@ -197,48 +196,51 @@ public class Launcher {
             JEVisClass connection = _client.getJEVisClass("HTTPCon");
             JEVisClass datapoints = _client.getJEVisClass("Data Point Directory");
             for (JEVisObject equip : equipments) {
-                List<JEVisObject> parserObject = equip.getChildren(parser, true);
-                List<JEVisObject> connectionObject = equip.getChildren(connection, true);
-                if (parserObject.size() != 1) {
-                    Logger.getLogger(this.getClass().getName()).log(Level.ALL, "Number of Parsing Objects != 1");
-                    continue;
-                }
-                if (connectionObject.size() != 1) {
-                    Logger.getLogger(this.getClass().getName()).log(Level.ALL, "Number of Connection Objects != 1");
-                    continue;
-                }
+                try {
+                    List<JEVisObject> parserObject = equip.getChildren(parser, true);
+                    List<JEVisObject> connectionObject = equip.getChildren(connection, true);
+                    if (parserObject.size() != 1) {
+                        Logger.getLogger(this.getClass().getName()).log(Level.ALL, "Number of Parsing Objects != 1");
+                        continue;
+                    }
+                    if (connectionObject.size() != 1) {
+                        Logger.getLogger(this.getClass().getName()).log(Level.ALL, "Number of Connection Objects != 1");
+                        continue;
+                    }
 
-                List<JEVisObject> datapointsDir = equip.getChildren(datapoints, true);
-                if (datapointsDir.size() != 1) {
-                    continue;
-                }
-                List<JEVisObject> datapointsJEVis = getDatapoints(datapointsDir.get(0));
-                Equipment equipment = new Equipment(equip);
-                if (equipment.isSingleConnection()) {
-                    for (JEVisObject dps : datapointsJEVis) {
-                        List<JEVisObject> tmpList = new ArrayList<JEVisObject>();
-                        tmpList.add(dps);
-                        Data data = new Data(parserObject.get(0), connectionObject.get(0), equip, tmpList);
+                    List<JEVisObject> datapointsDir = equip.getChildren(datapoints, true);
+                    if (datapointsDir.size() != 1) {
+                        continue;
+                    }
+                    List<JEVisObject> datapointsJEVis = getDatapoints(datapointsDir.get(0));
+                    Equipment equipment = new Equipment(equip);
+                    if (equipment.isSingleConnection()) {
+                        for (JEVisObject dps : datapointsJEVis) {
+                            List<JEVisObject> tmpList = new ArrayList<JEVisObject>();
+                            tmpList.add(dps);
+                            Data data = new Data(parserObject.get(0), connectionObject.get(0), equip, tmpList);
+                            dataList.add(data);
+                        }
+                    } else {
+                        Data data = new Data(parserObject.get(0), connectionObject.get(0), equip, datapointsJEVis);
                         dataList.add(data);
                     }
-                } else {
-                    Data data = new Data(parserObject.get(0), connectionObject.get(0), equip, datapointsJEVis);
-                    dataList.add(data);
+                } catch (Exception ex) {
+                    Logger.getLogger(Launcher.class.getName()).log(Level.ERROR, "Problems with equip with id: " + equip.getID(), ex);
                 }
-
             }
         } catch (JEVisException ex) {
-            java.util.logging.Logger.getLogger(Launcher.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(this.getClass().getName()).log(Level.ERROR, ex.getMessage());
         }
-
-
         //create Requests
         List<Request> requests = new ArrayList<Request>();
         for (Data data : dataList) {
             Request request = RequestGenerator.createJEVisRequest(data);
             requests.add(request);
         }
-        Logger.getLogger(this.getClass().getName()).log(Level.ALL, "Number of Requests: " + requests.size());
+
+        Logger.getLogger(
+                this.getClass().getName()).log(Level.ALL, "Number of Requests: " + requests.size());
         return requests;
     }
 
