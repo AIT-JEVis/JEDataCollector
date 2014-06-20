@@ -32,10 +32,11 @@ public class DefaultRequest implements Request {
     private boolean _needParsing;
     private DateTime _from;
     private DateTime _until;
-    public InputHandler _inputHandler;
-    public List<NewDataPoint> _dataPoints;
-    public DateTimeZone _dateTimeZone;
-    public String _importType;
+    private InputHandler _inputHandler;
+    private List<NewDataPoint> _dataPoints;
+    private DateTimeZone _dateTimeZone;
+    private String _importType;
+    private String _outputPath;
 
     @Override
     public boolean needConnection() {
@@ -174,5 +175,15 @@ public class DefaultRequest implements Request {
     @Override
     public String getOutputType() {
         return _importType;
+    }
+
+    @Override
+    public void setFileOutputPath(String outputPath) {
+        _outputPath = outputPath;
+    }
+
+    @Override
+    public String getFileOutputPath() {
+        return _outputPath;
     }
 }

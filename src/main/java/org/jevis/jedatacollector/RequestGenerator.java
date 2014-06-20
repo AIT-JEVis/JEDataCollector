@@ -67,6 +67,19 @@ public class RequestGenerator {
         req.setInputHandler(input);
         return req;
     }
+    
+      public static Request createOnlyParsingRequestWithOutput(DataCollectorParser fileParser, InputHandler input, String outputPath) {
+        Request req = new DefaultRequest();
+        req.setNeedConnection(false);
+        req.setNeedImport(true);
+        req.setNeedParsing(true);
+        req.setParser(null);
+        req.setParser(fileParser);
+        req.setInputHandler(input);
+        req.setOutputType(OutputHandler.FILE_OUTPUT);
+        req.setFileOutputPath(outputPath);
+        return req;
+    }
 
     public static Request createConnectionParsingRequest(DatacollectorConnection connection, DataCollectorParser parsing) {
         Request request = new DefaultRequest();

@@ -38,7 +38,6 @@ public interface Request {
 //    public void setSpecificDatapoint(NewDataPoint datapoint);
 //
 //    public NewDataPoint getSpecificDatapoint();
-
     public Equipment getEquipment();
 
     public void setData(Data data);
@@ -56,26 +55,30 @@ public interface Request {
     public void setNeedParsing(boolean needParsing);
 
     public void setFrom(DateTime from);
-    
+
     public DateTime getFrom();
-    
+
     public void setUntil(DateTime until);
-    
+
     public DateTime getUntil();
-    
+
     public void setInputHandler(InputHandler input);
-    
+
     public InputHandler getInputHandler();
-    
+
     public void setDataPoints(List<NewDataPoint> dataPoints);
-    
+
     public List<NewDataPoint> getDataPoints();
 
     public DateTimeZone getTimezone();
-    
+
     public void setTimeZone(DateTimeZone timeZone);
-    
+
     public void setOutputType(String importType);
+
+    public String getOutputType();
     
-     public String getOutputType();
+    public void setFileOutputPath(String outputPath);
+    
+    public String getFileOutputPath();
 }

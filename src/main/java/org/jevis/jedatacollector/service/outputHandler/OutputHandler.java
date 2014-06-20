@@ -14,7 +14,7 @@ import org.jevis.jedatacollector.parsingNew.Result;
  */
 public abstract class OutputHandler {
 
-    public static String FILE_OUTPUT = "file";
+    public static String FILE_OUTPUT = "csv_file";
     public static String JEVIS_OUTPUT = "jevis";
 
     abstract public void writeOutput(Request request, List<Result> results);
