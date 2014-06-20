@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.jevis.api.JEVisAttribute;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
@@ -46,23 +46,22 @@ public class DataCollector {
         if (req.getInputHandler() != null) {
             _inputHandler = req.getInputHandler();
         }
-        System.out.println("Default Timezone " + DateTimeZone.getDefault());
     }
     //TODO validate EACH Step.. for example "Exist all information for the conenction, parsing...?
 
     public void run() throws FetchingException {
         if (_request.needConnection()) {
+            Logger.getLogger(DataCollector.class.getName()).log(Level.INFO, "Start Connection");
             connect();
             getInput();
         }
         if (_request.needParsing()) {
-            System.out.println("Beginne parsen");
+            Logger.getLogger(DataCollector.class.getName()).log(Level.INFO, "Start Parsing");
             parse();
-            System.out.println("Parsen fertig");
         }
         if (_request.needImport()) {
+            Logger.getLogger(DataCollector.class.getName()).log(Level.INFO, "Import Data");
             importData();
-            System.out.println("Alles importiert");
         }
     }
 
@@ -80,7 +79,7 @@ public class DataCollector {
     public void importData() {
         try {
             List<Result> results = getResults();
-            System.out.println("Resultlistsize: " + results.size());
+            Logger.getLogger(DataCollector.class.getName()).log(Level.ALL, "Number of results: " + results.size());
             Map<JEVisObject, List<JEVisSample>> onlineToSampleMap = new HashMap<JEVisObject, List<JEVisSample>>();
 
             //extract all online nodes and save them in a map
@@ -112,43 +111,44 @@ public class DataCollector {
 
             for (JEVisObject o : onlineToSampleMap.keySet()) {
                 List<JEVisSample> samples = onlineToSampleMap.get(o);
-                System.out.println("ID: " + o.getID());
-                System.out.println("Size: " + samples.size());
+                Logger.getLogger(DataCollector.class.getName()).log(Level.ALL, "ID: " + o.getID());
+                Logger.getLogger(DataCollector.class.getName()).log(Level.ALL, "Number of imported Samples: " + samples.size());
                 o.getAttribute("Raw Data").addSamples(samples);
             }
         } catch (JEVisException ex) {
-            Logger.getLogger(DataCollector.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DataCollector.class.getName()).log(Level.ERROR, null, ex);
         }
     }
 
     public DateTime convertTime(DateTimeZone from, DateTime time) {
         long timeInMillis = time.getMillis();
         DateTime dateTime = new DateTime(timeInMillis, from);
-        long nextTransition = from.nextTransition(timeInMillis) - timeInMillis;
-        long currentOffset = from.getOffset(timeInMillis);
+        Logger.getLogger(DataCollector.class.getName()).log(Level.ALL, "DateTime before: " + dateTime);
+//        long nextTransition = from.nextTransition(timeInMillis) - timeInMillis;
+//        long currentOffset = from.getOffset(timeInMillis);
 //        from.getStandardOffset(timeInMillis);
         DateTime tmpTime = dateTime;
-        if (_lastDateInUTC != null) {
-            tmpTime = convertTimeInTransitionRange(from, dateTime, _lastDateInUTC);
-        }
+//        if (_lastDateInUTC != null) {
+//            tmpTime = convertTimeInTransitionRange(from, dateTime, _lastDateInUTC);
+//        }
         dateTime = tmpTime.toDateTime(DateTimeZone.UTC);
-        _lastDateInUTC = dateTime;
+//        _lastDateInUTC = dateTime;
+       Logger.getLogger(DataCollector.class.getName()).log(Level.ALL, "DateTime after: " + dateTime);
         return dateTime;
     }
 
-    public DateTime convertTimeInTransitionRange(DateTimeZone from, DateTime currentDate, DateTime lastDate) {
-
-        long timeBetween = currentDate.getMillis() - lastDate.getMillis();
-        if (timeBetween != 240000) {
-            System.out.println("###############################NICHT GLEICH!!!!!!!!!");
-            System.out.println(timeBetween);
-            System.out.println("c " + currentDate);
-            System.out.println("l " + lastDate);
-        }
+//    public DateTime convertTimeInTransitionRange(DateTimeZone from, DateTime currentDate, DateTime lastDate) {
+//
+//        long timeBetween = currentDate.getMillis() - lastDate.getMillis();
+//        if (timeBetween != 240000) {
+//            System.out.println("###############################NICHT GLEICH!!!!!!!!!");
+//            System.out.println(timeBetween);
+//            System.out.println("c " + currentDate);
+//            System.out.println("l " + lastDate);
+//        }
 //        long timeBetween = 240000;
-        return lastDate.plusMillis((int) timeBetween);
-    }
-
+//        return lastDate.plusMillis((int) timeBetween);
+//    }
     public List<Result> getResults() {
         return _parsingService.getFileParser().getResults();
     }
@@ -175,11 +175,18 @@ public class DataCollector {
             }
         }
         if (from == null) {
+            from = _request.getEquipment().getStartCollectingTime();
+        }
+        if (from == null) {
             from = new DateTime(0);
         }
-        if (until == null) { 
+        if (until == null && from != null) {
+            until = new DateTime(from.getMillis() + 10000000);
+        }
+        if (until == null) {
             until = new DateTime();
         }
+
         List<Object> rawResult = _connection.sendSamplesRequest(from, until, _request.getDataPoints().get(0));
 
         initializeInputConverter(rawResult);
@@ -196,7 +203,7 @@ public class DataCollector {
                     //TODO iwas überlegen
                 }
             } catch (JEVisException ex) {
-                Logger.getLogger(Data.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(DataCollector.class.getName()).log(Level.ERROR, null, ex);
             }
         } else {
             //TODO wie oben das gleiche!
@@ -212,7 +219,7 @@ public class DataCollector {
 //    }
 
     private void initializeInputConverter(List<Object> rawResult) {
-        System.out.println("###Initialisiere InputConverter###");
+        Logger.getLogger(DataCollector.class.getName()).log(Level.INFO, "Initialize Input Converter");
         _inputHandler = InputFactory.getInputConverter(rawResult);
         _inputHandler.convertInput(); //this should happn in the converter
     }

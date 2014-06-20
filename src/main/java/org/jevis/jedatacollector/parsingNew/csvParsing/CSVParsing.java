@@ -11,6 +11,7 @@ import org.jevis.api.JEVisClass;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
 import org.jevis.api.JEVisType;
+import org.jevis.jedatacollector.DataCollector;
 import org.jevis.jedatacollector.data.JevisAttributes;
 import org.jevis.jedatacollector.parsingNew.DataCollectorParser;
 import org.jevis.jedatacollector.parsingNew.Result;
@@ -195,16 +196,15 @@ public class CSVParsing extends DataCollectorParser {
         DateCSVParser dateParser = null;
         try {
             JEVisClass dateClass = dateObject.getJEVisClass();
-            System.out.println("Dateobjectid " + dateObject.getID());
 
             JEVisType dateFormatType = dateClass.getType(JevisAttributes.DATE_DATEFORMAT);
             JEVisType timeFormatType = dateClass.getType(JevisAttributes.DATE_TIMEFORMAT);
             JEVisType timeZoneType = dateClass.getType(JevisAttributes.DATE_TIMEZONE);
 
             String date = dateObject.getAttribute(dateFormatType).getLatestSample().getValueAsString();
-            System.out.println("Date" + date);
+            Logger.getLogger(DataCollector.class.getName()).log(Level.ALL, "date Value: " + date);
             String time = dateObject.getAttribute(timeFormatType).getLatestSample().getValueAsString();
-            System.out.println("Time" + time);
+            Logger.getLogger(DataCollector.class.getName()).log(Level.ALL, "time Value: " + time);
 //            DateTimeZone timezone = DateTimeZone.forTimeZone(TimeZone.getTimeZone(dateObject.getAttribute(timeZoneType).getLatestSample().getValueAsString()));
 
 
@@ -234,7 +234,7 @@ public class CSVParsing extends DataCollectorParser {
             if (mappingObject.getAttribute(indexValueType) != null) {
                 indexValue = (int) (long) mappingObject.getAttribute(indexValueType).getLatestSample().getValueAsLong();
             }
-            System.out.println("IndexValue" + indexValue);
+            Logger.getLogger(DataCollector.class.getName()).log(Level.ALL, "index Value: " + indexValue);
             //            int indexDatapoint = 0;
             //            if (mapping.getAttribute(indexDatapointType) != null) {
             //                indexDatapoint = Integer.parseInt((String) mapping.getAttribute(indexDatapointType).getLatestSample().getValue());
@@ -243,9 +243,11 @@ public class CSVParsing extends DataCollectorParser {
             if (mappingObject.getAttribute(datapointType) != null) {
                 onlineID = mappingObject.getAttribute(datapointType).getLatestSample().getValueAsLong();
             }
-            System.out.println("Datapoint" + onlineID);
+            Logger.getLogger(DataCollector.class.getName()).log(Level.ALL, "online ID: " + onlineID);
 
             String mapping = mappingObject.getAttribute(mappingType).getLatestSample().getValueAsString();
+            Logger.getLogger(DataCollector.class.getName()).log(Level.ALL, "mapping Value: " + mapping);
+
             boolean mappingNecessary = false;
             if (mappingObject.getAttribute(mappingNecessaryType).getLatestSample() != null) {
                 mappingNecessary = mappingObject.getAttribute(mappingNecessaryType).getLatestSample().getValueAsBoolean();
@@ -287,9 +289,9 @@ public class CSVParsing extends DataCollectorParser {
             JEVisType seperatorThousandType = valueClass.getType(JevisAttributes.VALUE_THOUSANDSEPERATOR);
 
             String seperatorDecimal = valueObject.getAttribute(seperatorDecimalType).getLatestSample().getValueAsString();
-            System.out.println("sepDecimal" + seperatorDecimal);
+            Logger.getLogger(DataCollector.class.getName()).log(Level.ALL, "decimal seperator: " + seperatorDecimal);
             String seperatorThousand = valueObject.getAttribute(seperatorThousandType).getLatestSample().getValueAsString();
-            System.out.println("sepThousand " + seperatorThousand);
+            Logger.getLogger(DataCollector.class.getName()).log(Level.ALL, "thousand seperator: " + seperatorThousand);
             valueParser = new ValueCSVParser(indexValue, seperatorDecimal, seperatorThousand);
         } catch (JEVisException ex) {
             Logger.getLogger(CSVParsing.class.getName()).log(Level.ERROR, null, ex);

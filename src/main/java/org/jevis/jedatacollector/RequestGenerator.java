@@ -56,7 +56,6 @@ public class RequestGenerator {
 //
 //        return requests;
 //    }
-
     public static Request createOnlyParsingRequest(DataCollectorParser fileParser, InputHandler input) {
         Request req = new DefaultRequest();
         req.setNeedConnection(false);
@@ -110,31 +109,23 @@ public class RequestGenerator {
         return request;
     }
 
-    static List<Request> createJEVisSingleRequests(Data data) {
-        List<Request> requests = new ArrayList<Request>();
-
+    static Request createJEVisRequest(Data data) {
         DatacollectorConnection connection = data.getConnection();
         DataCollectorParser parsing = data.getParsing();
         Equipment equipment = data.getEquipment();
         List<NewDataPoint> datapoints = data.getDatapoints();
 
-        for (NewDataPoint dp : datapoints) {
-            Request request = new DefaultRequest();
-            request.setNeedConnection(true);
-            request.setConnection(connection);
-            request.setParser(parsing);
-            request.setEquipment(equipment);
-            ArrayList<NewDataPoint> tmpDatapoints = new ArrayList<NewDataPoint>();
-            tmpDatapoints.add(dp);
-            request.setDataPoints(tmpDatapoints);
+        Request request = new DefaultRequest();
+        request.setNeedConnection(true);
+        request.setConnection(connection);
+        request.setParser(parsing);
+        request.setEquipment(equipment);
+        request.setDataPoints(datapoints);
 //            request.setSpecificDatapoint(dp);
 //                request.setData(data);
-            request.setNeedImport(true);
-            request.setNeedParsing(true);
-            request.setTimeZone(equipment.getTimezone());
-            requests.add(request);
-        }
-        
-        return requests;
+        request.setNeedImport(true);
+        request.setNeedParsing(true);
+        request.setTimeZone(equipment.getTimezone());
+        return request;
     }
 }

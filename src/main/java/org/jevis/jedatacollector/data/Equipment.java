@@ -10,7 +10,10 @@ import org.jevis.api.JEVisClass;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
 import org.jevis.api.JEVisType;
+import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 /**
  *
@@ -24,12 +27,16 @@ public class Equipment {
 //    public static String LAST_SERVICE = "Last Service";
     public static String SINGLE_CONNECTION = "Single Reader";
     public static String TIMEZONE = "Timezone";
+    public static String STARTDATE = "Start data collecting";
+    public static String STARTDATEFORMAT = "Start date format";
 //    private String _name;
 //    private String _installationDate;
 //    private String _lastFetch;
 //    private String _lastService;
     private boolean _singleReader;
     private DateTimeZone _timezone;
+    private DateTime _startDate;
+    private String _startDateFormat;
 
 //    public String getInstallationDate() {
 //        return _installationDate;
@@ -53,6 +60,10 @@ public class Equipment {
     public DateTimeZone getTimezone() {
         return _timezone;
     }
+    
+    public DateTime getStartCollectingTime(){
+        return _startDate;
+    }
 
     public Equipment(JEVisObject equipment) {
         try {
@@ -63,6 +74,8 @@ public class Equipment {
 //            JEVisType lastServiceType = type.getType(LAST_SERVICE);
             JEVisType singleReaderType = type.getType(SINGLE_CONNECTION);
             JEVisType timezoneType = type.getType(TIMEZONE);
+            JEVisType startDateCollecting = type.getType(STARTDATE);
+            JEVisType startDateFormat = type.getType(STARTDATEFORMAT);
 
 //            if (equipment.getAttribute(nameType).getLatestSample() != null) {
 //                _name = (String) equipment.getAttribute(nameType).getLatestSample().getValue();
@@ -82,6 +95,14 @@ public class Equipment {
             if (equipment.getAttribute(timezoneType).getLatestSample() != null) {
                 String timezoneName = (String) equipment.getAttribute(timezoneType).getLatestSample().getValue();
                 _timezone = DateTimeZone.forID(timezoneName);
+            }
+              if (equipment.getAttribute(startDateFormat).getLatestSample() != null) {
+                _startDateFormat = equipment.getAttribute(startDateFormat).getLatestSample().getValueAsString();
+            }
+            if (equipment.getAttribute(startDateCollecting).getLatestSample() != null) {
+                DateTimeFormatter fmt = DateTimeFormat.forPattern(_startDateFormat);
+                String date = equipment.getAttribute(startDateCollecting).getLatestSample().getValueAsString();
+                _startDate = fmt.parseDateTime(date);
             }
         } catch (JEVisException ex) {
             Logger.getLogger(Equipment.class.getName()).log(Level.SEVERE, null, ex);
