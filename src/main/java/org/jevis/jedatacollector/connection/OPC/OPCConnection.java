@@ -6,7 +6,7 @@ package org.jevis.jedatacollector.connection.OPC;
 
 import java.util.List;
 import org.jevis.api.JEVisObject;
-import org.jevis.jedatacollector.data.NewDataPoint;
+import org.jevis.jedatacollector.data.DataPoint;
 import org.jevis.jedatacollector.connection.DatacollectorConnection;
 import org.jevis.jedatacollector.exception.FetchingException;
 import org.joda.time.DateTime;
@@ -25,7 +25,7 @@ public class OPCConnection implements DatacollectorConnection
     }
 
     @Override
-    public List<Object> sendSampleRequest(NewDataPoint dp, DateTime from, DateTime until) throws FetchingException
+    public List<Object> sendSampleRequest(DataPoint dp, DateTime from, DateTime until) throws FetchingException
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }

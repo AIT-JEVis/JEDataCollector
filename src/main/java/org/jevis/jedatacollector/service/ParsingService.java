@@ -7,11 +7,11 @@ package org.jevis.jedatacollector.service;
 import java.util.ArrayList;
 import java.util.List;
 import org.jevis.api.JEVisObject;
+import org.jevis.commons.parsing.DataCollectorParser;
+import org.jevis.commons.parsing.SampleParserContainer;
+import org.jevis.commons.parsing.inputHandler.InputHandler;
 import org.jevis.jedatacollector.Request;
-import org.jevis.jedatacollector.data.NewDataPoint;
-import org.jevis.jedatacollector.parsingNew.DataCollectorParser;
-import org.jevis.jedatacollector.parsingNew.SampleParserContainer;
-import org.jevis.jedatacollector.service.inputHandler.InputHandler;
+import org.jevis.jedatacollector.data.DataPoint;
 
 /**
  *
@@ -42,7 +42,7 @@ public class ParsingService {
 //                }
 //            }
             List<JEVisObject> datapoints = new ArrayList<JEVisObject>();
-            for (NewDataPoint ndp : request.getDataPoints()) {
+            for (DataPoint ndp : request.getDataPoints()) {
                 datapoints.add(ndp.getJEVisDatapoint());
             }
             _fileParser.createSampleContainers(_fileParser.getJEVisParser(),datapoints);

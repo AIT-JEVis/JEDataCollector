@@ -15,7 +15,7 @@ import org.jevis.api.JEVisType;
  *
  * @author Broder
  */
-public class NewDataPoint {
+public class DataPoint {
 
     public static String CHANNEL_ID = "ChannelID";
     public static String DATA_LOGGER_NAME = "Data Logger Name";
@@ -34,13 +34,13 @@ public class NewDataPoint {
     JEVisObject _onlineData;
 //    JEVisObject _dataPoint;
 
-    public NewDataPoint(String channelID, String dataLoggerName, Long onlineID) {
+    public DataPoint(String channelID, String dataLoggerName, Long onlineID) {
         _channelID = channelID;
         _dataLoggerName = dataLoggerName;
         _onlineID = onlineID;
     }
 
-    public NewDataPoint(JEVisObject dp) {
+    public DataPoint(JEVisObject dp) {
         _jevisDatapoint = dp;
         _datapointID = dp.getID();
 
@@ -65,7 +65,7 @@ public class NewDataPoint {
             _onlineData = dp.getDataSource().getObject(_onlineID);
 //            _onlineData = dp.getDataSource().getObject(onlineID);
         } catch (JEVisException ex) {
-            Logger.getLogger(NewDataPoint.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DataPoint.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

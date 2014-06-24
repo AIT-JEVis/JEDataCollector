@@ -6,13 +6,15 @@ package org.jevis.jedatacollector;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.jevis.commons.parsing.DataCollectorParser;
+import org.jevis.commons.parsing.ParsingRequest;
+import org.jevis.commons.parsing.ParsingRequestGenerator;
+import org.jevis.commons.parsing.inputHandler.InputHandler;
+import org.jevis.commons.parsing.outputHandler.OutputHandler;
 import org.jevis.jedatacollector.connection.DatacollectorConnection;
 import org.jevis.jedatacollector.data.Data;
 import org.jevis.jedatacollector.data.Equipment;
-import org.jevis.jedatacollector.data.NewDataPoint;
-import org.jevis.jedatacollector.parsingNew.DataCollectorParser;
-import org.jevis.jedatacollector.service.inputHandler.InputHandler;
-import org.jevis.jedatacollector.service.outputHandler.OutputHandler;
+import org.jevis.jedatacollector.data.DataPoint;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
@@ -68,7 +70,7 @@ public class RequestGenerator {
         return req;
     }
     
-      public static Request createOnlyParsingRequestWithOutput(DataCollectorParser fileParser, InputHandler input, String outputPath) {
+    public static Request createOnlyParsingRequestWithOutput(DataCollectorParser fileParser, InputHandler input, String outputPath) {
         Request req = new DefaultRequest();
         req.setNeedConnection(false);
         req.setNeedImport(true);
@@ -76,11 +78,13 @@ public class RequestGenerator {
         req.setParser(null);
         req.setParser(fileParser);
         req.setInputHandler(input);
+        ParsingRequest preq = ParsingRequestGenerator.generateOutputfileRequest(outputPath);
+        req.setParsingRequest(preq);
         req.setOutputType(OutputHandler.FILE_OUTPUT);
         req.setFileOutputPath(outputPath);
         return req;
     }
-
+    
     public static Request createConnectionParsingRequest(DatacollectorConnection connection, DataCollectorParser parsing) {
         Request request = new DefaultRequest();
         request.setNeedConnection(true);
@@ -90,8 +94,8 @@ public class RequestGenerator {
         request.setNeedParsing(true);
         return request;
     }
-
-    public static Request createCLIRequest(DatacollectorConnection connection, DataCollectorParser parsing, NewDataPoint dataPoint, DateTime from, DateTime until, DateTimeZone timeZone) {
+    
+    public static Request createCLIRequest(DatacollectorConnection connection, DataCollectorParser parsing, DataPoint dataPoint, DateTime from, DateTime until, DateTimeZone timeZone) {
         Request request = new DefaultRequest();
         request.setNeedConnection(true);
         request.setConnection(connection);
@@ -100,15 +104,15 @@ public class RequestGenerator {
         request.setParser(parsing);
         request.setNeedImport(true);
 //        request.setSpecificDatapoint(dataPoint);
-        List<NewDataPoint> dataPoints = new ArrayList<NewDataPoint>();
+        List<DataPoint> dataPoints = new ArrayList<DataPoint>();
         dataPoints.add(dataPoint);
         request.setDataPoints(dataPoints);
         request.setNeedParsing(true);
         request.setTimeZone(timeZone);
         return request;
     }
-
-    public static Request createConnectionRequestWithTimeperiod(DatacollectorConnection connection, NewDataPoint datapoint, DateTime from, DateTime until) {
+    
+    public static Request createConnectionRequestWithTimeperiod(DatacollectorConnection connection, DataPoint datapoint, DateTime from, DateTime until) {
         Request request = new DefaultRequest();
         request.setNeedConnection(true);
         request.setConnection(connection);
@@ -116,19 +120,19 @@ public class RequestGenerator {
         request.setNeedParsing(false);
         request.setFrom(from);
         request.setUntil(until);
-        ArrayList<NewDataPoint> datapoints = new ArrayList<NewDataPoint>();
+        ArrayList<DataPoint> datapoints = new ArrayList<DataPoint>();
         datapoints.add(datapoint);
         request.setDataPoints(datapoints);
 //        request.setSpecificDatapoint(datapoint);
         return request;
     }
-
+    
     static Request createJEVisRequest(Data data) {
         DatacollectorConnection connection = data.getConnection();
         DataCollectorParser parsing = data.getParsing();
         Equipment equipment = data.getEquipment();
-        List<NewDataPoint> datapoints = data.getDatapoints();
-
+        List<DataPoint> datapoints = data.getDatapoints();
+        
         Request request = new DefaultRequest();
         request.setNeedConnection(true);
         request.setConnection(connection);
@@ -141,6 +145,8 @@ public class RequestGenerator {
         request.setNeedParsing(true);
         request.setTimeZone(equipment.getTimezone());
         request.setOutputType(OutputHandler.JEVIS_OUTPUT);
+        ParsingRequest parsingReq = ParsingRequestGenerator.generateJEVisParsingRequest(equipment.getTimezone(), Launcher.getClient());
+        request.setParsingRequest(parsingReq);
         return request;
     }
 }

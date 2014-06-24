@@ -16,7 +16,7 @@ import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.jevis.api.JEVisObject;
 import org.jevis.jedatacollector.connection.DatacollectorConnection;
-import org.jevis.jedatacollector.data.NewDataPoint;
+import org.jevis.jedatacollector.data.DataPoint;
 import org.jevis.jedatacollector.exception.FetchingException;
 import org.jevis.jedatacollector.exception.FetchingExceptionType;
 import org.joda.time.DateTime;
@@ -83,7 +83,7 @@ public class FTPConnection implements DatacollectorConnection {
         return true;
     }
 
-    private String getNextFile(DateTime from, NewDataPoint dp) throws FetchingException {
+    private String getNextFile(DateTime from, DataPoint dp) throws FetchingException {
         String retFile = null;
         DateTime earliestDate = null;
 
@@ -132,7 +132,7 @@ public class FTPConnection implements DatacollectorConnection {
         return true;
     }
 
-    private DateTime getDate(String fileName, NewDataPoint dp) throws FetchingException {
+    private DateTime getDate(String fileName, DataPoint dp) throws FetchingException {
         boolean fromBeforeTo = (_fileNameScheme.indexOf("*DATE_FROM") < _fileNameScheme.indexOf("*DATE_TO*"));
 
         if (_fileNameScheme.indexOf("*DATE_TO*") == -1) {
@@ -189,7 +189,7 @@ public class FTPConnection implements DatacollectorConnection {
         return false;
     }
 
-    public List<Object> sendSampleRequest(NewDataPoint dp, DateTime from, DateTime until) throws FetchingException {
+    public List<Object> sendSampleRequest(DataPoint dp, DateTime from, DateTime until) throws FetchingException {
         List<Object> ret = new LinkedList<Object>();
         String fileName;
 

@@ -8,15 +8,14 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jevis.api.JEVisAttribute;
-import org.jevis.api.JEVisClass;
 import org.jevis.api.JEVisDataSource;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
+import org.jevis.commons.parsing.DataCollectorParser;
+import org.jevis.commons.parsing.ParsingFactory;
 import org.jevis.jedatacollector.connection.DatacollectorConnection;
 import org.jevis.jedatacollector.connection.ConnectionFactory;
 import org.jevis.jedatacollector.exception.FetchingException;
-import org.jevis.jedatacollector.parsing.ParsingFactory;
-import org.jevis.jedatacollector.parsingNew.DataCollectorParser;
 import org.joda.time.DateTime;
 
 /**
@@ -29,7 +28,7 @@ public class Data {
     private DatacollectorConnection _connection;
     private DataCollectorParser _parsingData;
     private Equipment _dataLoggerData;
-    private List<NewDataPoint> _datapoints;
+    private List<DataPoint> _datapoints;
     private JEVisDataSource _datasource;
 //    private OnlineData _onlineData;
 //    private JEVisObject _newParsingData;
@@ -41,9 +40,9 @@ public class Data {
             Logger.getLogger(Data.class.getName()).log(Level.SEVERE, null, ex);
         }
         _dataLoggerData = new Equipment(equipment);
-        _datapoints = new ArrayList<NewDataPoint>();
+        _datapoints = new ArrayList<DataPoint>();
         for (JEVisObject dp : datapoints) {
-            _datapoints.add(new NewDataPoint(dp));
+            _datapoints.add(new DataPoint(dp));
         }
         try {
             _connection = ConnectionFactory.getConnection(connection);
@@ -64,7 +63,7 @@ public class Data {
         _dataLoggerData = new Equipment(equipment);
 
 
-        _datapoints = new ArrayList<NewDataPoint>();
+        _datapoints = new ArrayList<DataPoint>();
         try {
             _connection = ConnectionFactory.getConnection(connection);
             _parsingData = ParsingFactory.getParsing(parser);
@@ -80,7 +79,7 @@ public class Data {
         return _defaultTimezone;    //TODP ÜBERARBEITEN!!
     }
 
-    public List<NewDataPoint> getDatapoints() {
+    public List<DataPoint> getDatapoints() {
         return _datapoints;
     }
 
@@ -96,7 +95,7 @@ public class Data {
         return _parsingData;
     }
 
-    public DateTime getFrom(NewDataPoint dp) {
+    public DateTime getFrom(DataPoint dp) {
         if (dp != null) {
             try {
                 JEVisObject onlineData = _datasource.getObject(dp.getOnlineID());

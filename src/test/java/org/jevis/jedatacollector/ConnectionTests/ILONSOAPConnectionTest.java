@@ -4,32 +4,13 @@
  */
 package org.jevis.jedatacollector.ConnectionTests;
 
-import java.io.File;
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import junit.framework.Assert;
-import org.jevis.jedatacollector.DataCollector;
-import org.jevis.jedatacollector.Request;
-import org.jevis.jedatacollector.RequestGenerator;
-import org.jevis.jedatacollector.connection.DatacollectorConnection;
-import org.jevis.jedatacollector.connection.SOAP.SOAPConnection;
-import org.jevis.jedatacollector.data.NewDataPoint;
-import org.jevis.jedatacollector.service.inputHandler.SOAPMessageInputHandler;
-import org.joda.time.DateTime;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-
 /**
  *
  * @author bf
  */
 public class ILONSOAPConnectionTest {
 
-//    public void test_iLONConnect() throws Exception {
+    public void test_iLONConnect() throws Exception {
 //        String template = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?> <SOAP-ENV:Envelope      SOAP-ENV:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\" xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\"><SOAP-ENV:Body><DataLogger_Read xmlns=\"http://wsdl.echelon.com/web_services_ns/ilon100/v3.0/message/\"><DATA><Log><UCPTpointName>*DATAPOINT*</UCPTpointName><UCPTindex>*DATALOGGER*</UCPTindex><UCPTstart>*DATE_FROM*</UCPTstart><UCPTstop>*DATE_TO*</UCPTstop><UCPTcount>50</UCPTcount></Log></DATA></DataLogger_Read></SOAP-ENV:Body> </SOAP-ENV:Envelope>";
 //        DatacollectorConnection connection = new SOAPConnection(template, "http://192.168.2.209/WSDL/iLON100.WSDL", "yyyy-MM-dd'T'HH:mm:ss'Z'", "0", 2l, 60l, null);
 //
@@ -58,5 +39,5 @@ public class ILONSOAPConnectionTest {
 //        Assert.assertTrue(nodeValues.getLength() > 0);
 //        Assert.assertTrue(nodeNames.getLength() == nodeDates.getLength());
 //        Assert.assertTrue(nodeValues.getLength() == nodeDates.getLength());
-//    }
+    }
 }

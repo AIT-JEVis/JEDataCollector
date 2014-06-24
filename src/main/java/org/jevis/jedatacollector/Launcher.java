@@ -9,13 +9,21 @@ import java.util.List;
 import org.apache.commons.cli.Option;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 import org.jevis.api.JEVisClass;
 import org.jevis.api.JEVisDataSource;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
 import org.jevis.api.sql.JEVisDataSourceSQL;
 import org.jevis.commons.cli.JEVisCommandLine;
+import org.jevis.commons.parsing.DataCollectorParser;
+import org.jevis.commons.parsing.GeneralDateParser;
+import org.jevis.commons.parsing.GeneralMappingParser;
+import org.jevis.commons.parsing.GeneralValueParser;
+import org.jevis.commons.parsing.SampleParserContainer;
+import org.jevis.commons.parsing.csvParsing.CSVParsing;
+import org.jevis.commons.parsing.csvParsing.DateCSVParser;
+import org.jevis.commons.parsing.csvParsing.MappingFixCSVParser;
+import org.jevis.commons.parsing.csvParsing.ValueCSVParser;
 import org.jevis.jedatacollector.exception.FetchingException;
 import org.jevis.jedatacollector.CLIProperties.ConnectionCLIParser;
 import org.jevis.jedatacollector.CLIProperties.ParsingCLIParser;
@@ -23,16 +31,7 @@ import org.jevis.jedatacollector.connection.DatacollectorConnection;
 import org.jevis.jedatacollector.connection.HTTP.HTTPConnection;
 import org.jevis.jedatacollector.data.Data;
 import org.jevis.jedatacollector.data.Equipment;
-import org.jevis.jedatacollector.data.NewDataPoint;
-import org.jevis.jedatacollector.parsingNew.DataCollectorParser;
-import org.jevis.jedatacollector.parsingNew.GeneralDateParser;
-import org.jevis.jedatacollector.parsingNew.GeneralMappingParser;
-import org.jevis.jedatacollector.parsingNew.GeneralValueParser;
-import org.jevis.jedatacollector.parsingNew.SampleParserContainer;
-import org.jevis.jedatacollector.parsingNew.csvParsing.CSVParsing;
-import org.jevis.jedatacollector.parsingNew.csvParsing.DateCSVParser;
-import org.jevis.jedatacollector.parsingNew.csvParsing.MappingFixCSVParser;
-import org.jevis.jedatacollector.parsingNew.csvParsing.ValueCSVParser;
+import org.jevis.jedatacollector.data.DataPoint;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
@@ -69,7 +68,7 @@ public class Launcher {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        Logger.getLogger(Launcher.class.getName()).log(Level.INFO, "-------Start JEDataCollector r25-------");
+        Logger.getLogger(Launcher.class.getName()).log(Level.INFO, "-------Start JEDataCollector r26-------");
         initializeCommandLine(args);
         initializeLogger(JEVisCommandLine.getInstance().getDebugLevel());
 
@@ -281,7 +280,7 @@ public class Launcher {
 
         String datapointID = "16"; //TODO this should come from a file
         Logger.getLogger(this.getClass().getName()).log(Level.ALL, "Datapoint id: " + datapointID);
-        NewDataPoint datapoint = new NewDataPoint(datapointID, "VIDA350", outputOnlineID);
+        DataPoint datapoint = new DataPoint(datapointID, "VIDA350", outputOnlineID);
 
         DateTimeZone timeZone = DateTimeZone.getDefault(); //TODO this should come from a file
 

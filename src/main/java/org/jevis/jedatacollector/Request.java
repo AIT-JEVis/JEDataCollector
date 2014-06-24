@@ -5,13 +5,14 @@
 package org.jevis.jedatacollector;
 
 import java.util.List;
+import org.jevis.commons.parsing.DataCollectorParser;
+import org.jevis.commons.parsing.ParsingRequest;
+import org.jevis.commons.parsing.inputHandler.InputHandler;
 import org.jevis.jedatacollector.connection.DatacollectorConnection;
 import org.jevis.jedatacollector.data.Data;
 import org.jevis.jedatacollector.data.Equipment;
-import org.jevis.jedatacollector.data.NewDataPoint;
-import org.jevis.jedatacollector.parsingNew.DataCollectorParser;
+import org.jevis.jedatacollector.data.DataPoint;
 import org.jevis.jedatacollector.service.ParsingService;
-import org.jevis.jedatacollector.service.inputHandler.InputHandler;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
@@ -66,9 +67,9 @@ public interface Request {
 
     public InputHandler getInputHandler();
 
-    public void setDataPoints(List<NewDataPoint> dataPoints);
+    public void setDataPoints(List<DataPoint> dataPoints);
 
-    public List<NewDataPoint> getDataPoints();
+    public List<DataPoint> getDataPoints();
 
     public DateTimeZone getTimezone();
 
@@ -81,4 +82,8 @@ public interface Request {
     public void setFileOutputPath(String outputPath);
     
     public String getFileOutputPath();
+    
+    public ParsingRequest getParsingRequest();
+    
+    public void setParsingRequest(ParsingRequest preq);
 }

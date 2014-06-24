@@ -6,6 +6,7 @@ package org.jevis.jedatacollector.connection;
 
 import java.text.DecimalFormat;
 import java.util.*;
+import org.jevis.jedatacollector.data.DataPoint;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -33,7 +34,7 @@ public class ConnectionHelper {
     public static final String DATAPOINT = "\\*DATAPOINT\\*";
     public static final String SYSTEM_TIME = "\\*SYSTEM_TIME\\*";
 
-    public static List<String> parseString(String string, String datapoint, String datePattern, DateTime from, DateTime until) {
+    public static List<String> parseString(String string, DataPoint datapoint, String datePattern, DateTime from, DateTime until) {
 //        string = Pattern.quote(string);
         if (string.matches(".*\\{.*\\}.*")) {
             String replace = string.substring(string.indexOf("{"), string.indexOf("}") + 1);
@@ -80,7 +81,7 @@ public class ConnectionHelper {
         return df.format(num);
     }
 
-    public static String parseDateFrom(String string, String datapoint, String datePattern, DateTime from) {
+    public static String parseDateFrom(String string, DataPoint datapoint, String datePattern, DateTime from) {
         if (datePattern != null) {
 //            DateFormat df = new 
 //            df.setTimeZone(deviceTimeZone);
@@ -112,13 +113,13 @@ public class ConnectionHelper {
         string = string.replaceAll(SYSTEM_TIME, String.valueOf(System.nanoTime()));
 
         if (datapoint != null) {
-            string = string.replaceAll(DATAPOINT, datapoint);
+            string = string.replaceAll(DATAPOINT, datapoint.getChannelID());
         }
 
         return string;
     }
 
-    public static String parseDateTo(String string, String datapoint, String datePattern, DateTime until) {
+    public static String parseDateTo(String string, DataPoint datapoint, String datePattern, DateTime until) {
         if (datePattern != null) {
             DateTimeFormatter fmt = DateTimeFormat.forPattern(datePattern);
 
@@ -134,7 +135,7 @@ public class ConnectionHelper {
         string = string.replaceAll(SYSTEM_TIME, String.valueOf(System.nanoTime()));
 
         if (datapoint != null) {
-            string = string.replaceAll(DATAPOINT, datapoint);
+            string = string.replaceAll(DATAPOINT, datapoint.getChannelID());
         }
 
         return string;

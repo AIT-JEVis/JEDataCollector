@@ -33,7 +33,7 @@ import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
 import org.jevis.api.JEVisType;
 import org.jevis.jedatacollector.connection.ConnectionHelper;
-import org.jevis.jedatacollector.data.NewDataPoint;
+import org.jevis.jedatacollector.data.DataPoint;
 import org.jevis.jedatacollector.connection.DatacollectorConnection;
 import org.jevis.jedatacollector.exception.FetchingException;
 import org.jevis.jedatacollector.exception.FetchingExceptionType;
@@ -105,7 +105,7 @@ public class HTTPConnection implements DatacollectorConnection {
     }
 
     @Override
-    public List<Object> sendSampleRequest(NewDataPoint dp, DateTime from, DateTime until) throws FetchingException {
+    public List<Object> sendSampleRequest(DataPoint dp, DateTime from, DateTime until) throws FetchingException {
         List<Object> res = new LinkedList<Object>();
         URL requestUrl;
         List<String> paths = getAllPaths(dp, from, until);
@@ -300,7 +300,7 @@ public class HTTPConnection implements DatacollectorConnection {
         return false;
     }
 
-    private List<String> getAllPaths(NewDataPoint dp, DateTime from, DateTime until) {
+    private List<String> getAllPaths(DataPoint dp, DateTime from, DateTime until) {
         List<String> paths = new ArrayList<String>();
         if (_filePath.contains("TIME_START") || _filePath.contains("TIME_END")) {
             _filePath = _filePath.replaceAll("TIME_START", "DATE_FROM");
@@ -312,7 +312,7 @@ public class HTTPConnection implements DatacollectorConnection {
 //                tsv.splitIntoChunks(10, 0, 0);
 
 //                for (TimeSet tsPart : tsv) {
-            paths.addAll(ConnectionHelper.parseString(_filePath, dp.getChannelID(), _dateFormat, from, until));
+            paths.addAll(ConnectionHelper.parseString(_filePath, dp, _dateFormat, from, until));
 //                }
         } else {
             paths.add(_filePath);

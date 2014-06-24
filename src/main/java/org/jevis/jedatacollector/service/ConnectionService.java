@@ -5,7 +5,7 @@
 package org.jevis.jedatacollector.service;
 
 import java.util.*;
-import org.jevis.jedatacollector.data.NewDataPoint;
+import org.jevis.jedatacollector.data.DataPoint;
 import org.jevis.jedatacollector.connection.DatacollectorConnection;
 import org.jevis.jedatacollector.exception.FetchingException;
 import org.joda.time.DateTime;
@@ -28,7 +28,7 @@ public class ConnectionService {
         System.out.println("---Verbinden erfolgreich---");
     }
 
-    public List<Object> sendSamplesRequest(DateTime from, DateTime until, NewDataPoint dp) throws FetchingException {
+    public List<Object> sendSamplesRequest(DateTime from, DateTime until, DataPoint dp) throws FetchingException {
         System.out.println("---Send Sample Request---");
 
 //        Calendar fromAfter = GregorianCalendar.getInstance();

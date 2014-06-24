@@ -18,7 +18,7 @@ import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
 import org.jevis.api.JEVisType;
 import org.jevis.jedatacollector.connection.ConnectionHelper;
-import org.jevis.jedatacollector.data.NewDataPoint;
+import org.jevis.jedatacollector.data.DataPoint;
 import org.jevis.jedatacollector.connection.DatacollectorConnection;
 import org.jevis.jedatacollector.exception.FetchingException;
 
@@ -71,13 +71,13 @@ public class SQLConnection implements DatacollectorConnection {
     }
 
     @Override
-    public List<Object> sendSampleRequest(NewDataPoint dp, DateTime from, DateTime until) throws FetchingException {
+    public List<Object> sendSampleRequest(DataPoint dp, DateTime from, DateTime until) throws FetchingException {
         List<Object> returnList = new LinkedList<Object>();
 
         try {
             String q = URLDecoder.decode(_dbQuery, "UTF-8");
-            q = ConnectionHelper.parseDateFrom(q, String.valueOf(dp.getChannelID()), _dbDateFormat, from);
-            q = ConnectionHelper.parseDateTo(q, String.valueOf(dp.getChannelID()), _dbDateFormat, from);
+            q = ConnectionHelper.parseDateFrom(q, dp, _dbDateFormat, from);
+            q = ConnectionHelper.parseDateTo(q, dp, _dbDateFormat, from);
             ResultSet resultSet = _statement.executeQuery(q);
             Calendar c = Calendar.getInstance();
 

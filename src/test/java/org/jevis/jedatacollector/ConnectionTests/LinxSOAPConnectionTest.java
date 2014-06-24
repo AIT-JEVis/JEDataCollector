@@ -11,13 +11,13 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import org.jevis.commons.parsing.inputHandler.SOAPMessageInputHandler;
 import org.jevis.jedatacollector.DataCollector;
 import org.jevis.jedatacollector.Request;
 import org.jevis.jedatacollector.RequestGenerator;
 import org.jevis.jedatacollector.connection.DatacollectorConnection;
 import org.jevis.jedatacollector.connection.SOAP.SOAPConnection;
-import org.jevis.jedatacollector.data.NewDataPoint;
-import org.jevis.jedatacollector.service.inputHandler.SOAPMessageInputHandler;
+import org.jevis.jedatacollector.data.DataPoint;
 import org.joda.time.DateTime;
 import org.w3c.dom.Document;
 
@@ -42,7 +42,7 @@ public class LinxSOAPConnectionTest {
         DateTime from = until.minusDays(15);
         System.out.println("from "+from);
         System.out.println("until "+until);
-        NewDataPoint datapoint = new NewDataPoint("NVE_VIVA24nvoSteamTemp", "0",null);
+        DataPoint datapoint = new DataPoint("NVE_VIVA24nvoSteamTemp", "0",null);
 
         Request request = RequestGenerator.createConnectionRequestWithTimeperiod(connection, datapoint, from, until);
 

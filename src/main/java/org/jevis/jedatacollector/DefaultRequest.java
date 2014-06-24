@@ -4,14 +4,16 @@
  */
 package org.jevis.jedatacollector;
 
+import java.util.ArrayList;
 import java.util.List;
+import org.jevis.commons.parsing.DataCollectorParser;
+import org.jevis.commons.parsing.ParsingRequest;
+import org.jevis.commons.parsing.inputHandler.InputHandler;
 import org.jevis.jedatacollector.connection.DatacollectorConnection;
 import org.jevis.jedatacollector.data.Data;
 import org.jevis.jedatacollector.data.Equipment;
-import org.jevis.jedatacollector.data.NewDataPoint;
-import org.jevis.jedatacollector.parsingNew.DataCollectorParser;
+import org.jevis.jedatacollector.data.DataPoint;
 import org.jevis.jedatacollector.service.ParsingService;
-import org.jevis.jedatacollector.service.inputHandler.InputHandler;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
@@ -24,7 +26,7 @@ public class DefaultRequest implements Request {
     private boolean _needConnection = false;
     private DatacollectorConnection _connection;
     private DataCollectorParser _parser;
-    private NewDataPoint _datapoint;
+    private DataPoint _datapoint;
     private Equipment _equipment;
     private Data _data;
     private boolean _needImport;
@@ -33,10 +35,13 @@ public class DefaultRequest implements Request {
     private DateTime _from;
     private DateTime _until;
     private InputHandler _inputHandler;
-    private List<NewDataPoint> _dataPoints;
+    private List<DataPoint> _dataPoints = new ArrayList<DataPoint>();
     private DateTimeZone _dateTimeZone;
     private String _importType;
     private String _outputPath;
+    private ParsingRequest _parsingRequest;
+    
+    
 
     @Override
     public boolean needConnection() {
@@ -53,7 +58,7 @@ public class DefaultRequest implements Request {
         return _connection;
     }
 
-    public NewDataPoint getSpecificDatapoint() {
+    public DataPoint getSpecificDatapoint() {
         return _datapoint;
     }
 
@@ -148,12 +153,12 @@ public class DefaultRequest implements Request {
     }
 
     @Override
-    public void setDataPoints(List<NewDataPoint> dataPoints) {
+    public void setDataPoints(List<DataPoint> dataPoints) {
         _dataPoints = dataPoints;
     }
 
     @Override
-    public List<NewDataPoint> getDataPoints() {
+    public List<DataPoint> getDataPoints() {
         return _dataPoints;
     }
 
@@ -185,5 +190,15 @@ public class DefaultRequest implements Request {
     @Override
     public String getFileOutputPath() {
         return _outputPath;
+    }
+
+    @Override
+    public ParsingRequest getParsingRequest() {
+        return _parsingRequest;
+    }
+
+    @Override
+    public void setParsingRequest(ParsingRequest preq) {
+        _parsingRequest = preq;
     }
 }

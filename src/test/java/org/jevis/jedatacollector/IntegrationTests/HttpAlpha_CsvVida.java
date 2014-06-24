@@ -8,22 +8,22 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import junit.framework.Assert;
+import org.jevis.commons.parsing.DataCollectorParser;
+import org.jevis.commons.parsing.GeneralDateParser;
+import org.jevis.commons.parsing.GeneralMappingParser;
+import org.jevis.commons.parsing.GeneralValueParser;
+import org.jevis.commons.parsing.Result;
+import org.jevis.commons.parsing.SampleParserContainer;
+import org.jevis.commons.parsing.csvParsing.CSVParsing;
+import org.jevis.commons.parsing.csvParsing.DateCSVParser;
+import org.jevis.commons.parsing.csvParsing.MappingFixCSVParser;
+import org.jevis.commons.parsing.csvParsing.ValueCSVParser;
 import org.jevis.jedatacollector.DataCollector;
 
 import org.jevis.jedatacollector.Request;
 import org.jevis.jedatacollector.RequestGenerator;
 import org.jevis.jedatacollector.connection.DatacollectorConnection;
 import org.jevis.jedatacollector.connection.HTTP.HTTPConnection;
-import org.jevis.jedatacollector.parsingNew.DataCollectorParser;
-import org.jevis.jedatacollector.parsingNew.Result;
-import org.jevis.jedatacollector.parsingNew.csvParsing.CSVParsing;
-import org.jevis.jedatacollector.parsingNew.csvParsing.MappingFixCSVParser;
-import org.jevis.jedatacollector.parsingNew.csvParsing.DateCSVParser;
-import org.jevis.jedatacollector.parsingNew.csvParsing.ValueCSVParser;
-import org.jevis.jedatacollector.parsingNew.GeneralMappingParser;
-import org.jevis.jedatacollector.parsingNew.GeneralDateParser;
-import org.jevis.jedatacollector.parsingNew.GeneralValueParser;
-import org.jevis.jedatacollector.parsingNew.SampleParserContainer;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
@@ -92,10 +92,10 @@ public class HttpAlpha_CsvVida {
         DateTimeFormatter dtf = DateTimeFormat.forPattern("dd-MM-yyyy HH:mm:ss");
 
         List<DateTime> expectedDateTimes = new ArrayList<DateTime>();
-        expectedDateTimes.add(dtf.parseDateTime("13-07-2012 00:00:00").toDateTime(DateTimeZone.UTC));
-        expectedDateTimes.add(dtf.parseDateTime("13-07-2012 00:15:00").toDateTime(DateTimeZone.UTC));
-        expectedDateTimes.add(dtf.parseDateTime("13-07-2012 00:30:00").toDateTime(DateTimeZone.UTC));
-        expectedDateTimes.add(dtf.parseDateTime("13-07-2012 00:45:00").toDateTime(DateTimeZone.UTC));
+        expectedDateTimes.add(dtf.parseDateTime("13-07-2012 00:00:00"));
+        expectedDateTimes.add(dtf.parseDateTime("13-07-2012 00:15:00"));
+        expectedDateTimes.add(dtf.parseDateTime("13-07-2012 00:30:00"));
+        expectedDateTimes.add(dtf.parseDateTime("13-07-2012 00:45:00"));
 
         Assert.assertEquals(expectedValues.size(), realValues.size());
         Assert.assertEquals(expectedDateTimes.size(), realDateTimes.size());

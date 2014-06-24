@@ -10,7 +10,7 @@ import org.jevis.jedatacollector.Request;
 import org.jevis.jedatacollector.RequestGenerator;
 import org.jevis.jedatacollector.connection.DatacollectorConnection;
 import org.jevis.jedatacollector.connection.FTP.FTPConnection;
-import org.jevis.jedatacollector.data.NewDataPoint;
+import org.jevis.jedatacollector.data.DataPoint;
 import org.jevis.jedatacollector.exception.FetchingException;
 import org.joda.time.DateTime;
 

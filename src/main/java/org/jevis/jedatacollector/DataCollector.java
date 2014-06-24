@@ -10,15 +10,15 @@ import org.apache.log4j.Logger;
 import org.jevis.api.JEVisAttribute;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
-import org.jevis.jedatacollector.data.NewDataPoint;
+import org.jevis.commons.parsing.Result;
+import org.jevis.commons.parsing.inputHandler.InputHandler;
+import org.jevis.commons.parsing.inputHandler.InputHandlerFactory;
+import org.jevis.commons.parsing.outputHandler.OutputHandler;
+import org.jevis.commons.parsing.outputHandler.OutputHandlerFactory;
+import org.jevis.jedatacollector.data.DataPoint;
 import org.jevis.jedatacollector.exception.FetchingException;
 import org.jevis.jedatacollector.service.ConnectionService;
 import org.jevis.jedatacollector.service.ParsingService;
-import org.jevis.jedatacollector.service.inputHandler.InputHandler;
-import org.jevis.jedatacollector.parsingNew.Result;
-import org.jevis.jedatacollector.service.inputHandler.InputHandlerFactory;
-import org.jevis.jedatacollector.service.outputHandler.OutputHandler;
-import org.jevis.jedatacollector.service.outputHandler.OutputHandlerFactory;
 import org.joda.time.DateTime;
 
 /**
@@ -27,11 +27,11 @@ import org.joda.time.DateTime;
  */
 public class DataCollector {
 
-    protected ParsingService _parsingService;
-    protected ConnectionService _connection;
-    protected InputHandler _inputHandler;
-    protected Request _request;
-    protected DateTime _lastDateInUTC;
+    private ParsingService _parsingService;
+    private ConnectionService _connection;
+    private InputHandler _inputHandler;
+    private Request _request;
+    private DateTime _lastDateInUTC;
 
     public DataCollector() {
     }
@@ -73,11 +73,9 @@ public class DataCollector {
     }
 
     public void importData() {
-       OutputHandler outputHandler = OutputHandlerFactory.getOutputHandler(_request.getOutputType());
-       outputHandler.writeOutput(_request, getResults());
+        OutputHandler outputHandler = OutputHandlerFactory.getOutputHandler(_request.getOutputType());
+        outputHandler.writeOutput(_request.getParsingRequest(), getResults());
     }
-
-
 
 //    public DateTime convertTimeInTransitionRange(DateTimeZone from, DateTime currentDate, DateTime lastDate) {
 //
@@ -107,7 +105,7 @@ public class DataCollector {
 
         if (from == null) {
             DateTime currentFrom;
-            for (NewDataPoint dp : _request.getDataPoints()) {
+            for (DataPoint dp : _request.getDataPoints()) {
                 currentFrom = getFrom(dp);
                 if (from == null) {
                     from = currentFrom;
@@ -116,7 +114,7 @@ public class DataCollector {
                 }
             }
         }
-        if (from == null) {
+        if (from == null && _request.getEquipment() != null) {
             from = _request.getEquipment().getStartCollectingTime();
         }
         if (from == null) {
@@ -125,13 +123,16 @@ public class DataCollector {
         if (until == null) {
             until = new DateTime();
         }
-
-        List<Object> rawResult = _connection.sendSamplesRequest(from, until, _request.getDataPoints().get(0));
+        DataPoint dp = null;
+        if (!_request.getDataPoints().isEmpty()) {
+            dp = _request.getDataPoints().get(0);
+        }
+        List<Object> rawResult = _connection.sendSamplesRequest(from, until, dp);
 
         initializeInputConverter(rawResult);
     }
 
-    public DateTime getFrom(NewDataPoint dp) {
+    public DateTime getFrom(DataPoint dp) {
         if (dp != null) {
             try {
                 JEVisObject onlineData = Launcher.getClient().getObject(dp.getOnlineID());
