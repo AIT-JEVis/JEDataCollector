@@ -29,6 +29,7 @@ public class DataPoint {
     private String _dataLoggerName;
     private JEVisObject _jevisDatapoint;
     private Long _datapointID;
+//    private Long _id;
 //    private Integer _fetchRate;
 //    private String _jobState;
     JEVisObject _onlineData;

@@ -37,6 +37,7 @@ public class Equipment {
     private DateTimeZone _timezone;
     private DateTime _startDate;
     private String _startDateFormat;
+    private Long _id;
 
 //    public String getInstallationDate() {
 //        return _installationDate;
@@ -64,9 +65,15 @@ public class Equipment {
     public DateTime getStartCollectingTime(){
         return _startDate;
     }
+    
+    public Long getID(){
+        return _id;
+    }
 
     public Equipment(JEVisObject equipment) {
+        
         try {
+            _id = equipment.getID();
             JEVisClass type = equipment.getJEVisClass();
 //            JEVisType nameType = type.getType(NAME);
 //            JEVisType installationType = type.getType(INSTALLATION_DATE);

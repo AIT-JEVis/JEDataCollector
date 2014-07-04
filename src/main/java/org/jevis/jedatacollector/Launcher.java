@@ -14,6 +14,7 @@ import org.jevis.api.JEVisDataSource;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
 import org.jevis.api.sql.JEVisDataSourceSQL;
+import org.jevis.api.sql.RelationshipTable;
 import org.jevis.commons.cli.JEVisCommandLine;
 import org.jevis.commons.parsing.DataCollectorParser;
 import org.jevis.commons.parsing.GeneralDateParser;
@@ -68,7 +69,7 @@ public class Launcher {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        Logger.getLogger(Launcher.class.getName()).log(Level.INFO, "-------Start JEDataCollector r26-------");
+        Logger.getLogger(Launcher.class.getName()).log(Level.INFO, "-------Start JEDataCollector r27-------");
         initializeCommandLine(args);
         initializeLogger(JEVisCommandLine.getInstance().getDebugLevel());
 
@@ -108,7 +109,13 @@ public class Launcher {
 
     private void excecuteRequsts(List<Request> requestJobs) {
         for (Request request : requestJobs) {
-            Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Execute Request");
+            Logger.getLogger(this.getClass().getName()).log(Level.INFO, "-----Execute Request------");
+            Logger.getLogger(this.getClass().getName()).log(Level.INFO, "ID; " + request.getEquipment().getID());
+            Logger.getLogger(this.getClass().getName()).log(Level.ALL, "Datapoints:");
+            for (DataPoint p : request.getDataPoints()) {
+                Logger.getLogger(this.getClass().getName()).log(Level.ALL, p.getDatapointId());
+
+            }
             DataCollector datalogger = new DataCollector(request);
             try {
                 datalogger.run();

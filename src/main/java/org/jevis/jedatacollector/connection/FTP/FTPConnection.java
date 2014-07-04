@@ -14,7 +14,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
+import org.jevis.api.JEVisAttribute;
+import org.jevis.api.JEVisClass;
+import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
+import org.jevis.api.JEVisType;
 import org.jevis.jedatacollector.connection.DatacollectorConnection;
 import org.jevis.jedatacollector.data.DataPoint;
 import org.jevis.jedatacollector.exception.FetchingException;
@@ -29,16 +33,16 @@ public class FTPConnection implements DatacollectorConnection {
 
     private long _id;
     private Long _triesRead;
-    private Long _timeoutRead;
+    private Long _readTimeout;
     private Long _triesConnection;
-    private Long _timeoutConnection;
+    private Long _connectionTimeout;
     private String _seperator;
     private String _dateFormat;
     private String _filePath; //data/trend
     private String _fileNameScheme; //
-    private String _URL;
+    private String _serverURL;
     private String _password;
-    private Long _port;
+    private Integer _port;
     private String _username;
     private FTPClient _fc;
 
@@ -46,11 +50,11 @@ public class FTPConnection implements DatacollectorConnection {
         _dateFormat = dateFormat;
         _filePath = filePath;
         _fileNameScheme = fileNameScheme;
-        _URL = url;
+        _serverURL = url;
         _username = user;
         _password = password;
-        _timeoutConnection = timeoutConnection;
-        _timeoutRead = timeoutRead;
+        _connectionTimeout = timeoutConnection;
+        _readTimeout = timeoutRead;
 
     }
 
@@ -60,14 +64,14 @@ public class FTPConnection implements DatacollectorConnection {
             _fc = new FTPClient();
 //            _fc.addProtocolCommandListener(new PrintCommandListener(new PrintWriter(System.out), true));
 
-            if (_timeoutConnection != 0) {
-                _fc.setConnectTimeout(_timeoutConnection.intValue() * 1000);
+            if (_connectionTimeout != 0) {
+                _fc.setConnectTimeout(_connectionTimeout.intValue() * 1000);
             }
-            if (_timeoutRead != 0) {
-                _fc.setDataTimeout(_timeoutRead.intValue() * 1000);
+            if (_readTimeout != 0) {
+                _fc.setDataTimeout(_readTimeout.intValue() * 1000);
             }
 
-            _fc.connect(_URL);
+            _fc.connect(_serverURL);
 
             if (_fc.login(_username, _password) == false) {
                 throw new FetchingException(_id, FetchingExceptionType.CONNECTION_ERROR);
@@ -189,6 +193,7 @@ public class FTPConnection implements DatacollectorConnection {
         return false;
     }
 
+    @Override
     public List<Object> sendSampleRequest(DataPoint dp, DateTime from, DateTime until) throws FetchingException {
         List<Object> ret = new LinkedList<Object>();
         String fileName;
@@ -222,19 +227,60 @@ public class FTPConnection implements DatacollectorConnection {
         return ret;
     }
 
-    public void initialize(JEVisObject object) throws FetchingException {
-//        _id = cn.getID();
-//        _dateFormat = cn.<String>getPropertyValue("Date Format");
-//        _triesRead = cn.<Long>getPropertyValue("Read Tries");
-//        _timeoutRead = cn.<Long>getPropertyValue("Read Timeout (in sec.)");
-//        _triesConnection = cn.<Long>getPropertyValue("Connection Tries");
-//        _timeoutConnection = cn.<Long>getPropertyValue("Connection Timeout (in sec.)");
-//        _filePath = cn.<String>getPropertyValue("File Path");
-//        _fileNameScheme = cn.<String>getPropertyValue("File Name Scheme");
-//        _password = cn.<String>getPropertyValue("Password");
-//        _port = cn.<Long>getPropertyValue("Port");
-//        _username = cn.<String>getPropertyValue("Username");
-//        _URL = cn.<String>getPropertyValue("Server URL");
-//        _seperator = cn.<String>getPropertyValue("File Detail Seperator");
+    @Override
+    public void initialize(JEVisObject node) throws FetchingException {
+        try {
+            JEVisClass type = node.getJEVisClass();
+            JEVisType dateFormat = type.getType("Date format");
+            JEVisType filePath = type.getType("File path");
+            JEVisType fileNameScheme = type.getType("File name scheme");
+            JEVisType server = type.getType("Server URL");
+            JEVisType port = type.getType("Port");
+            JEVisType connectionTimeout = type.getType("Connection timeout");
+            JEVisType readTimeout = type.getType("Read timeout");
+    //            JEVisType maxRequest = type.getType("Maxrequestdays");
+            JEVisType user = type.getType("User");
+            JEVisType password = type.getType("Password");
+
+            _id = node.getID();
+            if (node.getAttribute(dateFormat).hasSample()) {
+                _dateFormat = (String) node.getAttribute(dateFormat).getLatestSample().getValue();
+            }
+            _filePath = (String) node.getAttribute(filePath).getLatestSample().getValue();
+            _serverURL = (String) node.getAttribute(server).getLatestSample().getValue();
+            _port = Integer.parseInt((String) node.getAttribute(port).getLatestSample().getValue());
+            _connectionTimeout = node.getAttribute(connectionTimeout).getLatestSample().getValueAsLong();
+            _readTimeout = node.getAttribute(readTimeout).getLatestSample().getValueAsLong();
+    //            if (node.getAttribute(maxRequest).hasSample()) {
+    //                _maximumDayRequest = Integer.parseInt((String) node.getAttribute(maxRequest).getLatestSample().getValue());
+    //            }
+            JEVisAttribute userAttr = node.getAttribute(user);
+            if (!userAttr.hasSample()) {
+                _username = "";
+            } else {
+                _username = (String) userAttr.getLatestSample().getValue();
+            }
+            JEVisAttribute passAttr = node.getAttribute(password);
+            if (!passAttr.hasSample()) {
+                _password = "";
+            } else {
+                _password = (String) passAttr.getLatestSample().getValue();
+            }
+    //        _id = cn.getID();
+    //        _dateFormat = cn.<String>getPropertyValue("Date Format");
+    //        _triesRead = cn.<Long>getPropertyValue("Read Tries");
+    //        _timeoutRead = cn.<Long>getPropertyValue("Read Timeout (in sec.)");
+    //        _triesConnection = cn.<Long>getPropertyValue("Connection Tries");
+    //        _timeoutConnection = cn.<Long>getPropertyValue("Connection Timeout (in sec.)");
+    //        _filePath = cn.<String>getPropertyValue("File Path");
+    //        _fileNameScheme = cn.<String>getPropertyValue("File Name Scheme");
+    //        _password = cn.<String>getPropertyValue("Password");
+    //        _port = cn.<Long>getPropertyValue("Port");
+    //        _username = cn.<String>getPropertyValue("Username");
+    //        _URL = cn.<String>getPropertyValue("Server URL");
+    //        _seperator = cn.<String>getPropertyValue("File Detail Seperator");
+        } catch (JEVisException ex) {
+            Logger.getLogger(FTPConnection.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }
