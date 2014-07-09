@@ -69,7 +69,7 @@ public class Launcher {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        Logger.getLogger(Launcher.class.getName()).log(Level.INFO, "-------Start JEDataCollector r27-------");
+        Logger.getLogger(Launcher.class.getName()).log(Level.INFO, "-------Start JEDataCollector r28-------");
         initializeCommandLine(args);
         initializeLogger(JEVisCommandLine.getInstance().getDebugLevel());
 

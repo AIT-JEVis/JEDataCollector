@@ -46,7 +46,7 @@ public class Test_MCA01 {
         GeneralMappingParser datapointParser2 = new MappingCSVParser(true, 4444l, "4", 2);
         GeneralMappingParser datapointParser3 = new MappingCSVParser(true, 5555l, "5", 2);
         GeneralDateParser dateParser = new DateCSVParser(null, null, "dd.MM.yyyy HH:mm:ss", 1);
-        GeneralValueParser valueParser = new ValueCSVParser(3, ".", null);
+        GeneralValueParser valueParser = new ValueCSVParser(3, ".", "");
 
         SampleParserContainer sampleContainer1 = new SampleParserContainer(datapointParser1, dateParser, valueParser);
         SampleParserContainer sampleContainer2 = new SampleParserContainer(datapointParser2, dateParser, valueParser);
@@ -73,12 +73,12 @@ public class Test_MCA01 {
         }
 
         List expectedValues = new ArrayList<Double>();
-        expectedValues.add(265266.000);
-        expectedValues.add(3030.420);
-        expectedValues.add(55.0);
+        expectedValues.add(265266d);
+        expectedValues.add(3030d);
+        expectedValues.add(55d);
         expectedValues.add(1312d);
-        expectedValues.add(23.0);
-        expectedValues.add(192.23);
+        expectedValues.add(23d);
+        expectedValues.add(192d);
 
         List expectedDatapoints = new ArrayList<String>();
         expectedDatapoints.add(3333l);
