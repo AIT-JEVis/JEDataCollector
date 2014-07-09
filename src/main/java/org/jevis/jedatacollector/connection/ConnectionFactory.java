@@ -8,6 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
+import org.jevis.jedatacollector.connection.FTP.FTPConnection;
 import org.jevis.jedatacollector.connection.HTTP.HTTPConnection;
 import org.jevis.jedatacollector.connection.SOAP.SOAPConnection;
 import org.jevis.jedatacollector.connection.SQL.SQLConnection;
@@ -20,10 +21,10 @@ import org.jevis.jedatacollector.exception.FetchingExceptionType;
  */
 public class ConnectionFactory {
 
-    private static final String HTTP_CONNECTION = ("HTTPCon");
-    private static final String FTP_CONNECTION = ("FTP");
-    private static final String SOAP_CONNECTION = ("SOAP");
-    private static final String SQL_CONNECTION = ("SQL");
+    public static final String HTTP_CONNECTION = ("HTTPCon");
+    public static final String FTP_CONNECTION = ("FTP");
+    public static final String SOAP_CONNECTION = ("SOAP");
+    public static final String SQL_CONNECTION = ("SQL");
 
     public static DatacollectorConnection getConnection(JEVisObject connectionData) throws FetchingException {
         DatacollectorConnection connection = null;
@@ -43,6 +44,8 @@ public class ConnectionFactory {
             connection = new SOAPConnection();
         } else if (identifier.equals(SQL_CONNECTION)) {
             connection = new SQLConnection();
+        }else if (identifier.equals(FTP_CONNECTION)) {
+            connection = new FTPConnection();
         }
         connection.initialize(connectionData);
         return connection;

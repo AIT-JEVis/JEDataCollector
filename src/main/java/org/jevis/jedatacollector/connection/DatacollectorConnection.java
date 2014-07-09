@@ -49,4 +49,6 @@ public interface DatacollectorConnection {
     boolean returnsLimitedSampleCount();
 
     void initialize(JEVisObject object) throws FetchingException;
+    
+    public String getConnectionType();
 }

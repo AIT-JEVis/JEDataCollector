@@ -32,6 +32,7 @@ import org.jevis.api.JEVisClass;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
 import org.jevis.api.JEVisType;
+import org.jevis.jedatacollector.connection.ConnectionFactory;
 import org.jevis.jedatacollector.connection.ConnectionHelper;
 import org.jevis.jedatacollector.data.DataPoint;
 import org.jevis.jedatacollector.connection.DatacollectorConnection;
@@ -319,5 +320,10 @@ public class HTTPConnection implements DatacollectorConnection {
         }
 
         return paths;
+    }
+    
+      @Override
+    public String getConnectionType() {
+        return ConnectionFactory.HTTP_CONNECTION;
     }
 }

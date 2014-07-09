@@ -10,12 +10,9 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
-import java.io.BufferedReader;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jevis.api.JEVisObject;
@@ -71,8 +68,8 @@ public class SFTPConnection implements DatacollectorConnection {
 //            Vector files = sftp.ls("*");
 //            System.out.printf("Found %d files in dir %s%n", files.size(), directory);
             InputStream get = sftp.get(filename);
-            
-         
+
+
 
             _channel.disconnect();
             _session.disconnect();
@@ -90,5 +87,10 @@ public class SFTPConnection implements DatacollectorConnection {
     @Override
     public void initialize(JEVisObject object) throws FetchingException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getConnectionType() {
+        return null;
     }
 }

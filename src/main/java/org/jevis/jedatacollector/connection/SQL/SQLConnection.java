@@ -17,6 +17,7 @@ import org.jevis.api.JEVisClass;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
 import org.jevis.api.JEVisType;
+import org.jevis.jedatacollector.connection.ConnectionFactory;
 import org.jevis.jedatacollector.connection.ConnectionHelper;
 import org.jevis.jedatacollector.data.DataPoint;
 import org.jevis.jedatacollector.connection.DatacollectorConnection;
@@ -141,5 +142,10 @@ public class SQLConnection implements DatacollectorConnection {
         } catch (JEVisException ex) {
             Logger.getLogger(SQLConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    @Override
+    public String getConnectionType() {
+        return ConnectionFactory.SQL_CONNECTION;
     }
 }

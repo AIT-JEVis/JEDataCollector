@@ -28,6 +28,7 @@ import org.jevis.commons.parsing.csvParsing.ValueCSVParser;
 import org.jevis.jedatacollector.exception.FetchingException;
 import org.jevis.jedatacollector.CLIProperties.ConnectionCLIParser;
 import org.jevis.jedatacollector.CLIProperties.ParsingCLIParser;
+import org.jevis.jedatacollector.connection.ConnectionFactory;
 import org.jevis.jedatacollector.connection.DatacollectorConnection;
 import org.jevis.jedatacollector.connection.HTTP.HTTPConnection;
 import org.jevis.jedatacollector.data.Data;
@@ -69,7 +70,7 @@ public class Launcher {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        Logger.getLogger(Launcher.class.getName()).log(Level.INFO, "-------Start JEDataCollector r28-------");
+        Logger.getLogger(Launcher.class.getName()).log(Level.INFO, "-------Start JEDataCollector r29-------");
         initializeCommandLine(args);
         initializeLogger(JEVisCommandLine.getInstance().getDebugLevel());
 
@@ -200,18 +201,25 @@ public class Launcher {
 
             JEVisClass parser = _client.getJEVisClass("CSV");
             JEVisClass connection = _client.getJEVisClass("HTTPCon");
+            //workaround for inherit bug, normally only with jevic class parser and connection
+            JEVisClass ftpConnection = _client.getJEVisClass("FTP");
             JEVisClass datapoints = _client.getJEVisClass("Data Point Directory");
             for (JEVisObject equip : equipments) {
                 try {
                     List<JEVisObject> parserObject = equip.getChildren(parser, true);
                     List<JEVisObject> connectionObject = equip.getChildren(connection, true);
+
                     if (parserObject.size() != 1) {
                         Logger.getLogger(this.getClass().getName()).log(Level.ALL, "Number of Parsing Objects != 1");
                         continue;
                     }
                     if (connectionObject.size() != 1) {
                         Logger.getLogger(this.getClass().getName()).log(Level.ALL, "Number of Connection Objects != 1");
-                        continue;
+                        //same workaround as above
+                        connectionObject = equip.getChildren(ftpConnection, true);
+                        if (connectionObject.size() != 1) {
+                            continue;
+                        }
                     }
 
                     List<JEVisObject> datapointsDir = equip.getChildren(datapoints, true);

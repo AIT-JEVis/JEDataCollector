@@ -21,6 +21,7 @@ import org.jevis.api.JEVisClass;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
 import org.jevis.api.JEVisType;
+import org.jevis.jedatacollector.connection.ConnectionFactory;
 import org.jevis.jedatacollector.data.DataPoint;
 import org.jevis.jedatacollector.connection.DatacollectorConnection;
 import org.jevis.jedatacollector.exception.FetchingException;
@@ -284,5 +285,10 @@ public class SOAPConnection implements DatacollectorConnection {
         @Override
         public void write(int b) throws IOException {
         }
+    }
+    
+      @Override
+    public String getConnectionType() {
+        return ConnectionFactory.SOAP_CONNECTION;
     }
 }
