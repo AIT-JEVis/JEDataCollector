@@ -148,4 +148,9 @@ public class SQLConnection implements DatacollectorConnection {
     public String getConnectionType() {
         return ConnectionFactory.SQL_CONNECTION;
     }
+
+    @Override
+    public String parseString(DataPoint dp, DateTime from, DateTime until) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

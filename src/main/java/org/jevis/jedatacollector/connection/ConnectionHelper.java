@@ -33,6 +33,9 @@ public class ConnectionHelper {
     public static final String DATE_TO_SECOND = "\\*DATE_TO_SECOND\\*";
     public static final String DATAPOINT = "\\*DATAPOINT\\*";
     public static final String SYSTEM_TIME = "\\*SYSTEM_TIME\\*";
+    public static final String NEW_DATAPOINT = "\\$\\{DATAPOINT\\}";
+    public static final String NEW_DATEFROM = "\\$\\{DATE_FROM\\}";
+    public static final String NEW_DATEUNTIL = "\\$\\{DATE_TO\\}";
 
     public static List<String> parseString(String string, DataPoint datapoint, String datePattern, DateTime from, DateTime until) {
 //        string = Pattern.quote(string);
@@ -93,13 +96,13 @@ public class ConnectionHelper {
 
             DateTimeFormatter fmt = DateTimeFormat.forPattern(datePattern);
 
-            string = string.replaceAll(DATE_FROM, fmt.print(from));
-            string = string.replaceAll(DATE_FROM_YEAR, from.getYear() + "");
-            string = string.replaceAll(DATE_FROM_MONTH, from.getMonthOfYear() + "");
-            string = string.replaceAll(DATE_FROM_DAY, from.getDayOfMonth() + "");
-            string = string.replaceAll(DATE_FROM_HOUR, from.getHourOfDay() + "");
-            string = string.replaceAll(DATE_FROM_MINUTE, from.getMinuteOfHour() + "");
-            string = string.replaceAll(DATE_FROM_SECOND, from.getSecondOfMinute() + "");
+            string = string.replaceAll(NEW_DATEFROM, fmt.print(from));
+//            string = string.replaceAll(DATE_FROM_YEAR, from.getYear() + "");
+//            string = string.replaceAll(DATE_FROM_MONTH, from.getMonthOfYear() + "");
+//            string = string.replaceAll(DATE_FROM_DAY, from.getDayOfMonth() + "");
+//            string = string.replaceAll(DATE_FROM_HOUR, from.getHourOfDay() + "");
+//            string = string.replaceAll(DATE_FROM_MINUTE, from.getMinuteOfHour() + "");
+//            string = string.replaceAll(DATE_FROM_SECOND, from.getSecondOfMinute() + "");
 
 //            string = string.replaceAll(DATE_FROM, df.format(c.getTime()));
 //            string = string.replaceAll(DATE_FROM_YEAR, df.format(c.get(Calendar.YEAR)));
@@ -123,13 +126,13 @@ public class ConnectionHelper {
         if (datePattern != null) {
             DateTimeFormatter fmt = DateTimeFormat.forPattern(datePattern);
 
-            string = string.replaceAll(DATE_TO, fmt.print(until));
-            string = string.replaceAll(DATE_TO_YEAR, until.getYear() + "");
-            string = string.replaceAll(DATE_TO_MONTH, until.getMonthOfYear() + "");
-            string = string.replaceAll(DATE_TO_DAY, until.getDayOfMonth() + "");
-            string = string.replaceAll(DATE_TO_HOUR, until.getHourOfDay() + "");
-            string = string.replaceAll(DATE_TO_MINUTE, until.getMinuteOfHour() + "");
-            string = string.replaceAll(DATE_TO_SECOND, until.getSecondOfMinute() + "");
+            string = string.replaceAll(NEW_DATEUNTIL, fmt.print(until));
+//            string = string.replaceAll(DATE_TO_YEAR, until.getYear() + "");
+//            string = string.replaceAll(DATE_TO_MONTH, until.getMonthOfYear() + "");
+//            string = string.replaceAll(DATE_TO_DAY, until.getDayOfMonth() + "");
+//            string = string.replaceAll(DATE_TO_HOUR, until.getHourOfDay() + "");
+//            string = string.replaceAll(DATE_TO_MINUTE, until.getMinuteOfHour() + "");
+//            string = string.replaceAll(DATE_TO_SECOND, until.getSecondOfMinute() + "");
         }
 
         string = string.replaceAll(SYSTEM_TIME, String.valueOf(System.nanoTime()));
@@ -139,5 +142,17 @@ public class ConnectionHelper {
         }
 
         return string;
+    }
+
+    public static String replaceTime(String path) {
+        if (path.contains("TIME_START") || path.contains("TIME_END")) {
+            path = path.replaceAll("TIME_START", "DATE_FROM");
+            path = path.replaceAll("TIME_END", "DATE_TO");
+        }
+        return path;
+    }
+
+    public static String replaceDatapoint(String parsedString, DataPoint dp) {
+        return parsedString.replaceAll(ConnectionHelper.NEW_DATAPOINT, dp.getChannelID());
     }
 }

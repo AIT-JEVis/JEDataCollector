@@ -50,6 +50,7 @@ public class HTTPConnection implements DatacollectorConnection {
     private String _filePath;
     private String _dateFormat;
     private String _wholePath;
+    private String _parsedPath;
     private Integer _port;
     private Integer _connectionTimeout;
     private Integer _readTimeout;
@@ -69,8 +70,8 @@ public class HTTPConnection implements DatacollectorConnection {
         _connectionTimeout = connectionTimeout;
         _readTimeout = readTimeout;
     }
-    
-       public HTTPConnection(String serverURL, String filePath, Integer port, Integer connectionTimeout, Integer readTimeout,String dateFormat) {
+
+    public HTTPConnection(String serverURL, String filePath, Integer port, Integer connectionTimeout, Integer readTimeout, String dateFormat) {
         _serverURL = serverURL;
         _filePath = filePath;
         _port = port;
@@ -105,131 +106,130 @@ public class HTTPConnection implements DatacollectorConnection {
         return true;
     }
 
-    @Override
-    public List<Object> sendSampleRequest(DataPoint dp, DateTime from, DateTime until) throws FetchingException {
-        List<Object> res = new LinkedList<Object>();
-        URL requestUrl;
-        List<String> paths = getAllPaths(dp, from, until);
-
-        if (_userName == null || _password == null || _userName.equals("") && _password.equals("")) {
-
-            try {
-                List<String> l;
-
-                for (String path : paths) {
-                    l = new LinkedList<String>();
-                    URLConnection request;
-
-                    if (path.startsWith("/")) {
-                        path = path.substring(1, path.length());
-                    }
-
-                    if (!_serverURL.contains("://")) {
-                        _serverURL = "http://" + _serverURL;
-                    }
-
-                    if (_port != null) {
-                        requestUrl = new URL(_serverURL + ":" + _port + "/" + path);
-                    } else {
-                        requestUrl = new URL(_serverURL + "/" + path);
-                    }
-
-                    request = requestUrl.openConnection();
-                    System.out.println("Requesting " + requestUrl);
-
-//                    if (_connectionTimeout == null) {
-                    _connectionTimeout = 600 * 1000;
+//    @Override
+//    public List<Object> sendSampleRequest(DataPoint dp, DateTime from, DateTime until) throws FetchingException {
+//        List<Object> res = new LinkedList<Object>();
+//        URL requestUrl;
+//        List<String> paths = getAllPaths(dp, from, until);
+//
+//        if (_userName == null || _password == null || _userName.equals("") && _password.equals("")) {
+//
+//            try {
+//                List<String> l;
+//
+//                for (String path : paths) {
+//                    l = new LinkedList<String>();
+//                    URLConnection request;
+//
+//                    if (path.startsWith("/")) {
+//                        path = path.substring(1, path.length());
 //                    }
-                    //                System.out.println("Connect timeout: " + _connectionTimeout.intValue() / 1000 + "s");
-                    request.setConnectTimeout(_connectionTimeout.intValue());
-
-//                    if (_readTimeout == null) {
-                    _readTimeout = 600 * 1000;
+//
+//                    if (!_serverURL.contains("://")) {
+//                        _serverURL = "http://" + _serverURL;
 //                    }
-                    //                System.out.println("read timeout: " + _readTimeout.intValue() / 1000 + "s");
-                    request.setReadTimeout(_readTimeout.intValue());
-
-                    InputStream inputStream = request.getInputStream();
-                    InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-                    BufferedReader bufReader = new BufferedReader(inputStreamReader);
-                    boolean firstLine = true;
-                    String output;
-
-                    while ((output = bufReader.readLine()) != null) {
-                        System.out.println(output);
-                        if (firstLine && output.equals(" ")) {
-                            firstLine = false;
-                            continue;
-                        }
-
-                        l.add(output);
-                    }
-
-                    res.add(l);
-                }
-            } catch (MalformedURLException ex) {
-                throw new FetchingException(_id, FetchingExceptionType.URL_ERROR);
-            } catch (Exception ex) {
-                throw new FetchingException(_id, FetchingExceptionType.CONNECTION_TIMEOUT);
-            }
-        } else {
-            DefaultHttpClient _httpClient;
-            HttpHost _targetHost;
-            HttpGet _httpGet;
-            BasicHttpContext _localContext = new BasicHttpContext();
-
-            _httpClient = new DefaultHttpClient();
-            /*
-             * Define Authetification
-             */
-            /*
-             * Username & password
-             */
-
-            _targetHost = new HttpHost(_serverURL, ((int) (long) _port), "http");
-            /*
-             * set the sope for the authentification
-             */
-            _httpClient.getCredentialsProvider().setCredentials(
-                    new AuthScope(_targetHost.getHostName(), _targetHost.getPort()),
-                    new UsernamePasswordCredentials(_userName, _password));
-
-            // Create AuthCache instance
-            AuthCache authCache = new BasicAuthCache();
-
-            //set Authenticication scheme
-            BasicScheme basicAuth = new BasicScheme();
-            authCache.put(_targetHost, basicAuth);
-
-            _httpGet = new HttpGet(_filePath);
-
-
-            try {
-                //TODO: Connection timeouts and error handling
-
-
-                HttpResponse oResponse = _httpClient.execute(_targetHost, _httpGet, _localContext);
-
-                HttpEntity oEntity = oResponse.getEntity();
-                String oXmlString = EntityUtils.toString(oEntity);
-                EntityUtils.consume(oEntity);
-
-
-
-                res.add(oXmlString);
-            } catch (ClientProtocolException ex) {
-                throw new FetchingException(_id, FetchingExceptionType.CONNECTION_ERROR);
-                //Logger.getLogger(HTTPAuthetificationConnection.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IOException ex) {
-                throw new FetchingException(_id, FetchingExceptionType.CONNECTION_ERROR);
-                //Logger.getLogger(HTTPAuthetificationConnection.class.getName()).log(Level.SEVERE, null, ex);
-
-            }
-        }
-        System.out.println("outputsize "+res.size());
-        return res;
-    }
-
+//
+//                    if (_port != null) {
+//                        requestUrl = new URL(_serverURL + ":" + _port + "/" + path);
+//                    } else {
+//                        requestUrl = new URL(_serverURL + "/" + path);
+//                    }
+//
+//                    request = requestUrl.openConnection();
+//                    System.out.println("Requesting " + requestUrl);
+//
+////                    if (_connectionTimeout == null) {
+//                    _connectionTimeout = 600 * 1000;
+////                    }
+//                    //                System.out.println("Connect timeout: " + _connectionTimeout.intValue() / 1000 + "s");
+//                    request.setConnectTimeout(_connectionTimeout.intValue());
+//
+////                    if (_readTimeout == null) {
+//                    _readTimeout = 600 * 1000;
+////                    }
+//                    //                System.out.println("read timeout: " + _readTimeout.intValue() / 1000 + "s");
+//                    request.setReadTimeout(_readTimeout.intValue());
+//
+//                    InputStream inputStream = request.getInputStream();
+//                    InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+//                    BufferedReader bufReader = new BufferedReader(inputStreamReader);
+//                    boolean firstLine = true;
+//                    String output;
+//
+//                    while ((output = bufReader.readLine()) != null) {
+//                        System.out.println(output);
+//                        if (firstLine && output.equals(" ")) {
+//                            firstLine = false;
+//                            continue;
+//                        }
+//
+//                        l.add(output);
+//                    }
+//
+//                    res.add(l);
+//                }
+//            } catch (MalformedURLException ex) {
+//                throw new FetchingException(_id, FetchingExceptionType.URL_ERROR);
+//            } catch (Exception ex) {
+//                throw new FetchingException(_id, FetchingExceptionType.CONNECTION_TIMEOUT);
+//            }
+//        } else {
+//            DefaultHttpClient _httpClient;
+//            HttpHost _targetHost;
+//            HttpGet _httpGet;
+//            BasicHttpContext _localContext = new BasicHttpContext();
+//
+//            _httpClient = new DefaultHttpClient();
+//            /*
+//             * Define Authetification
+//             */
+//            /*
+//             * Username & password
+//             */
+//
+//            _targetHost = new HttpHost(_serverURL, ((int) (long) _port), "http");
+//            /*
+//             * set the sope for the authentification
+//             */
+//            _httpClient.getCredentialsProvider().setCredentials(
+//                    new AuthScope(_targetHost.getHostName(), _targetHost.getPort()),
+//                    new UsernamePasswordCredentials(_userName, _password));
+//
+//            // Create AuthCache instance
+//            AuthCache authCache = new BasicAuthCache();
+//
+//            //set Authenticication scheme
+//            BasicScheme basicAuth = new BasicScheme();
+//            authCache.put(_targetHost, basicAuth);
+//
+//            _httpGet = new HttpGet(_filePath);
+//
+//
+//            try {
+//                //TODO: Connection timeouts and error handling
+//
+//
+//                HttpResponse oResponse = _httpClient.execute(_targetHost, _httpGet, _localContext);
+//
+//                HttpEntity oEntity = oResponse.getEntity();
+//                String oXmlString = EntityUtils.toString(oEntity);
+//                EntityUtils.consume(oEntity);
+//
+//
+//
+//                res.add(oXmlString);
+//            } catch (ClientProtocolException ex) {
+//                throw new FetchingException(_id, FetchingExceptionType.CONNECTION_ERROR);
+//                //Logger.getLogger(HTTPAuthetificationConnection.class.getName()).log(Level.SEVERE, null, ex);
+//            } catch (IOException ex) {
+//                throw new FetchingException(_id, FetchingExceptionType.CONNECTION_ERROR);
+//                //Logger.getLogger(HTTPAuthetificationConnection.class.getName()).log(Level.SEVERE, null, ex);
+//
+//            }
+//        }
+//        System.out.println("outputsize "+res.size());
+//        return res;
+//    }
     @Override
     public void initialize(JEVisObject node) throws FetchingException {
         try {
@@ -297,6 +297,129 @@ public class HTTPConnection implements DatacollectorConnection {
     }
 
     @Override
+    public List<Object> sendSampleRequest(DataPoint dp, DateTime from, DateTime until) throws FetchingException {
+        List<Object> res = new LinkedList<Object>();
+        URL requestUrl;
+
+        if (_userName == null || _password == null || _userName.equals("") && _password.equals("")) {
+
+            try {
+                List<String> l;
+
+                l = new LinkedList<String>();
+                URLConnection request;
+
+                String path = parseString(dp, from, until);
+
+                if (path.startsWith("/")) {
+                    path = path.substring(1, path.length());
+                }
+
+                if (!_serverURL.contains("://")) {
+                    _serverURL = "http://" + _serverURL;
+                }
+
+                if (_port != null) {
+                    requestUrl = new URL(_serverURL + ":" + _port + "/" + path);
+                } else {
+                    requestUrl = new URL(_serverURL + "/" + path);
+                }
+
+                request = requestUrl.openConnection();
+                System.out.println("Requesting " + requestUrl);
+
+//                    if (_connectionTimeout == null) {
+                _connectionTimeout = 600 * 1000;
+//                    }
+                //                System.out.println("Connect timeout: " + _connectionTimeout.intValue() / 1000 + "s");
+                request.setConnectTimeout(_connectionTimeout.intValue());
+
+//                    if (_readTimeout == null) {
+                _readTimeout = 600 * 1000;
+//                    }
+                //                System.out.println("read timeout: " + _readTimeout.intValue() / 1000 + "s");
+                request.setReadTimeout(_readTimeout.intValue());
+
+                InputStream inputStream = request.getInputStream();
+                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+                BufferedReader bufReader = new BufferedReader(inputStreamReader);
+                boolean firstLine = true;
+                String output;
+
+                while ((output = bufReader.readLine()) != null) {
+                    System.out.println(output);
+                    if (firstLine && output.equals(" ")) {
+                        firstLine = false;
+                        continue;
+                    }
+
+                    l.add(output);
+                    res.add(l);
+                }
+            } catch (MalformedURLException ex) {
+                throw new FetchingException(_id, FetchingExceptionType.URL_ERROR);
+            } catch (Exception ex) {
+                throw new FetchingException(_id, FetchingExceptionType.CONNECTION_TIMEOUT);
+            }
+        } else {
+            DefaultHttpClient _httpClient;
+            HttpHost _targetHost;
+            HttpGet _httpGet;
+            BasicHttpContext _localContext = new BasicHttpContext();
+
+            _httpClient = new DefaultHttpClient();
+            /*
+             * Define Authetification
+             */
+            /*
+             * Username & password
+             */
+
+            _targetHost = new HttpHost(_serverURL, ((int) (long) _port), "http");
+            /*
+             * set the sope for the authentification
+             */
+            _httpClient.getCredentialsProvider().setCredentials(
+                    new AuthScope(_targetHost.getHostName(), _targetHost.getPort()),
+                    new UsernamePasswordCredentials(_userName, _password));
+
+            // Create AuthCache instance
+            AuthCache authCache = new BasicAuthCache();
+
+            //set Authenticication scheme
+            BasicScheme basicAuth = new BasicScheme();
+            authCache.put(_targetHost, basicAuth);
+
+            _httpGet = new HttpGet(_filePath);
+
+
+            try {
+                //TODO: Connection timeouts and error handling
+
+
+                HttpResponse oResponse = _httpClient.execute(_targetHost, _httpGet, _localContext);
+
+                HttpEntity oEntity = oResponse.getEntity();
+                String oXmlString = EntityUtils.toString(oEntity);
+                EntityUtils.consume(oEntity);
+
+
+
+                res.add(oXmlString);
+            } catch (ClientProtocolException ex) {
+                throw new FetchingException(_id, FetchingExceptionType.CONNECTION_ERROR);
+                //Logger.getLogger(HTTPAuthetificationConnection.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                throw new FetchingException(_id, FetchingExceptionType.CONNECTION_ERROR);
+                //Logger.getLogger(HTTPAuthetificationConnection.class.getName()).log(Level.SEVERE, null, ex);
+
+            }
+        }
+        System.out.println("outputsize " + res.size());
+        return res;
+    }
+
+    @Override
     public boolean returnsLimitedSampleCount() {
         return false;
     }
@@ -321,9 +444,18 @@ public class HTTPConnection implements DatacollectorConnection {
 
         return paths;
     }
-    
-      @Override
+
+    @Override
     public String getConnectionType() {
         return ConnectionFactory.HTTP_CONNECTION;
+    }
+
+    public String parseString(DataPoint dp, DateTime from, DateTime until) {
+        String parsedString = _filePath;
+//        parsedString = ConnectionHelper.replaceTime(_filePath);
+        parsedString = ConnectionHelper.replaceDatapoint(parsedString, dp);
+        parsedString = ConnectionHelper.parseDateFrom(parsedString, dp, _dateFormat, from);
+        parsedString = ConnectionHelper.parseDateTo(parsedString, dp, _dateFormat, until);
+        return parsedString;
     }
 }

@@ -6,7 +6,6 @@ package org.jevis.jedatacollector.connection.OPC;
 
 import java.util.List;
 import org.jevis.api.JEVisObject;
-import org.jevis.jedatacollector.connection.ConnectionFactory;
 import org.jevis.jedatacollector.data.DataPoint;
 import org.jevis.jedatacollector.connection.DatacollectorConnection;
 import org.jevis.jedatacollector.exception.FetchingException;
@@ -126,4 +125,10 @@ public class OPCConnection implements DatacollectorConnection
     public String getConnectionType() {
         return null;
     }
+
+    @Override
+    public String parseString(DataPoint dp, DateTime from, DateTime until) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

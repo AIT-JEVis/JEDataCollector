@@ -21,7 +21,6 @@ import org.jevis.api.JEVisObject;
 import org.jevis.api.JEVisType;
 import org.jevis.jedatacollector.connection.ConnectionFactory;
 import org.jevis.jedatacollector.connection.ConnectionHelper;
-import static org.jevis.jedatacollector.connection.ConnectionHelper.DATAPOINT;
 import org.jevis.jedatacollector.connection.DatacollectorConnection;
 import org.jevis.jedatacollector.data.DataPoint;
 import org.jevis.jedatacollector.exception.FetchingException;
@@ -48,6 +47,7 @@ public class FTPConnection implements DatacollectorConnection {
     private Integer _port;
     private String _username;
     private FTPClient _fc;
+    private String _parsedPath;
 
     public FTPConnection() {
         super();
@@ -203,15 +203,15 @@ public class FTPConnection implements DatacollectorConnection {
     @Override
     public List<Object> sendSampleRequest(DataPoint dp, DateTime from, DateTime until) throws FetchingException {
         List<Object> ret = new LinkedList<Object>();
-        String fileName;
-        _fileNameScheme = _fileNameScheme.replaceAll(ConnectionHelper.DATAPOINT, dp.getChannelID());
-        
-        if (_fileNameScheme.indexOf('*') != -1) {
-            fileName = getNextFile(from, dp);
-        } else {
-            fileName = _fileNameScheme;
-        }
-
+        String fileName = parseString(dp, from, until);
+//        _fileNameScheme = _fileNameScheme.replaceAll(ConnectionHelper.DATAPOINT, dp.getChannelID());
+//
+//        if (_fileNameScheme.indexOf('*') != -1) {
+//            fileName = getNextFile(from, dp);
+//        } else {
+//            fileName = _fileNameScheme;
+//        }
+        System.out.println("file "+fileName);
         try {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             String query = _filePath + fileName;
@@ -301,5 +301,15 @@ public class FTPConnection implements DatacollectorConnection {
     @Override
     public String getConnectionType() {
         return ConnectionFactory.FTP_CONNECTION;
+    }
+
+    @Override
+    public String parseString(DataPoint dp, DateTime from, DateTime until) {
+        String parsedString = _fileNameScheme;
+//        parsedString = ConnectionHelper.replaceTime(_filePath);
+        parsedString = ConnectionHelper.replaceDatapoint(parsedString, dp);
+        parsedString = ConnectionHelper.parseDateFrom(parsedString, dp, _dateFormat, from);
+        parsedString = ConnectionHelper.parseDateTo(parsedString, dp, _dateFormat, until);
+        return parsedString;
     }
 }
