@@ -26,6 +26,7 @@ import org.jevis.commons.parsing.csvParsing.MappingFixCSVParser;
 import org.jevis.commons.parsing.csvParsing.ValueCSVParser;
 import org.jevis.jedatacollector.exception.FetchingException;
 import org.jevis.jedatacollector.CLIProperties.ConnectionCLIParser;
+import org.jevis.jedatacollector.CLIProperties.JEVisServerConnectionCLI;
 import org.jevis.jedatacollector.CLIProperties.ParsingCLIParser;
 import org.jevis.jedatacollector.connection.DatacollectorConnection;
 import org.jevis.jedatacollector.connection.HTTP.HTTPConnection;
@@ -68,7 +69,7 @@ public class Launcher {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        Logger.getLogger(Launcher.class.getName()).log(Level.INFO, "-------Start JEDataCollector r30-------");
+        Logger.getLogger(Launcher.class.getName()).log(Level.INFO, "-------Start JEDataCollector r31-------");
         initializeCommandLine(args);
         initializeLogger(JEVisCommandLine.getInstance().getDebugLevel());
 
@@ -173,9 +174,16 @@ public class Launcher {
 
     private boolean connectAlphaServer() {
         Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Connect to JEConfig");
+        JEVisCommandLine cmd = JEVisCommandLine.getInstance();
+        String configFile = cmd.getConfigPath();
+        Logger.getLogger(this.getClass().getName()).log(Level.INFO, "ConfigFile: " + configFile);
+        JEVisServerConnectionCLI con = new JEVisServerConnectionCLI(configFile);
+        Logger.getLogger(this.getClass().getName()).log(Level.INFO, con.getDb());
         try {
-            _client = new JEVisDataSourceSQL("192.168.2.55", "3306", "jevis", "jevis", "jevistest", "Sys Admin", "jevis");
-            _client.connect("Sys Admin", "jevis");
+//            _client = new JEVisDataSourceSQL("192.168.2.55", "3306", "jevis", "jevis", "jevistest", "Sys Admin", "jevis");
+//            _client.connect("Sys Admin", "jevis");
+            _client = new JEVisDataSourceSQL(con.getDb() , con.getPort(), con.getSchema(), con.getUser(), con.getPw(), con.getJevisUser(), con.getJevisPW());
+            _client.connect(con.getJevisUser(), con.getJevisPW());
         } catch (JEVisException ex) {
             Logger.getLogger(Launcher.class.getName()).log(Level.ERROR, null, ex);
             return false;
