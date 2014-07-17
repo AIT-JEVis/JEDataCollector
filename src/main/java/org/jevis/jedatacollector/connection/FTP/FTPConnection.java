@@ -203,7 +203,7 @@ public class FTPConnection implements DatacollectorConnection {
     @Override
     public List<Object> sendSampleRequest(DataPoint dp, DateTime from, DateTime until) throws FetchingException {
         List<Object> ret = new LinkedList<Object>();
-        String fileName = parseString(dp, from, until);
+        String fileName = ConnectionHelper.parseConnectionString(dp, from, until,_fileNameScheme,_dateFormat);
 //        _fileNameScheme = _fileNameScheme.replaceAll(ConnectionHelper.DATAPOINT, dp.getChannelID());
 //
 //        if (_fileNameScheme.indexOf('*') != -1) {
@@ -303,13 +303,4 @@ public class FTPConnection implements DatacollectorConnection {
         return ConnectionFactory.FTP_CONNECTION;
     }
 
-    @Override
-    public String parseString(DataPoint dp, DateTime from, DateTime until) {
-        String parsedString = _fileNameScheme;
-//        parsedString = ConnectionHelper.replaceTime(_filePath);
-        parsedString = ConnectionHelper.replaceDatapoint(parsedString, dp);
-        parsedString = ConnectionHelper.parseDateFrom(parsedString, dp, _dateFormat, from);
-        parsedString = ConnectionHelper.parseDateTo(parsedString, dp, _dateFormat, until);
-        return parsedString;
-    }
 }

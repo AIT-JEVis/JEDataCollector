@@ -280,11 +280,6 @@ public class SOAPConnection implements DatacollectorConnection {
         return true;
     }
 
-    @Override
-    public String parseString(DataPoint dp, DateTime from, DateTime until) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
     public class NullOutputStream extends OutputStream {
 
         @Override

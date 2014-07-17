@@ -69,7 +69,7 @@ public class Launcher {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        Logger.getLogger(Launcher.class.getName()).log(Level.INFO, "-------Start JEDataCollector r31-------");
+        Logger.getLogger(Launcher.class.getName()).log(Level.INFO, "-------Start JEDataCollector r32-------");
         initializeCommandLine(args);
         initializeLogger(JEVisCommandLine.getInstance().getDebugLevel());
 
@@ -182,7 +182,7 @@ public class Launcher {
         try {
 //            _client = new JEVisDataSourceSQL("192.168.2.55", "3306", "jevis", "jevis", "jevistest", "Sys Admin", "jevis");
 //            _client.connect("Sys Admin", "jevis");
-            _client = new JEVisDataSourceSQL(con.getDb() , con.getPort(), con.getSchema(), con.getUser(), con.getPw(), con.getJevisUser(), con.getJevisPW());
+            _client = new JEVisDataSourceSQL(con.getDb(), con.getPort(), con.getSchema(), con.getUser(), con.getPw(), con.getJevisUser(), con.getJevisPW());
             _client.connect(con.getJevisUser(), con.getJevisPW());
         } catch (JEVisException ex) {
             Logger.getLogger(Launcher.class.getName()).log(Level.ERROR, null, ex);
@@ -209,6 +209,7 @@ public class Launcher {
             JEVisClass connection = _client.getJEVisClass("HTTPCon");
             //workaround for inherit bug, normally only with jevic class parser and connection
             JEVisClass ftpConnection = _client.getJEVisClass("FTP");
+            JEVisClass sftpConnection = _client.getJEVisClass("sFTP");
             JEVisClass datapoints = _client.getJEVisClass("Data Point Directory");
             for (JEVisObject equip : equipments) {
                 try {
@@ -224,7 +225,12 @@ public class Launcher {
                         //same workaround as above
                         connectionObject = equip.getChildren(ftpConnection, true);
                         if (connectionObject.size() != 1) {
-                            continue;
+                            connectionObject = equip.getChildren(sftpConnection, true);
+                            Logger.getLogger(this.getClass().getName()).log(Level.INFO, "$$$$$ SFTP $$$$$$$");
+                            if (connectionObject.size() != 1) {
+                                Logger.getLogger(this.getClass().getName()).log(Level.INFO, "NOTNOTNOTNOT");
+                                continue;
+                            }
                         }
                     }
 

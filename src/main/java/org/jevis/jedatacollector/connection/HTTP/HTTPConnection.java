@@ -58,6 +58,7 @@ public class HTTPConnection implements DatacollectorConnection {
     private Long _id;
     private String _userName;
     private String _password;
+    private Boolean _ssl = false;
 
     public HTTPConnection() {
         super();
@@ -252,6 +253,7 @@ public class HTTPConnection implements DatacollectorConnection {
             JEVisType filePath = type.getType("File Path");
             JEVisType server = type.getType("Server URL");
             JEVisType port = type.getType("Port");
+            JEVisType sslType = type.getType("SSL");
             JEVisType connectionTimeout = type.getType("Connection timeout");
             JEVisType readTimeout = type.getType("Read timeout");
 //            JEVisType maxRequest = type.getType("Maxrequestdays");
@@ -267,6 +269,7 @@ public class HTTPConnection implements DatacollectorConnection {
             _port = Integer.parseInt((String) node.getAttribute(port).getLatestSample().getValue());
             _connectionTimeout = Integer.parseInt((String) node.getAttribute(connectionTimeout).getLatestSample().getValue());
             _readTimeout = Integer.parseInt((String) node.getAttribute(readTimeout).getLatestSample().getValue());
+            _ssl = node.getAttribute(readTimeout).getLatestSample().getValueAsBoolean();
 //            if (node.getAttribute(maxRequest).hasSample()) {
 //                _maximumDayRequest = Integer.parseInt((String) node.getAttribute(maxRequest).getLatestSample().getValue());
 //            }
@@ -301,7 +304,7 @@ public class HTTPConnection implements DatacollectorConnection {
         List<Object> res = new LinkedList<Object>();
         URL requestUrl;
 
-        if (_userName == null || _password == null || _userName.equals("") && _password.equals("")) {
+        if (_userName == null || _password == null || _userName.equals("") || _password.equals("")) {
 
             try {
                 List<String> l;
@@ -309,7 +312,7 @@ public class HTTPConnection implements DatacollectorConnection {
                 l = new LinkedList<String>();
                 URLConnection request;
 
-                String path = parseString(dp, from, until);
+                String path = ConnectionHelper.parseConnectionString(dp, from, until, _filePath, _dateFormat);
 
                 if (path.startsWith("/")) {
                     path = path.substring(1, path.length());
@@ -317,6 +320,10 @@ public class HTTPConnection implements DatacollectorConnection {
 
                 if (!_serverURL.contains("://")) {
                     _serverURL = "http://" + _serverURL;
+                }
+
+                if (_ssl) {
+                    _serverURL.replace("http", "https");
                 }
 
                 if (_port != null) {
@@ -375,7 +382,11 @@ public class HTTPConnection implements DatacollectorConnection {
              * Username & password
              */
 
-            _targetHost = new HttpHost(_serverURL, ((int) (long) _port), "http");
+            if (_ssl) {
+                _targetHost = new HttpHost(_serverURL, ((int) (long) _port), "https");
+            } else {
+                _targetHost = new HttpHost(_serverURL, ((int) (long) _port), "http");
+            }
             /*
              * set the sope for the authentification
              */
@@ -449,13 +460,13 @@ public class HTTPConnection implements DatacollectorConnection {
     public String getConnectionType() {
         return ConnectionFactory.HTTP_CONNECTION;
     }
-
-    public String parseString(DataPoint dp, DateTime from, DateTime until) {
-        String parsedString = _filePath;
-//        parsedString = ConnectionHelper.replaceTime(_filePath);
-        parsedString = ConnectionHelper.replaceDatapoint(parsedString, dp);
-        parsedString = ConnectionHelper.parseDateFrom(parsedString, dp, _dateFormat, from);
-        parsedString = ConnectionHelper.parseDateTo(parsedString, dp, _dateFormat, until);
-        return parsedString;
-    }
+//
+//    public String parseString(DataPoint dp, DateTime from, DateTime until) {
+//        String parsedString = _filePath;
+////        parsedString = ConnectionHelper.replaceTime(_filePath);
+//        parsedString = ConnectionHelper.replaceDatapoint(parsedString, dp);
+//        parsedString = ConnectionHelper.parseDateFrom(parsedString, dp, _dateFormat, from);
+//        parsedString = ConnectionHelper.parseDateTo(parsedString, dp, _dateFormat, until);
+//        return parsedString;
+//    }
 }

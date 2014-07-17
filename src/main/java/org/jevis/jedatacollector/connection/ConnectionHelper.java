@@ -85,7 +85,7 @@ public class ConnectionHelper {
     }
 
     public static String parseDateFrom(String string, DataPoint datapoint, String datePattern, DateTime from) {
-        if (datePattern != null) {
+        if (datePattern != null && !datePattern.equals("")) {
 //            DateFormat df = new 
 //            df.setTimeZone(deviceTimeZone);
 
@@ -123,7 +123,7 @@ public class ConnectionHelper {
     }
 
     public static String parseDateTo(String string, DataPoint datapoint, String datePattern, DateTime until) {
-        if (datePattern != null) {
+        if (datePattern != null && !datePattern.equals("")) {
             DateTimeFormatter fmt = DateTimeFormat.forPattern(datePattern);
 
             string = string.replaceAll(NEW_DATEUNTIL, fmt.print(until));
@@ -154,5 +154,15 @@ public class ConnectionHelper {
 
     public static String replaceDatapoint(String parsedString, DataPoint dp) {
         return parsedString.replaceAll(ConnectionHelper.NEW_DATAPOINT, dp.getChannelID());
+    }
+
+    //gets the whole String of the Connection with all replacements
+    public static String parseConnectionString(DataPoint dp, DateTime from, DateTime until, String fileNameScheme, String dateFormat) {
+        String parsedString = fileNameScheme;
+//        parsedString = ConnectionHelper.replaceTime(_filePath);
+        parsedString = ConnectionHelper.replaceDatapoint(parsedString, dp);
+        parsedString = ConnectionHelper.parseDateFrom(parsedString, dp, dateFormat, from);
+        parsedString = ConnectionHelper.parseDateTo(parsedString, dp, dateFormat, until);
+        return parsedString;
     }
 }

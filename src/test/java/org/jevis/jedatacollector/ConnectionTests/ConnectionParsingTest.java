@@ -7,6 +7,7 @@ package org.jevis.jedatacollector.ConnectionTests;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import junit.framework.Assert;
+import org.jevis.jedatacollector.connection.ConnectionHelper;
 import org.jevis.jedatacollector.connection.FTP.FTPConnection;
 import org.jevis.jedatacollector.connection.HTTP.HTTPConnection;
 import org.jevis.jedatacollector.data.DataPoint;
@@ -27,7 +28,7 @@ public class ConnectionParsingTest {
         DataPoint dp = new DataPoint("_L2_1_DI5_Input_18CB", null, 256l);
         DateTime from = dtf.parseDateTime("01012013000000");
         DateTime until = dtf.parseDateTime("31012013153045");
-        String parsedString = ftp.parseString(dp, from, until);
+        String parsedString = ConnectionHelper.parseConnectionString(dp, from, until, "Trend${DATAPOINT}.csv", "ddMMyyyyHHmmss");
         System.out.println(parsedString);
         Assert.assertEquals("Trend_L2_1_DI5_Input_18CB.csv", parsedString);
     }
@@ -38,7 +39,7 @@ public class ConnectionParsingTest {
         DataPoint dp = new DataPoint("11", null, 256l);
         DateTime from = dtf.parseDateTime("01012013000000");
         DateTime until = dtf.parseDateTime("31012013153045");
-        String parsedString = http.parseString(dp, from, until);
+        String parsedString = ConnectionHelper.parseConnectionString(dp, from, until, "/DP${DATAPOINT}-${DATE_FROM}-${DATE_TO}", "ddMMyyyyHHmmss");
         Assert.assertEquals("/DP11-01012013000000-31012013153045", parsedString);
 //            http.sendSampleRequest(dp, from, until);
     }

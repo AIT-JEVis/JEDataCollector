@@ -52,6 +52,4 @@ public interface DatacollectorConnection {
     
     public String getConnectionType();
     
-    //gets the whole String of the Connection with all replacements
-    public String parseString(DataPoint dp, DateTime from, DateTime until);
 }

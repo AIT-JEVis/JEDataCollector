@@ -9,7 +9,7 @@ import org.jevis.jedatacollector.DataCollector;
 import org.jevis.jedatacollector.Request;
 import org.jevis.jedatacollector.RequestGenerator;
 import org.jevis.jedatacollector.connection.DatacollectorConnection;
-import org.jevis.jedatacollector.connection.FTP.FTPConnection;
+import org.jevis.jedatacollector.connection.FTP.SFTPConnection;
 import org.jevis.jedatacollector.data.DataPoint;
 import org.jevis.jedatacollector.exception.FetchingException;
 import org.joda.time.DateTime;
@@ -18,10 +18,9 @@ import org.joda.time.DateTime;
  *
  * @author bf
  */
-public class FTPConnectionTest {
-
-    public void test_loytec_ftp() throws FetchingException {
-        DatacollectorConnection connection = new FTPConnection(null, "/data/trend/", "Trend_L1_1_UI3_Input1_10DF.csv", "192.168.2.254", "admin", "envidatec4u", 200l, 2l);
+public class SFTPConnectionTest {
+        public void test_loytec_sftp() throws FetchingException {
+        DatacollectorConnection connection = new SFTPConnection(null, "/data/trend/", "Trend_L1_1_UI3_Input1_10DF.csv", "192.168.2.254", "admin", "envidatec4u", 200l, 2l);
         DateTime until = new DateTime();
         DateTime from = until.minusDays(10);
         DataPoint datapoint = new DataPoint("test", "0",null);
