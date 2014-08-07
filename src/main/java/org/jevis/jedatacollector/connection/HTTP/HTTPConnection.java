@@ -32,6 +32,7 @@ import org.jevis.api.JEVisClass;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
 import org.jevis.api.JEVisType;
+import org.jevis.commons.DatabaseHelper;
 import org.jevis.jedatacollector.connection.ConnectionFactory;
 import org.jevis.jedatacollector.connection.ConnectionHelper;
 import org.jevis.jedatacollector.data.DataPoint;
@@ -261,15 +262,13 @@ public class HTTPConnection implements DatacollectorConnection {
             JEVisType password = type.getType("Password");
 
             _id = node.getID();
-            if (node.getAttribute(dateFormat).hasSample()) {
-                _dateFormat = (String) node.getAttribute(dateFormat).getLatestSample().getValue();
-            }
-            _filePath = (String) node.getAttribute(filePath).getLatestSample().getValue();
-            _serverURL = (String) node.getAttribute(server).getLatestSample().getValue();
-            _port = Integer.parseInt((String) node.getAttribute(port).getLatestSample().getValue());
-            _connectionTimeout = Integer.parseInt((String) node.getAttribute(connectionTimeout).getLatestSample().getValue());
-            _readTimeout = Integer.parseInt((String) node.getAttribute(readTimeout).getLatestSample().getValue());
-            _ssl = node.getAttribute(readTimeout).getLatestSample().getValueAsBoolean();
+            _dateFormat = DatabaseHelper.getObjectAsString(node, dateFormat);
+            _filePath = DatabaseHelper.getObjectAsString(node, filePath);
+            _serverURL = DatabaseHelper.getObjectAsString(node, server);
+            _port = DatabaseHelper.getObjectAsInteger(node, port);
+            _connectionTimeout = DatabaseHelper.getObjectAsInteger(node, connectionTimeout);
+            _readTimeout = DatabaseHelper.getObjectAsInteger(node, readTimeout);
+            _ssl = DatabaseHelper.getObjectAsBoolean(node, sslType);
 //            if (node.getAttribute(maxRequest).hasSample()) {
 //                _maximumDayRequest = Integer.parseInt((String) node.getAttribute(maxRequest).getLatestSample().getValue());
 //            }

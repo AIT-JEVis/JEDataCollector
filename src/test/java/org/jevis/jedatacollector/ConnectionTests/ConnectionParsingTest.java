@@ -4,14 +4,13 @@
  */
 package org.jevis.jedatacollector.ConnectionTests;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.List;
 import junit.framework.Assert;
 import org.jevis.jedatacollector.connection.ConnectionHelper;
 import org.jevis.jedatacollector.connection.FTP.FTPConnection;
 import org.jevis.jedatacollector.connection.HTTP.HTTPConnection;
 import org.jevis.jedatacollector.data.DataPoint;
-import org.jevis.jedatacollector.exception.FetchingException;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -42,5 +41,26 @@ public class ConnectionParsingTest {
         String parsedString = ConnectionHelper.parseConnectionString(dp, from, until, "/DP${DATAPOINT}-${DATE_FROM}-${DATE_TO}", "ddMMyyyyHHmmss");
         Assert.assertEquals("/DP11-01012013000000-31012013153045", parsedString);
 //            http.sendSampleRequest(dp, from, until);
+    }
+
+    public void test_ftp_parsing_multi_folder() {
+        String pattern = ".*\\.csv";
+        //positive tests
+        List<String> fileNamesPositive = new ArrayList<String>();
+        fileNamesPositive.add("hallo.csv");
+        fileNamesPositive.add("t.csv");
+        fileNamesPositive.add("123.csv");
+        for (String s : fileNamesPositive) {
+            Assert.assertTrue(ConnectionHelper.fitsFileNameScheme(s, pattern));
+        }
+
+        //negative tests
+        List<String> fileNamesNegative = new ArrayList<String>();
+        fileNamesNegative.add("hallocsv");
+        fileNamesNegative.add("t.csv1");
+        fileNamesNegative.add("123.csv.");
+        for (String s : fileNamesNegative) {
+            Assert.assertFalse(ConnectionHelper.fitsFileNameScheme(s, pattern));
+        }
     }
 }

@@ -10,6 +10,7 @@ import org.jevis.api.JEVisClass;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
 import org.jevis.api.JEVisType;
+import org.jevis.commons.DatabaseHelper;
 
 /**
  *
@@ -55,14 +56,13 @@ public class DataPoint {
             JEVisType onlineIDType = type.getType(ONLINE_ID);
             JEVisType valueSpecType = type.getType(VALUE_SPEC);
 
-            _channelID = dp.getAttribute(channelIDType).getLatestSample().getValueAsString();
-            if (dp.getAttribute(dataLoggerNameType).getLatestSample() != null) {
-                _dataLoggerName = dp.getAttribute(dataLoggerNameType).getLatestSample().getValueAsString();
-            }
+            _channelID = DatabaseHelper.getObjectAsString(dp, channelIDType);
+            _dataLoggerName = DatabaseHelper.getObjectAsString(dp, dataLoggerNameType);
+
 //            _fetchRate = (Integer) dp.getAttribute(fetchRateType).getLatestSample().getValue();
 //            _jobState = (String) dp.getAttribute(jobStateType).getLatestSample().getValue();
-            _onlineID = dp.getAttribute(onlineIDType).getLatestSample().getValueAsLong();
-            _valueSpec = dp.getAttribute(valueSpecType).getLatestSample().getValueAsString();
+            _onlineID = DatabaseHelper.getObjectAsLong(dp, onlineIDType);
+            _valueSpec = DatabaseHelper.getObjectAsString(dp, valueSpecType);
             _onlineData = dp.getDataSource().getObject(_onlineID);
 //            _onlineData = dp.getDataSource().getObject(onlineID);
         } catch (JEVisException ex) {

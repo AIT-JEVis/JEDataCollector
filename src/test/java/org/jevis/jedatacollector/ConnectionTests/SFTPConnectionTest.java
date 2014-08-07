@@ -20,17 +20,17 @@ import org.joda.time.DateTime;
  */
 public class SFTPConnectionTest {
         public void test_loytec_sftp() throws FetchingException {
-        DatacollectorConnection connection = new SFTPConnection(null, "/data/trend/", "Trend_L1_1_UI3_Input1_10DF.csv", "192.168.2.254", "admin", "envidatec4u", 200l, 2l);
-        DateTime until = new DateTime();
-        DateTime from = until.minusDays(10);
-        DataPoint datapoint = new DataPoint("test", "0",null);
-
-        Request request = RequestGenerator.createConnectionRequestWithTimeperiod(connection, datapoint, from, until);
-        DataCollector collector = new DataCollector(request);
-        collector.run();
-
-        String[] stringArrayInput = collector.getInputHandler().getStringArrayInput();
-        Assert.assertTrue(stringArrayInput.length >= 1);
+//        DatacollectorConnection connection = new SFTPConnection(null, "/data/trend/", "Trend_L1_1_UI3_Input1_10DF.csv", "192.168.2.254", "admin", "envidatec4u", 200l, 2l);
+//        DateTime until = new DateTime();
+//        DateTime from = until.minusDays(10);
+//        DataPoint datapoint = new DataPoint("test", "0",null);
+//
+//        Request request = RequestGenerator.createConnectionRequestWithTimeperiod(connection, datapoint, from, until);
+//        DataCollector collector = new DataCollector(request);
+//        collector.run();
+//
+//        String[] stringArrayInput = collector.getInputHandler().getStringArrayInput();
+//        Assert.assertTrue(stringArrayInput.length >= 1);
 
     }
 }

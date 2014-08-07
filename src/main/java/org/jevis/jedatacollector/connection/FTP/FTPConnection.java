@@ -19,6 +19,7 @@ import org.jevis.api.JEVisClass;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
 import org.jevis.api.JEVisType;
+import org.jevis.commons.DatabaseHelper;
 import org.jevis.jedatacollector.connection.ConnectionFactory;
 import org.jevis.jedatacollector.connection.ConnectionHelper;
 import org.jevis.jedatacollector.connection.DatacollectorConnection;
@@ -94,107 +95,104 @@ public class FTPConnection implements DatacollectorConnection {
         return true;
     }
 
-    private String getNextFile(DateTime from, DataPoint dp) throws FetchingException {
-        String retFile = null;
-        DateTime earliestDate = null;
-
-        try {
-            String fileName;
-            DateTime dateFrom, dateTo;
-
-            for (FTPFile file : _fc.listFiles(_filePath)) {
-                fileName = file.getName();
-
-                if (!fitsFileNameScheme(fileName)) {
-                    continue;
-                }
-
-                dateFrom = getDate(fileName, dp);
-
-                if (dateFrom == null) {
-                    continue;
-                }
-
-                if (dateFrom.isAfter(from)) {
-                    if (earliestDate != null
-                            && earliestDate.isBefore(dateFrom)) {
-                        continue;
-                    }
-                    retFile = file.getName();
-                    earliestDate = dateFrom;
-                }
-            }
-        } catch (IOException ex) {
-            Logger.getLogger(FTPConnection.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        return retFile;
-    }
-
-    private boolean fitsFileNameScheme(String fileName) {
-        String parts[] = _fileNameScheme.split("\\*", -1);
-
-        for (int i = 0; i < parts.length; i += 2) {
-            if (!fileName.contains(parts[i])) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    private DateTime getDate(String fileName, DataPoint dp) throws FetchingException {
-        boolean fromBeforeTo = (_fileNameScheme.indexOf("*DATE_FROM") < _fileNameScheme.indexOf("*DATE_TO*"));
-
-        if (_fileNameScheme.indexOf("*DATE_TO*") == -1) {
-            fromBeforeTo = true;
-        }
-
-        String dateString;
-        DateFormat df = new SimpleDateFormat(_dateFormat);
-        Date cal = null;
-
-        if (fromBeforeTo) {
-            for (int i = 0; i < fileName.length() - _dateFormat.length(); i++) {
-                try {
-                    dateString = fileName.substring(i, i + _dateFormat.length());
-                    cal = df.parse(dateString);
-                    return new DateTime(cal);
-                } catch (Exception e) {
-                }
-            }
-        } else {
-            for (int i = fileName.length(); i >= fileName.length(); i--) {
-                try {
-                    dateString = fileName.substring(i, i + _dateFormat.length());
-                    cal = df.parse(dateString);
-                    return new DateTime(cal);
-                } catch (Exception e) {
-                }
-            }
-        }
-
-        if (cal == null) {
-            throw new FetchingException(_id, FetchingExceptionType.DATE_PARSE_ERROR);
-        }
-
-        return null;
-    }
-
-    private Character getSeperator(String fileNameScheme) {
-        fileNameScheme = fileNameScheme.replaceAll("\\*DATAPOINT\\*", "");
-        fileNameScheme = fileNameScheme.replaceAll("\\*DATE_FROM\\*", "");
-        fileNameScheme = fileNameScheme.replaceAll("\\*DATE_TO\\*", "");
-
-        for (char c : fileNameScheme.toCharArray()) {
-            if (c != '.') {
-                return c;
-            }
-        }
-
-        return null;
-    }
-
+//    private String getNextFile(DateTime from, DataPoint dp) throws FetchingException {
+//        String retFile = null;
+//        DateTime earliestDate = null;
+//
+//        try {
+//            String fileName;
+//            DateTime dateFrom, dateTo;
+//
+//            for (FTPFile file : _fc.listFiles(_filePath)) {
+//                fileName = file.getName();
+//
+//                if (!fitsFileNameScheme(fileName)) {
+//                    continue;
+//                }
+//
+//                dateFrom = getDate(fileName, dp);
+//
+//                if (dateFrom == null) {
+//                    continue;
+//                }
+//
+//                if (dateFrom.isAfter(from)) {
+//                    if (earliestDate != null
+//                            && earliestDate.isBefore(dateFrom)) {
+//                        continue;
+//                    }
+//                    retFile = file.getName();
+//                    earliestDate = dateFrom;
+//                }
+//            }
+//        } catch (IOException ex) {
+//            Logger.getLogger(FTPConnection.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//
+//        return retFile;
+//    }
+//
+//    private boolean fitsFileNameScheme(String fileName) {
+//        String parts[] = _fileNameScheme.split("\\*", -1);
+//
+//        for (int i = 0; i < parts.length; i += 2) {
+//            if (!fileName.contains(parts[i])) {
+//                return false;
+//            }
+//        }
+//
+//        return true;
+//    }
+//    private DateTime getDate(String fileName, DataPoint dp) throws FetchingException {
+//        boolean fromBeforeTo = (_fileNameScheme.indexOf("*DATE_FROM") < _fileNameScheme.indexOf("*DATE_TO*"));
+//
+//        if (_fileNameScheme.indexOf("*DATE_TO*") == -1) {
+//            fromBeforeTo = true;
+//        }
+//
+//        String dateString;
+//        DateFormat df = new SimpleDateFormat(_dateFormat);
+//        Date cal = null;
+//
+//        if (fromBeforeTo) {
+//            for (int i = 0; i < fileName.length() - _dateFormat.length(); i++) {
+//                try {
+//                    dateString = fileName.substring(i, i + _dateFormat.length());
+//                    cal = df.parse(dateString);
+//                    return new DateTime(cal);
+//                } catch (Exception e) {
+//                }
+//            }
+//        } else {
+//            for (int i = fileName.length(); i >= fileName.length(); i--) {
+//                try {
+//                    dateString = fileName.substring(i, i + _dateFormat.length());
+//                    cal = df.parse(dateString);
+//                    return new DateTime(cal);
+//                } catch (Exception e) {
+//                }
+//            }
+//        }
+//
+//        if (cal == null) {
+//            throw new FetchingException(_id, FetchingExceptionType.DATE_PARSE_ERROR);
+//        }
+//
+//        return null;
+//    }
+//    private Character getSeperator(String fileNameScheme) {
+//        fileNameScheme = fileNameScheme.replaceAll("\\*DATAPOINT\\*", "");
+//        fileNameScheme = fileNameScheme.replaceAll("\\*DATE_FROM\\*", "");
+//        fileNameScheme = fileNameScheme.replaceAll("\\*DATE_TO\\*", "");
+//
+//        for (char c : fileNameScheme.toCharArray()) {
+//            if (c != '.') {
+//                return c;
+//            }
+//        }
+//
+//        return null;
+//    }
     @Override
     public boolean returnsLimitedSampleCount() {
         return false;
@@ -203,7 +201,7 @@ public class FTPConnection implements DatacollectorConnection {
     @Override
     public List<Object> sendSampleRequest(DataPoint dp, DateTime from, DateTime until) throws FetchingException {
         List<Object> ret = new LinkedList<Object>();
-        String fileName = ConnectionHelper.parseConnectionString(dp, from, until,_fileNameScheme,_dateFormat);
+        String fileNameTmp = ConnectionHelper.parseConnectionString(dp, from, until, _fileNameScheme, _dateFormat);
 //        _fileNameScheme = _fileNameScheme.replaceAll(ConnectionHelper.DATAPOINT, dp.getChannelID());
 //
 //        if (_fileNameScheme.indexOf('*') != -1) {
@@ -211,25 +209,29 @@ public class FTPConnection implements DatacollectorConnection {
 //        } else {
 //            fileName = _fileNameScheme;
 //        }
-        System.out.println("file "+fileName);
-        try {
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            String query = _filePath + fileName;
-            org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.INFO, "FTPQuery " + query);
-            boolean retrieveFile = _fc.retrieveFile(query, out);
+        List<String> fileNames = ConnectionHelper.getFTPMatchedFileNames(_fc, _filePath, fileNameTmp);
 
-            org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.INFO, "Request status: " + retrieveFile);
+        for (String fileName : fileNames) {
+            System.out.println("file " + fileName);
+            try {
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                String query = _filePath + fileName;
+                org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.INFO, "FTPQuery " + query);
+                boolean retrieveFile = _fc.retrieveFile(query, out);
 
-            InputStream inputStream = new ByteArrayInputStream(out.toByteArray());
+                org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.INFO, "Request status: " + retrieveFile);
 
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-            String inputLine;
+                InputStream inputStream = new ByteArrayInputStream(out.toByteArray());
 
-            while ((inputLine = bufferedReader.readLine()) != null) {
-                ret.add(inputLine);
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+                String inputLine;
+
+                while ((inputLine = bufferedReader.readLine()) != null) {
+                    ret.add(inputLine);
+                }
+            } catch (IOException ex) {
+                throw new FetchingException(_id, FetchingExceptionType.CONNECTION_TIMEOUT);
             }
-        } catch (IOException ex) {
-            throw new FetchingException(_id, FetchingExceptionType.CONNECTION_TIMEOUT);
         }
 
         return ret;
@@ -251,20 +253,19 @@ public class FTPConnection implements DatacollectorConnection {
             JEVisType password = type.getType("Password");
 
             _id = node.getID();
-            if (node.getAttribute(dateFormat).hasSample()) {
-                _dateFormat = node.getAttribute(dateFormat).getLatestSample().getValueAsString();
-            }
-            _filePath = node.getAttribute(filePath).getLatestSample().getValueAsString();
-            _fileNameScheme = node.getAttribute(fileNameScheme).getLatestSample().getValueAsString();
-            _serverURL = node.getAttribute(server).getLatestSample().getValueAsString();
-            JEVisAttribute portAttr = node.getAttribute(port);
-            if (!portAttr.hasSample()) {
+            _dateFormat = DatabaseHelper.getObjectAsString(node, dateFormat);
+            _filePath = DatabaseHelper.getObjectAsString(node, filePath);
+            _fileNameScheme = DatabaseHelper.getObjectAsString(node, fileNameScheme);
+            _serverURL = DatabaseHelper.getObjectAsString(node, server);
+            
+            _port = DatabaseHelper.getObjectAsInteger(node, port);
+            if(_port == null){
                 _port = 20;
-            } else {
-                _port = Integer.parseInt((String) node.getAttribute(port).getLatestSample().getValue());
             }
-            _connectionTimeout = node.getAttribute(connectionTimeout).getLatestSample().getValueAsLong();
-            _readTimeout = node.getAttribute(readTimeout).getLatestSample().getValueAsLong();
+            
+            _connectionTimeout = DatabaseHelper.getObjectAsLong(node, connectionTimeout);
+            
+            _readTimeout = DatabaseHelper.getObjectAsLong(node, readTimeout);
             //            if (node.getAttribute(maxRequest).hasSample()) {
             //                _maximumDayRequest = Integer.parseInt((String) node.getAttribute(maxRequest).getLatestSample().getValue());
             //            }
@@ -302,5 +303,4 @@ public class FTPConnection implements DatacollectorConnection {
     public String getConnectionType() {
         return ConnectionFactory.FTP_CONNECTION;
     }
-
 }

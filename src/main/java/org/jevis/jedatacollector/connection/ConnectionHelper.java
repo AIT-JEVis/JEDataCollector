@@ -4,8 +4,15 @@
  */
 package org.jevis.jedatacollector.connection;
 
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPFile;
 import org.jevis.jedatacollector.data.DataPoint;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -164,5 +171,29 @@ public class ConnectionHelper {
         parsedString = ConnectionHelper.parseDateFrom(parsedString, dp, dateFormat, from);
         parsedString = ConnectionHelper.parseDateTo(parsedString, dp, dateFormat, until);
         return parsedString;
+    }
+
+    public static List<String> getFTPMatchedFileNames(FTPClient fc, String filePath, String fileNameScheme) {
+        List<String> fileNames = new ArrayList<String>();
+        String fileName = null;
+        try {
+            for (FTPFile file : fc.listFiles(filePath)) {
+                fileName = file.getName();
+
+                if (fitsFileNameScheme(fileName, fileNameScheme)) {
+                    fileNames.add(fileName);
+                }
+
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(ConnectionHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return fileNames;
+    }
+
+    public static boolean fitsFileNameScheme(String fileName, String fileNameScheme) {
+        Pattern p = Pattern.compile(fileNameScheme);
+        Matcher m = p.matcher(fileName);
+        return m.matches();
     }
 }
