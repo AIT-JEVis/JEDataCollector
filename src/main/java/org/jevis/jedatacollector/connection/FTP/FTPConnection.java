@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPSClient;
 import org.jevis.api.JEVisAttribute;
 import org.jevis.api.JEVisClass;
 import org.jevis.api.JEVisException;
@@ -48,6 +49,7 @@ public class FTPConnection implements DatacollectorConnection {
     private String _username;
     private FTPClient _fc;
     private String _parsedPath;
+    private Boolean _ssl = false;
 
     public FTPConnection() {
         super();
@@ -81,7 +83,11 @@ public class FTPConnection implements DatacollectorConnection {
     @Override
     public boolean connect() throws FetchingException {
         try {
-            _fc = new FTPClient();
+            if (_ssl) {
+                _fc = new FTPSClient();
+            } else {
+                _fc = new FTPClient();
+            }
 //            _fc.addProtocolCommandListener(new PrintCommandListener(new PrintWriter(System.out), true));
 
             if (_connectionTimeout != 0) {
@@ -234,7 +240,7 @@ public class FTPConnection implements DatacollectorConnection {
 
                 InputStream inputStream = new ByteArrayInputStream(out.toByteArray());
                 answer = new BufferedInputStream(inputStream);
-                
+
 //                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
 //                String inputLine;
 //
@@ -257,6 +263,7 @@ public class FTPConnection implements DatacollectorConnection {
             JEVisType dateFormat = ftpType.getType(JEVisTypes.Connection.FTP.DateFormat);
             JEVisType filePath = ftpType.getType(JEVisTypes.Connection.FTP.FilePath);
             JEVisType fileNameScheme = ftpType.getType(JEVisTypes.Connection.FTP.FileNameScheme);
+            JEVisType SSL = ftpType.getType(JEVisTypes.Connection.FTP.SSL);
             JEVisType server = ftpType.getType(JEVisTypes.Connection.FTP.Server);
             JEVisType port = ftpType.getType(JEVisTypes.Connection.FTP.Port);
             JEVisType connectionTimeout = ftpType.getType(JEVisTypes.Connection.FTP.ConnectionTimeout);
@@ -269,6 +276,7 @@ public class FTPConnection implements DatacollectorConnection {
             _dateFormat = DatabaseHelper.getObjectAsString(ftpObject, dateFormat);
             _filePath = DatabaseHelper.getObjectAsString(ftpObject, filePath);
             _fileNameScheme = DatabaseHelper.getObjectAsString(ftpObject, fileNameScheme);
+            _ssl = DatabaseHelper.getObjectAsBoolean(ftpObject, SSL);
             _serverURL = DatabaseHelper.getObjectAsString(ftpObject, server);
 
             _port = DatabaseHelper.getObjectAsInteger(ftpObject, port);

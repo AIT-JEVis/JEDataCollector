@@ -243,7 +243,7 @@ public class HTTPConnection implements DatacollectorConnection {
             JEVisType filePath = httpType.getType(JEVisTypes.Connection.HTTP.FilePath);
             JEVisType server = httpType.getType(JEVisTypes.Connection.HTTP.Server);
             JEVisType port = httpType.getType(JEVisTypes.Connection.HTTP.Port);
-            JEVisType sslType = httpType.getType(JEVisTypes.Connection.HTTP.SSLType);
+            JEVisType sslType = httpType.getType(JEVisTypes.Connection.HTTP.SSL);
             JEVisType connectionTimeout = httpType.getType(JEVisTypes.Connection.HTTP.ConnectionTimeout);
             JEVisType readTimeout = httpType.getType(JEVisTypes.Connection.HTTP.ReadTimeout);
             JEVisType user = httpType.getType(JEVisTypes.Connection.HTTP.User);
