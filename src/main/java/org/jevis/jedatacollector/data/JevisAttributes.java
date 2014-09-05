@@ -10,6 +10,9 @@ package org.jevis.jedatacollector.data;
  */
 public class JevisAttributes {
 
+    //Equipment
+    
+    
     //Parser
     public static String PARSER_DATE = "Date";
     public static String PARSER_MAPPING = "Mapping";

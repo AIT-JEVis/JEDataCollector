@@ -8,7 +8,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import junit.framework.Assert;
-import org.jevis.commons.parsing.DataCollectorParser;
+import org.jevis.commons.parsing.GenericParser;
 import org.jevis.commons.parsing.GeneralDateParser;
 import org.jevis.commons.parsing.GeneralMappingParser;
 import org.jevis.commons.parsing.GeneralValueParser;
@@ -46,7 +46,7 @@ public class Test_Single_XML {
         InputHandler inputHandler = new FileInputHandler(file);
         inputHandler.convertInput();
 
-        DataCollectorParser fileParser = new XMLParsing("Element", null, null);
+        GenericParser fileParser = new XMLParsing("Element", null, null);
         GeneralMappingParser datapointParser = new DatapointFixXMLParsing(false, 1234l);
         GeneralDateParser dateParser = new DateXMLParsing("yyyy-MM-dd HH:mm:ss.SSSZ", "UCPTlogTime", false, null, null, false);
         GeneralValueParser valueParser = new ValueXMLParsing("UCPTvalue", false, ".", ",");

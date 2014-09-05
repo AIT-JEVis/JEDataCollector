@@ -17,10 +17,10 @@ import org.jevis.api.JEVisClass;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
 import org.jevis.api.JEVisType;
-import org.jevis.jedatacollector.connection.ConnectionFactory;
 import org.jevis.jedatacollector.connection.ConnectionHelper;
 import org.jevis.jedatacollector.data.DataPoint;
 import org.jevis.jedatacollector.connection.DatacollectorConnection;
+import org.jevis.commons.JEVisTypes;
 import org.jevis.jedatacollector.exception.FetchingException;
 
 import org.joda.time.DateTime;
@@ -97,10 +97,10 @@ public class SQLConnection implements DatacollectorConnection {
         return returnList;
     }
 
-    @Override
-    public boolean returnsLimitedSampleCount() {
-        return false;
-    }
+//    @Override
+//    public boolean returnsLimitedSampleCount() {
+//        return false;
+//    }
 
     @Override
     public void initialize(JEVisObject node) throws FetchingException {
@@ -144,8 +144,13 @@ public class SQLConnection implements DatacollectorConnection {
         }
     }
 
+//    @Override
+//    public String getConnectionType() {
+//        return JEVisTypes.Connection.SQL.Name;
+//    }
+
     @Override
-    public String getConnectionType() {
-        return ConnectionFactory.SQL_CONNECTION;
+    public String getWholeFilePath() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

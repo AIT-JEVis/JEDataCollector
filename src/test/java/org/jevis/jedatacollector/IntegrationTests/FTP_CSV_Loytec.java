@@ -6,7 +6,7 @@ package org.jevis.jedatacollector.IntegrationTests;
 
 import java.util.List;
 import junit.framework.Assert;
-import org.jevis.commons.parsing.DataCollectorParser;
+import org.jevis.commons.parsing.GenericParser;
 import org.jevis.commons.parsing.GeneralDateParser;
 import org.jevis.commons.parsing.GeneralMappingParser;
 import org.jevis.commons.parsing.GeneralValueParser;

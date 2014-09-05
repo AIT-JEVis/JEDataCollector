@@ -8,7 +8,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import junit.framework.Assert;
-import org.jevis.commons.parsing.DataCollectorParser;
+import org.jevis.commons.parsing.GenericParser;
 import org.jevis.commons.parsing.GeneralDateParser;
 import org.jevis.commons.parsing.GeneralMappingParser;
 import org.jevis.commons.parsing.GeneralValueParser;
@@ -53,9 +53,9 @@ public class HttpAlpha_CsvVida {
      */
     public void test_alphaConnect() throws Exception {
         DatacollectorConnection connection = new HTTPConnection("192.168.2.55", "/Parsing/JEVis_DEFAULT_example.csv", 80, 300, 30);
-        DataCollectorParser fileParser = new CSVParsing("\"", ";", 1);
+        GenericParser fileParser = new CSVParsing("\"", ";", 1);
 
-        GeneralMappingParser datapointParser = new MappingFixCSVParser(false, 22);
+        GeneralMappingParser datapointParser = new MappingFixCSVParser(false, 22l);
         GeneralDateParser dateParser = new DateCSVParser(null, null, "dd-MM-yyyy HH:mm:ss", 1);
         GeneralValueParser valueParser = new ValueCSVParser(2, ".", null);
 

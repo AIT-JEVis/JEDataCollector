@@ -6,7 +6,7 @@ package org.jevis.jedatacollector;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.jevis.commons.parsing.DataCollectorParser;
+import org.jevis.commons.parsing.GenericParser;
 import org.jevis.commons.parsing.ParsingRequest;
 import org.jevis.commons.parsing.ParsingRequestGenerator;
 import org.jevis.commons.parsing.inputHandler.InputHandler;
@@ -59,7 +59,7 @@ public class RequestGenerator {
 //
 //        return requests;
 //    }
-    public static Request createOnlyParsingRequest(DataCollectorParser fileParser, InputHandler input) {
+    public static Request createOnlyParsingRequest(GenericParser fileParser, InputHandler input) {
         Request req = new DefaultRequest();
         req.setNeedConnection(false);
         req.setNeedImport(false);
@@ -69,8 +69,8 @@ public class RequestGenerator {
         req.setInputHandler(input);
         return req;
     }
-    
-    public static Request createOnlyParsingRequestWithOutput(DataCollectorParser fileParser, InputHandler input, String outputPath) {
+
+    public static Request createOnlyParsingRequestWithOutput(GenericParser fileParser, InputHandler input, String outputPath) {
         Request req = new DefaultRequest();
         req.setNeedConnection(false);
         req.setNeedImport(true);
@@ -84,8 +84,8 @@ public class RequestGenerator {
         req.setFileOutputPath(outputPath);
         return req;
     }
-    
-    public static Request createConnectionParsingRequest(DatacollectorConnection connection, DataCollectorParser parsing) {
+
+    public static Request createConnectionParsingRequest(DatacollectorConnection connection, GenericParser parsing) {
         Request request = new DefaultRequest();
         request.setNeedConnection(true);
         request.setConnection(connection);
@@ -94,8 +94,8 @@ public class RequestGenerator {
         request.setNeedParsing(true);
         return request;
     }
-    
-    public static Request createCLIRequest(DatacollectorConnection connection, DataCollectorParser parsing, DataPoint dataPoint, DateTime from, DateTime until, DateTimeZone timeZone) {
+
+    public static Request createCLIRequest(DatacollectorConnection connection, GenericParser parsing, DataPoint dataPoint, DateTime from, DateTime until, DateTimeZone timeZone) {
         Request request = new DefaultRequest();
         request.setNeedConnection(true);
         request.setConnection(connection);
@@ -111,7 +111,27 @@ public class RequestGenerator {
         request.setTimeZone(timeZone);
         return request;
     }
-    
+
+    public static Request createCLIRequestWithFileOutput(DatacollectorConnection connection, GenericParser parsing, DataPoint dataPoint, DateTime from, DateTime until, DateTimeZone timeZone, String outputPath) {
+        Request request = new DefaultRequest();
+        request.setNeedConnection(true);
+        request.setConnection(connection);
+        request.setFrom(from);
+        request.setUntil(until);
+        request.setParser(parsing);
+        request.setNeedImport(true);
+//        request.setSpecificDatapoint(dataPoint);
+        List<DataPoint> dataPoints = new ArrayList<DataPoint>();
+        dataPoints.add(dataPoint);
+        request.setDataPoints(dataPoints);
+        request.setNeedParsing(true);
+        request.setTimeZone(timeZone);
+        request.setOutputType(OutputHandler.FILE_OUTPUT);
+        ParsingRequest preq = ParsingRequestGenerator.generateOutputfileRequest(outputPath);
+        request.setParsingRequest(preq);
+        return request;
+    }
+
     public static Request createConnectionRequestWithTimeperiod(DatacollectorConnection connection, DataPoint datapoint, DateTime from, DateTime until) {
         Request request = new DefaultRequest();
         request.setNeedConnection(true);
@@ -126,13 +146,13 @@ public class RequestGenerator {
 //        request.setSpecificDatapoint(datapoint);
         return request;
     }
-    
+
     static Request createJEVisRequest(Data data) {
         DatacollectorConnection connection = data.getConnection();
-        DataCollectorParser parsing = data.getParsing();
+        GenericParser parsing = data.getParsing();
         Equipment equipment = data.getEquipment();
         List<DataPoint> datapoints = data.getDatapoints();
-        
+
         Request request = new DefaultRequest();
         request.setNeedConnection(true);
         request.setConnection(connection);

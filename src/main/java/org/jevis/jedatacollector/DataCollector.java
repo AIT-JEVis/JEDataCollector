@@ -28,7 +28,7 @@ import org.joda.time.DateTime;
 public class DataCollector {
 
     private ParsingService _parsingService;
-    private ConnectionService _connection;
+    private ConnectionService _connectionService;
     private InputHandler _inputHandler;
     private Request _request;
     private DateTime _lastDateInUTC;
@@ -62,9 +62,9 @@ public class DataCollector {
     }
 
     public void parse() throws FetchingException {
-        if (_parsingService == null) {
-            _parsingService = new ParsingService(_request);
-        }
+//        if (_parsingService == null) {
+        _parsingService = new ParsingService(_request.getParser());
+//        }
         _parsingService.parseData(_inputHandler);
     }
 
@@ -94,8 +94,8 @@ public class DataCollector {
     }
 
     private void connect() throws FetchingException {
-        _connection = new ConnectionService(_request.getConnectionData());
-        _connection.connect();
+        _connectionService = new ConnectionService(_request.getConnectionData());
+        _connectionService.connect();
     }
 
     private void getInput() throws FetchingException {
@@ -127,7 +127,7 @@ public class DataCollector {
         if (!_request.getDataPoints().isEmpty()) {
             dp = _request.getDataPoints().get(0);
         }
-        List<Object> rawResult = _connection.sendSamplesRequest(from, until, dp);
+        List<Object> rawResult = _connectionService.sendSamplesRequest(from, until, dp);
 
         initializeInputConverter(rawResult);
     }

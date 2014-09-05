@@ -4,14 +4,10 @@
  */
 package org.jevis.jedatacollector.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import org.jevis.api.JEVisObject;
 import org.jevis.commons.parsing.DataCollectorParser;
+import org.jevis.commons.parsing.GenericParser;
 import org.jevis.commons.parsing.SampleParserContainer;
 import org.jevis.commons.parsing.inputHandler.InputHandler;
-import org.jevis.jedatacollector.Request;
-import org.jevis.jedatacollector.data.DataPoint;
 
 /**
  *
@@ -29,24 +25,24 @@ public class ParsingService {
     }
     private DataCollectorParser _fileParser;
 
-    public ParsingService(Request request) {
-        _fileParser = request.getParser();
-        if (_fileParser.getSampleParserContianers().isEmpty()) {
+    public ParsingService(DataCollectorParser parser) {
+        _fileParser = parser;
+//        if (_fileParser.getSampleParserContianers().isEmpty()) {
+////            List<JEVisObject> datapoints = new ArrayList<JEVisObject>();
+////            JEVisObject dp = request.getSpecificDatapoint().getJEVisDatapoint();
+////            if (dp != null) {
+////                datapoints.add(dp);
+////            } else {
+////                for (NewDataPoint ndp : request.getData().getDatapoints()) {
+////                    datapoints.add(ndp.getJEVisDatapoint());
+////                }
+////            }
 //            List<JEVisObject> datapoints = new ArrayList<JEVisObject>();
-//            JEVisObject dp = request.getSpecificDatapoint().getJEVisDatapoint();
-//            if (dp != null) {
-//                datapoints.add(dp);
-//            } else {
-//                for (NewDataPoint ndp : request.getData().getDatapoints()) {
-//                    datapoints.add(ndp.getJEVisDatapoint());
-//                }
+//            for (DataPoint ndp : request.getDataPoints()) {
+//                datapoints.add(ndp.getJEVisDatapoint());
 //            }
-            List<JEVisObject> datapoints = new ArrayList<JEVisObject>();
-            for (DataPoint ndp : request.getDataPoints()) {
-                datapoints.add(ndp.getJEVisDatapoint());
-            }
-            _fileParser.createSampleContainers(_fileParser.getJEVisParser(),datapoints);
-        }
+//            _fileParser.createSampleContainers(_fileParser.getJEVisParser(),datapoints);
+//        }
     }
 
 //    /**
@@ -62,7 +58,7 @@ public class ParsingService {
 //    public ParsedData getParsedData(){
 //        return _parser.getData();
 //    }
-    public void setFileParser(DataCollectorParser fileParser) {
+    public void setFileParser(GenericParser fileParser) {
         _fileParser = fileParser;
     }
 

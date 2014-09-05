@@ -1,0 +1,7 @@
+type=csv
+delim=,
+headerlines=2
+valueindex=2
+decimalsep=.
+dateindex=1
+dateformat=yyyy-MM-dd HH:mm:ss

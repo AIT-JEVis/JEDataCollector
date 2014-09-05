@@ -13,6 +13,8 @@ import org.jevis.jedatacollector.connection.FTP.SFTPConnection;
 import org.jevis.jedatacollector.connection.HTTP.HTTPConnection;
 import org.jevis.jedatacollector.connection.SOAP.SOAPConnection;
 import org.jevis.jedatacollector.connection.SQL.SQLConnection;
+import org.jevis.commons.JEVisTypes;
+import org.jevis.jedatacollector.CLIProperties.ConnectionCLIParser;
 import org.jevis.jedatacollector.exception.FetchingException;
 import org.jevis.jedatacollector.exception.FetchingExceptionType;
 
@@ -22,11 +24,7 @@ import org.jevis.jedatacollector.exception.FetchingExceptionType;
  */
 public class ConnectionFactory {
 
-    public static final String HTTP_CONNECTION = ("HTTPCon");
-    public static final String FTP_CONNECTION = ("FTP");
-    public static final String SFTP_CONNECTION = ("sFTP");
-    public static final String SOAP_CONNECTION = ("SOAP");
-    public static final String SQL_CONNECTION = ("SQL");
+
 
     public static DatacollectorConnection getConnection(JEVisObject connectionData) throws FetchingException {
         DatacollectorConnection connection = null;
@@ -41,18 +39,35 @@ public class ConnectionFactory {
             Logger.getLogger(ConnectionFactory.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        if (identifier.equals(HTTP_CONNECTION)) {
+        if (identifier.equals(JEVisTypes.Connection.HTTP.Name)) {
             connection = new HTTPConnection();
-        } else if (identifier.equals(SOAP_CONNECTION)) {
+        } else if (identifier.equals(JEVisTypes.Connection.SOAP.Name)) {
             connection = new SOAPConnection();
-        } else if (identifier.equals(SQL_CONNECTION)) {
+        } else if (identifier.equals(JEVisTypes.Connection.SQL.Name)) {
             connection = new SQLConnection();
-        } else if (identifier.equals(FTP_CONNECTION)) {
+        } else if (identifier.equals(JEVisTypes.Connection.FTP.Name)) {
             connection = new FTPConnection();
-        } else if (identifier.equals(SFTP_CONNECTION)) {
+        } else if (identifier.equals(JEVisTypes.Connection.sFTP.Name)) {
             connection = new SFTPConnection();
         }
-        connection.initialize(connectionData);
+        return connection;
+    }
+
+    public static DatacollectorConnection getConnection(ConnectionCLIParser con) {
+                DatacollectorConnection connection = null;
+        String identifier = con.getConnectionType();
+
+        if (identifier.equals(JEVisTypes.Connection.HTTP.Name)) {
+            connection = new HTTPConnection(con.getIP(), con.getPath(), con.getPort(), con.getConnectionTimeout(), con.getReadTimeout(), con.getDateFormat());
+        } else if (identifier.equals(JEVisTypes.Connection.SOAP.Name)) {
+            connection = new SOAPConnection();
+        } else if (identifier.equals(JEVisTypes.Connection.SQL.Name)) {
+            connection = new SQLConnection();
+        } else if (identifier.equals(JEVisTypes.Connection.FTP.Name)) {
+            connection = new FTPConnection(con.getDateFormat(), con.getPath(), con.getFileName(), con.getIP(),con.getPort(), con.getUser(), con.getPassword(), con.getConnectionTimeout(), con.getReadTimeout());
+        } else if (identifier.equals(JEVisTypes.Connection.sFTP.Name)) {
+            connection = new SFTPConnection(con.getDateFormat(), con.getPath(), con.getFileName(), con.getIP(),con.getPort(), con.getUser(), con.getPassword(), con.getConnectionTimeout(), con.getReadTimeout());
+        }
         return connection;
     }
 }

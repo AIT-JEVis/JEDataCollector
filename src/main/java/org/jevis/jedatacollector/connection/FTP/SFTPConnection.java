@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.net.ftp.FTPClient;
@@ -24,9 +25,12 @@ import org.jevis.api.JEVisClass;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
 import org.jevis.api.JEVisType;
+import org.jevis.commons.DatabaseHelper;
 import org.jevis.jedatacollector.connection.ConnectionHelper;
 import org.jevis.jedatacollector.connection.DatacollectorConnection;
 import org.jevis.jedatacollector.data.DataPoint;
+import org.jevis.commons.JEVisTypes;
+import org.jevis.jedatacollector.Launcher;
 import org.jevis.jedatacollector.exception.FetchingException;
 import org.joda.time.DateTime;
 
@@ -40,21 +44,21 @@ public class SFTPConnection implements DatacollectorConnection {
     private Session _session;
     private long _id;
     private Long _triesRead;
-    private Long _readTimeout;
+    private Integer _readTimeout;
     private Long _triesConnection;
-    private Long _connectionTimeout;
+    private Integer _connectionTimeout;
     private String _seperator;
     private String _dateFormat;
     private String _filePath; //data/trend
     private String _fileNameScheme; //
     private String _serverURL;
     private String _password;
-    private Integer _port;
+    private Integer _port = 22;
     private String _username;
     private FTPClient _fc;
     private String _parsedPath;
 
-    public SFTPConnection(String dateFormat, String filePath, String fileNameScheme, String url, String user, String password, Long timeoutConnection, Long timeoutRead) {
+    public SFTPConnection(String dateFormat, String filePath, String fileNameScheme, String url, String user, String password, Integer timeoutConnection, Integer timeoutRead) {
         _dateFormat = dateFormat;
         _filePath = filePath;
         _fileNameScheme = fileNameScheme;
@@ -65,6 +69,20 @@ public class SFTPConnection implements DatacollectorConnection {
         _readTimeout = timeoutRead;
     }
     
+       public SFTPConnection(String dateFormat, String filePath, String fileNameScheme, String url,Integer port, String user, String password, Integer timeoutConnection, Integer timeoutRead) {
+        _dateFormat = dateFormat;
+        _filePath = filePath;
+        _fileNameScheme = fileNameScheme;
+        _serverURL = url;
+        _username = user;
+        _password = password;
+        _connectionTimeout = timeoutConnection;
+        _readTimeout = timeoutRead;
+        if(port!=null){
+            _port = port;
+        }
+    }
+
     public SFTPConnection() {
     }
 
@@ -81,7 +99,7 @@ public class SFTPConnection implements DatacollectorConnection {
             config.put("StrictHostKeyChecking", "no");
 
             JSch ssh = new JSch();
-            _session = ssh.getSession(login, hostname, 22);
+            _session = ssh.getSession(login, hostname, _port);
             _session.setConfig(config);
             _session.setPassword(password);
             _session.connect();
@@ -98,7 +116,7 @@ public class SFTPConnection implements DatacollectorConnection {
     @Override
     public List<Object> sendSampleRequest(DataPoint dp, DateTime from, DateTime until) throws FetchingException {
         List<Object> ret = new LinkedList<Object>();
-        String fileName = ConnectionHelper.parseConnectionString(dp, from, until,_fileNameScheme,_dateFormat);
+        String fileName = ConnectionHelper.parseConnectionString(dp, from, until, _fileNameScheme, _dateFormat);
 //        String query = _filePath + fileName;
 
 
@@ -106,9 +124,11 @@ public class SFTPConnection implements DatacollectorConnection {
 //            String directory = "the directory";
 //            String filename = "the filename";
             ChannelSftp sftp = (ChannelSftp) _channel;
+            Vector files = sftp.ls("*");
+            System.out.printf("Found %d files in dir %s%n", files.size(), _filePath);
             sftp.cd(_filePath);
 //            Vector files = sftp.ls("*");
-//            System.out.printf("Found %d files in dir %s%n", files.size(), directory);
+//            System.out.printf("Found %d files in dir %s%n", files.size(), _filePath);
             InputStream get = sftp.get(fileName);
 
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(get));
@@ -128,51 +148,52 @@ public class SFTPConnection implements DatacollectorConnection {
         return ret;
     }
 
-    @Override
-    public boolean returnsLimitedSampleCount() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
+//    @Override
+//    public boolean returnsLimitedSampleCount() {
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//    }
     @Override
     public void initialize(JEVisObject node) throws FetchingException {
         try {
-            JEVisClass type = node.getJEVisClass();
-            JEVisType dateFormat = type.getType("Date format");
-            JEVisType filePath = type.getType("File path");
-            JEVisType fileNameScheme = type.getType("File name scheme");
-            JEVisType server = type.getType("Server URL");
-            JEVisType port = type.getType("Port");
-            JEVisType connectionTimeout = type.getType("Connection Timeout");
-            JEVisType readTimeout = type.getType("Read Timeout");
+            JEVisClass sftpType = Launcher.getClient().getJEVisClass(JEVisTypes.Connection.sFTP.Name);
+            JEVisObject sftpObject = node.getChildren(sftpType, true).get(0);
+            JEVisType dateFormat = sftpType.getType(JEVisTypes.Connection.sFTP.DateFormat);
+            JEVisType filePath = sftpType.getType(JEVisTypes.Connection.sFTP.FilePath);
+            JEVisType fileNameScheme = sftpType.getType(JEVisTypes.Connection.sFTP.FileNameScheme);
+            JEVisType server = sftpType.getType(JEVisTypes.Connection.sFTP.Server);
+            JEVisType port = sftpType.getType(JEVisTypes.Connection.sFTP.Port);
+            JEVisType connectionTimeout = sftpType.getType(JEVisTypes.Connection.sFTP.ConnectionTimeout);
+            JEVisType readTimeout = sftpType.getType(JEVisTypes.Connection.sFTP.ReadTimeout);
             //            JEVisType maxRequest = type.getType("Maxrequestdays");
-            JEVisType user = type.getType("User");
-            JEVisType password = type.getType("Password");
+            JEVisType user = sftpType.getType(JEVisTypes.Connection.sFTP.User);
+            JEVisType password = sftpType.getType(JEVisTypes.Connection.sFTP.Password);
 
-            _id = node.getID();
-            if (node.getAttribute(dateFormat).hasSample()) {
-                _dateFormat = node.getAttribute(dateFormat).getLatestSample().getValueAsString();
+            _id = sftpObject.getID();
+            if (sftpObject.getAttribute(dateFormat).hasSample()) {
+                _dateFormat = sftpObject.getAttribute(dateFormat).getLatestSample().getValueAsString();
             }
-            _filePath = node.getAttribute(filePath).getLatestSample().getValueAsString();
-            _fileNameScheme = node.getAttribute(fileNameScheme).getLatestSample().getValueAsString();
-            _serverURL = node.getAttribute(server).getLatestSample().getValueAsString();
-            JEVisAttribute portAttr = node.getAttribute(port);
+            _filePath = sftpObject.getAttribute(filePath).getLatestSample().getValueAsString();
+            _fileNameScheme = sftpObject.getAttribute(fileNameScheme).getLatestSample().getValueAsString();
+            _serverURL = sftpObject.getAttribute(server).getLatestSample().getValueAsString();
+            JEVisAttribute portAttr = sftpObject.getAttribute(port);
             if (!portAttr.hasSample()) {
-                _port = 20;
+                _port = 22;
             } else {
-                _port = Integer.parseInt((String) node.getAttribute(port).getLatestSample().getValue());
+                _port = Integer.parseInt((String) sftpObject.getAttribute(port).getLatestSample().getValue());
             }
-            _connectionTimeout = node.getAttribute(connectionTimeout).getLatestSample().getValueAsLong();
-            _readTimeout = node.getAttribute(readTimeout).getLatestSample().getValueAsLong();
+             
+            _connectionTimeout = DatabaseHelper.getObjectAsInteger(sftpObject, connectionTimeout);
+            _readTimeout = DatabaseHelper.getObjectAsInteger(sftpObject, readTimeout);
             //            if (node.getAttribute(maxRequest).hasSample()) {
             //                _maximumDayRequest = Integer.parseInt((String) node.getAttribute(maxRequest).getLatestSample().getValue());
             //            }
-            JEVisAttribute userAttr = node.getAttribute(user);
+            JEVisAttribute userAttr = sftpObject.getAttribute(user);
             if (!userAttr.hasSample()) {
                 _username = "";
             } else {
                 _username = (String) userAttr.getLatestSample().getValue();
             }
-            JEVisAttribute passAttr = node.getAttribute(password);
+            JEVisAttribute passAttr = sftpObject.getAttribute(password);
             if (!passAttr.hasSample()) {
                 _password = "";
             } else {
@@ -196,8 +217,12 @@ public class SFTPConnection implements DatacollectorConnection {
         }
     }
 
+//    @Override
+//    public String getConnectionType() {
+//        return JEVisTypes.Connection.sFTP.Name;
+//    }
     @Override
-    public String getConnectionType() {
-        return null;
+    public String getWholeFilePath() {
+        return _filePath + _fileNameScheme;
     }
 }

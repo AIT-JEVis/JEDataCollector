@@ -1,0 +1,9 @@
+type=sFTP
+ip=192.168.1.113
+path=/home/bf/
+file=sftp.dat
+connection-timeout=300
+read-timeout=30
+user=bf
+password=nordhornzweipunktnull
+port=22

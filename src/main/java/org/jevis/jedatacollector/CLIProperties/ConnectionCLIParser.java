@@ -22,9 +22,12 @@ public class ConnectionCLIParser {
     private String _ip;
     private String _dateFormat;
     private String _path;
-    private int _port;
-    private int _connectionTimeout;
-    private int _readTimeout;
+    private String _file;
+    private String _user;
+    private String _password;
+    private Integer _port;
+    private Integer _connectionTimeout;
+    private Integer _readTimeout;
 
     public ConnectionCLIParser(String path) {
         Properties prop = new Properties();
@@ -37,10 +40,14 @@ public class ConnectionCLIParser {
             _connectionType = prop.getProperty("type");
             _dateFormat = prop.getProperty("dateformat");
             _ip = prop.getProperty("ip");
-            _port = Integer.parseInt(prop.getProperty("port"));
+
+            _port = getPropAsInteger(prop, "port");
             _path = prop.getProperty("path");
-            _connectionTimeout = Integer.parseInt(prop.getProperty("connection-timeout"));
-            _readTimeout = Integer.parseInt(prop.getProperty("read-timeout"));
+            _user = prop.getProperty("user");
+            _password = prop.getProperty("password");
+            _connectionTimeout = getPropAsInteger(prop, "connection-timeout");
+            _readTimeout = getPropAsInteger(prop, "read-timeout");
+            _file = prop.getProperty("file");
 
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -48,11 +55,19 @@ public class ConnectionCLIParser {
 
     }
 
+    private Integer getPropAsInteger(Properties prop, String propertyName) {
+        if (prop.getProperty(propertyName) != null) {
+            return Integer.parseInt(prop.getProperty(propertyName));
+        } else {
+            return null;
+        }
+    }
+
     public String getConnectionType() {
         return _connectionType;
     }
 
-    public int getPort() {
+    public Integer getPort() {
         return _port;
     }
 
@@ -74,5 +89,17 @@ public class ConnectionCLIParser {
 
     public String getDateFormat() {
         return _dateFormat;
+    }
+
+    public String getFileName() {
+        return _file;
+    }
+
+    public String getUser() {
+        return _user;
+    }
+
+    public String getPassword() {
+        return _password;
     }
 }

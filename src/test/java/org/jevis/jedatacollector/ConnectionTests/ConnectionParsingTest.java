@@ -22,7 +22,7 @@ import org.joda.time.format.DateTimeFormatter;
 public class ConnectionParsingTest {
 
     public void test_ftp_parsing() {
-        FTPConnection ftp = new FTPConnection(null, "/data/trend/", "Trend${DATAPOINT}.csv", "192.168.2.254", "admin", "envidatec4u", 2l, 200l);
+        FTPConnection ftp = new FTPConnection(null, "/data/trend/", "Trend${DATAPOINT}.csv", "192.168.2.254", "admin", "envidatec4u", 2, 200);
         DateTimeFormatter dtf = DateTimeFormat.forPattern("ddMMyyyyHHmmss");
         DataPoint dp = new DataPoint("_L2_1_DI5_Input_18CB", null, 256l);
         DateTime from = dtf.parseDateTime("01012013000000");

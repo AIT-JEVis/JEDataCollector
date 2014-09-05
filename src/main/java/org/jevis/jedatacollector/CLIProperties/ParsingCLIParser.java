@@ -17,13 +17,13 @@ public class ParsingCLIParser {
     private String _parsingType;
     private String _quote;
     private String _delim;
-    private int _headerlines;
-    private int _valueIndex;
+    private Integer _headerlines;
+    private Integer _valueIndex;
     private String _thousandSep;
     private String _decimalSep;
-    private int _dateIndex;
+    private Integer _dateIndex;
     private String _dateformat;
-    private int _timeIndex;
+    private Integer _timeIndex;
     private String _timeformat;
 
     public ParsingCLIParser(String path) {
@@ -37,19 +37,26 @@ public class ParsingCLIParser {
             _parsingType = prop.getProperty("type");
             _quote = prop.getProperty("quote");
             _delim = prop.getProperty("delim");
-            _headerlines = Integer.parseInt(prop.getProperty("headerlines"));
-            _valueIndex = Integer.parseInt(prop.getProperty("valueindex"));
+            _headerlines = getPropAsInteger(prop,"headerlines");
+            _valueIndex = getPropAsInteger(prop,"valueindex");
             _thousandSep = prop.getProperty("thousandsep");
             _decimalSep = prop.getProperty("decimalsep");
-            _dateIndex = Integer.parseInt(prop.getProperty("dateindex"));
+            _dateIndex = getPropAsInteger(prop,"dateindex");
             _dateformat = prop.getProperty("dateformat");
-            _timeIndex = Integer.parseInt(prop.getProperty("timeindex"));
+            _timeIndex = getPropAsInteger(prop,"timeindex");
             _timeformat = prop.getProperty("timeformat");
 
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-
+    }
+    
+        private Integer getPropAsInteger(Properties prop, String propertyName) {
+        if (prop.getProperty(propertyName) != null) {
+            return Integer.parseInt(prop.getProperty(propertyName));
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -76,14 +83,14 @@ public class ParsingCLIParser {
     /**
      * @return the _headerlines
      */
-    public int getHeaderlines() {
+    public Integer getHeaderlines() {
         return _headerlines;
     }
 
     /**
      * @return the _valueIndex
      */
-    public int getValueIndex() {
+    public Integer getValueIndex() {
         return _valueIndex;
     }
 
@@ -104,7 +111,7 @@ public class ParsingCLIParser {
     /**
      * @return the _dateIndex
      */
-    public int getDateIndex() {
+    public Integer getDateIndex() {
         return _dateIndex;
     }
 
@@ -115,7 +122,7 @@ public class ParsingCLIParser {
         return _dateformat;
     }
 
-    public int getTimeIndex() {
+    public Integer getTimeIndex() {
         return _timeIndex;
     }
 

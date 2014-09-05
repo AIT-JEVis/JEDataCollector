@@ -8,7 +8,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import junit.framework.Assert;
-import org.jevis.commons.parsing.DataCollectorParser;
+import org.jevis.commons.parsing.GenericParser;
 import org.jevis.commons.parsing.GeneralDateParser;
 import org.jevis.commons.parsing.GeneralMappingParser;
 import org.jevis.commons.parsing.GeneralValueParser;
@@ -40,9 +40,9 @@ public class Test_ARA01_outputHandler {
         InputHandler inputHandler = new FileInputHandler(file);
         inputHandler.convertInput();
 
-        DataCollectorParser fileParser = new CSVParsing(null, ";", 2);
+        GenericParser fileParser = new CSVParsing(null, ";", 2);
 
-        GeneralMappingParser datapointParser = new MappingFixCSVParser(false, 22);
+        GeneralMappingParser datapointParser = new MappingFixCSVParser(false, 22l);
         GeneralDateParser dateParser = new DateCSVParser("HH:mm:ss", 2, "dd.MM.yyyy", 3);
         GeneralValueParser valueParser = new ValueCSVParser(1, ".", ",");
 

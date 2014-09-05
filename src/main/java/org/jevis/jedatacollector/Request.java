@@ -5,7 +5,7 @@
 package org.jevis.jedatacollector;
 
 import java.util.List;
-import org.jevis.commons.parsing.DataCollectorParser;
+import org.jevis.commons.parsing.GenericParser;
 import org.jevis.commons.parsing.ParsingRequest;
 import org.jevis.commons.parsing.inputHandler.InputHandler;
 import org.jevis.jedatacollector.connection.DatacollectorConnection;
@@ -28,11 +28,11 @@ public interface Request {
 
     public DatacollectorConnection getConnectionData();
 
-    public DataCollectorParser getParser();
+    public GenericParser getParser();
 
     public void setConnection(DatacollectorConnection connection);
 
-    public void setParser(DataCollectorParser parsing);
+    public void setParser(GenericParser parsing);
 
     public void setEquipment(Equipment equipment);
 

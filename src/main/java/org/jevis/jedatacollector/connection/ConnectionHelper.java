@@ -160,7 +160,12 @@ public class ConnectionHelper {
     }
 
     public static String replaceDatapoint(String parsedString, DataPoint dp) {
-        return parsedString.replaceAll(ConnectionHelper.NEW_DATAPOINT, dp.getChannelID());
+        if(dp!=null){
+            return parsedString.replaceAll(ConnectionHelper.NEW_DATAPOINT, dp.getChannelID());
+        }else{
+            return parsedString;
+        }
+        
     }
 
     //gets the whole String of the Connection with all replacements
@@ -195,5 +200,13 @@ public class ConnectionHelper {
         Pattern p = Pattern.compile(fileNameScheme);
         Matcher m = p.matcher(fileName);
         return m.matches();
+    }
+
+    public static boolean containsToken(String tokenString) {
+        if (tokenString.contains(NEW_DATAPOINT) || tokenString.contains(NEW_DATEFROM) || tokenString.contains(NEW_DATEUNTIL)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

@@ -5,25 +5,22 @@ package org.jevis.jedatacollector.connection.FTP;
  * and open the template in the editor.
  */
 import java.io.*;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.net.ftp.FTPClient;
-import org.apache.commons.net.ftp.FTPFile;
 import org.jevis.api.JEVisAttribute;
 import org.jevis.api.JEVisClass;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
 import org.jevis.api.JEVisType;
 import org.jevis.commons.DatabaseHelper;
-import org.jevis.jedatacollector.connection.ConnectionFactory;
 import org.jevis.jedatacollector.connection.ConnectionHelper;
 import org.jevis.jedatacollector.connection.DatacollectorConnection;
 import org.jevis.jedatacollector.data.DataPoint;
+import org.jevis.commons.JEVisTypes;
+import org.jevis.jedatacollector.Launcher;
 import org.jevis.jedatacollector.exception.FetchingException;
 import org.jevis.jedatacollector.exception.FetchingExceptionType;
 import org.joda.time.DateTime;
@@ -36,16 +33,16 @@ public class FTPConnection implements DatacollectorConnection {
 
     private long _id;
     private Long _triesRead;
-    private Long _readTimeout;
+    private Integer _readTimeout;
     private Long _triesConnection;
-    private Long _connectionTimeout;
+    private Integer _connectionTimeout;
     private String _seperator;
     private String _dateFormat;
     private String _filePath; //data/trend
     private String _fileNameScheme; //
     private String _serverURL;
     private String _password;
-    private Integer _port;
+    private Integer _port = 21;
     private String _username;
     private FTPClient _fc;
     private String _parsedPath;
@@ -54,7 +51,7 @@ public class FTPConnection implements DatacollectorConnection {
         super();
     }
 
-    public FTPConnection(String dateFormat, String filePath, String fileNameScheme, String url, String user, String password, Long timeoutConnection, Long timeoutRead) {
+    public FTPConnection(String dateFormat, String filePath, String fileNameScheme, String url, String user, String password, Integer timeoutConnection, Integer timeoutRead) {
         _dateFormat = dateFormat;
         _filePath = filePath;
         _fileNameScheme = fileNameScheme;
@@ -63,7 +60,20 @@ public class FTPConnection implements DatacollectorConnection {
         _password = password;
         _connectionTimeout = timeoutConnection;
         _readTimeout = timeoutRead;
+    }
 
+    public FTPConnection(String dateFormat, String filePath, String fileNameScheme, String url, Integer port, String user, String password, Integer timeoutConnection, Integer timeoutRead) {
+        _dateFormat = dateFormat;
+        _filePath = filePath;
+        _fileNameScheme = fileNameScheme;
+        _serverURL = url;
+        _username = user;
+        _password = password;
+        _connectionTimeout = timeoutConnection;
+        _readTimeout = timeoutRead;
+        if (port != null) {
+            _port = port;
+        }
     }
 
     @Override
@@ -79,7 +89,7 @@ public class FTPConnection implements DatacollectorConnection {
                 _fc.setDataTimeout(_readTimeout.intValue() * 1000);
             }
 
-            _fc.connect(_serverURL);
+            _fc.connect(_serverURL, _port);
 
             if (_fc.login(_username, _password) == false) {
                 throw new FetchingException(_id, FetchingExceptionType.CONNECTION_ERROR);
@@ -193,11 +203,10 @@ public class FTPConnection implements DatacollectorConnection {
 //
 //        return null;
 //    }
-    @Override
-    public boolean returnsLimitedSampleCount() {
-        return false;
-    }
-
+//    @Override
+//    public boolean returnsLimitedSampleCount() {
+//        return false;
+//    }
     @Override
     public List<Object> sendSampleRequest(DataPoint dp, DateTime from, DateTime until) throws FetchingException {
         List<Object> ret = new LinkedList<Object>();
@@ -240,42 +249,43 @@ public class FTPConnection implements DatacollectorConnection {
     @Override
     public void initialize(JEVisObject node) throws FetchingException {
         try {
-            JEVisClass type = node.getJEVisClass();
-            JEVisType dateFormat = type.getType("Date format");
-            JEVisType filePath = type.getType("File path");
-            JEVisType fileNameScheme = type.getType("File name scheme");
-            JEVisType server = type.getType("Server URL");
-            JEVisType port = type.getType("Port");
-            JEVisType connectionTimeout = type.getType("Connection Timeout");
-            JEVisType readTimeout = type.getType("Read Timeout");
-            //            JEVisType maxRequest = type.getType("Maxrequestdays");
-            JEVisType user = type.getType("User");
-            JEVisType password = type.getType("Password");
+            JEVisClass ftpType = Launcher.getClient().getJEVisClass(JEVisTypes.Connection.FTP.Name);
+            JEVisObject ftpObject = node.getChildren(ftpType, true).get(0);
+            JEVisType dateFormat = ftpType.getType(JEVisTypes.Connection.FTP.DateFormat);
+            JEVisType filePath = ftpType.getType(JEVisTypes.Connection.FTP.FilePath);
+            JEVisType fileNameScheme = ftpType.getType(JEVisTypes.Connection.FTP.FileNameScheme);
+            JEVisType server = ftpType.getType(JEVisTypes.Connection.FTP.Server);
+            JEVisType port = ftpType.getType(JEVisTypes.Connection.FTP.Port);
+            JEVisType connectionTimeout = ftpType.getType(JEVisTypes.Connection.FTP.ConnectionTimeout);
+            JEVisType readTimeout = ftpType.getType(JEVisTypes.Connection.FTP.ReadTimeout);
+            JEVisType user = ftpType.getType(JEVisTypes.Connection.FTP.User);
+            JEVisType password = ftpType.getType(JEVisTypes.Connection.FTP.Password);
 
-            _id = node.getID();
-            _dateFormat = DatabaseHelper.getObjectAsString(node, dateFormat);
-            _filePath = DatabaseHelper.getObjectAsString(node, filePath);
-            _fileNameScheme = DatabaseHelper.getObjectAsString(node, fileNameScheme);
-            _serverURL = DatabaseHelper.getObjectAsString(node, server);
-            
-            _port = DatabaseHelper.getObjectAsInteger(node, port);
-            if(_port == null){
-                _port = 20;
+            _id = ftpObject.getID();
+            org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.INFO, "FTPdate " + dateFormat.getName());
+            _dateFormat = DatabaseHelper.getObjectAsString(ftpObject, dateFormat);
+            _filePath = DatabaseHelper.getObjectAsString(ftpObject, filePath);
+            _fileNameScheme = DatabaseHelper.getObjectAsString(ftpObject, fileNameScheme);
+            _serverURL = DatabaseHelper.getObjectAsString(ftpObject, server);
+
+            _port = DatabaseHelper.getObjectAsInteger(ftpObject, port);
+            if (_port == null) {
+                _port = 21;
             }
-            
-            _connectionTimeout = DatabaseHelper.getObjectAsLong(node, connectionTimeout);
-            
-            _readTimeout = DatabaseHelper.getObjectAsLong(node, readTimeout);
+
+            _connectionTimeout = DatabaseHelper.getObjectAsInteger(ftpObject, connectionTimeout);
+
+            _readTimeout = DatabaseHelper.getObjectAsInteger(ftpObject, readTimeout);
             //            if (node.getAttribute(maxRequest).hasSample()) {
             //                _maximumDayRequest = Integer.parseInt((String) node.getAttribute(maxRequest).getLatestSample().getValue());
             //            }
-            JEVisAttribute userAttr = node.getAttribute(user);
+            JEVisAttribute userAttr = ftpObject.getAttribute(user);
             if (!userAttr.hasSample()) {
                 _username = "";
             } else {
                 _username = (String) userAttr.getLatestSample().getValue();
             }
-            JEVisAttribute passAttr = node.getAttribute(password);
+            JEVisAttribute passAttr = ftpObject.getAttribute(password);
             if (!passAttr.hasSample()) {
                 _password = "";
             } else {
@@ -299,8 +309,12 @@ public class FTPConnection implements DatacollectorConnection {
         }
     }
 
+//    @Override
+//    public String getConnectionType() {
+//        return JEVisTypes.Connection.FTP.Name;
+//    }
     @Override
-    public String getConnectionType() {
-        return ConnectionFactory.FTP_CONNECTION;
+    public String getWholeFilePath() {
+        return _filePath + _fileNameScheme;
     }
 }

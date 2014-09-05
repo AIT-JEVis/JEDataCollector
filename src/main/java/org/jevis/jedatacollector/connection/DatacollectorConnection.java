@@ -46,10 +46,12 @@ public interface DatacollectorConnection {
      *
      * @return true if data is limited, false otherwise
      */
-    boolean returnsLimitedSampleCount();
+//    boolean returnsLimitedSampleCount();
 
     void initialize(JEVisObject object) throws FetchingException;
     
-    public String getConnectionType();
+    public String getWholeFilePath();
+    
+//    public String getConnectionType();
     
 }

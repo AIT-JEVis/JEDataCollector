@@ -8,7 +8,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import junit.framework.Assert;
-import org.jevis.commons.parsing.DataCollectorParser;
+import org.jevis.commons.parsing.GenericParser;
 import org.jevis.commons.parsing.GeneralDateParser;
 import org.jevis.commons.parsing.GeneralMappingParser;
 import org.jevis.commons.parsing.GeneralValueParser;
@@ -54,20 +54,20 @@ public class HttpAlpha_CsvAit {
     public void test_alphaConnect() throws Exception {
         
         DatacollectorConnection connection = new HTTPConnection("192.168.2.55", "/Parsing/data-all.csv", 80, 300, 30);
-        DataCollectorParser fileParser = new CSVParsing("\"", ";", 1);
+        GenericParser fileParser = new CSVParsing("\"", ";", 1);
 
         GeneralDateParser dateParser = new DateCSVParser(null, null, "dd-MM-yyyy HH:mm.ss", 1);
-        GeneralMappingParser datapointParser2 = new MappingFixCSVParser(false, 2);
+        GeneralMappingParser datapointParser2 = new MappingFixCSVParser(false, 2l);
         GeneralValueParser valueParser2 = new ValueCSVParser(2, ",", null);
-        GeneralMappingParser datapointParser3 = new MappingFixCSVParser(false, 3);
+        GeneralMappingParser datapointParser3 = new MappingFixCSVParser(false, 3l);
         GeneralValueParser valueParser3 = new ValueCSVParser(3, ",", null);
-        GeneralMappingParser datapointParser4 = new MappingFixCSVParser(false, 4);
+        GeneralMappingParser datapointParser4 = new MappingFixCSVParser(false, 4l);
         GeneralValueParser valueParser4 = new ValueCSVParser(4, ",", null);
-        GeneralMappingParser datapointParser5 = new MappingFixCSVParser(false, 5);
+        GeneralMappingParser datapointParser5 = new MappingFixCSVParser(false, 5l);
         GeneralValueParser valueParser5= new ValueCSVParser(5, ",", null);
-        GeneralMappingParser datapointParser6 = new MappingFixCSVParser(false, 6);
+        GeneralMappingParser datapointParser6 = new MappingFixCSVParser(false, 6l);
         GeneralValueParser valueParser6 = new ValueCSVParser(6, ",", null);
-        GeneralMappingParser datapointParser22 = new MappingFixCSVParser(false, 22);
+        GeneralMappingParser datapointParser22 = new MappingFixCSVParser(false, 22l);
         GeneralValueParser valueParser22 = new ValueCSVParser(22, ",", null);
 
 

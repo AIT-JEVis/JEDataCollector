@@ -30,11 +30,11 @@ public class OPCConnection implements DatacollectorConnection
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    @Override
-    public boolean returnsLimitedSampleCount()
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+//    @Override
+//    public boolean returnsLimitedSampleCount()
+//    {
+//        throw new UnsupportedOperationException("Not supported yet.");
+//    }
 
     @Override
     public void initialize(JEVisObject node) throws FetchingException
@@ -121,8 +121,13 @@ public class OPCConnection implements DatacollectorConnection
 //        }
 //    }
     
-      @Override
-    public String getConnectionType() {
-        return null;
+//      @Override
+//    public String getConnectionType() {
+//        return null;
+//    }
+
+    @Override
+    public String getWholeFilePath() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

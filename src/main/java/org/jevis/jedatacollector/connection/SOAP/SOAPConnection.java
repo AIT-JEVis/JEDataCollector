@@ -24,6 +24,7 @@ import org.jevis.api.JEVisType;
 import org.jevis.jedatacollector.connection.ConnectionFactory;
 import org.jevis.jedatacollector.data.DataPoint;
 import org.jevis.jedatacollector.connection.DatacollectorConnection;
+import org.jevis.commons.JEVisTypes;
 import org.jevis.jedatacollector.exception.FetchingException;
 import org.jevis.jedatacollector.exception.FetchingExceptionType;
 import org.joda.time.DateTime;
@@ -276,9 +277,14 @@ public class SOAPConnection implements DatacollectorConnection {
     }
 
     @Override
-    public boolean returnsLimitedSampleCount() {
-        return true;
+    public String getWholeFilePath() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+//    @Override
+//    public boolean returnsLimitedSampleCount() {
+//        return true;
+//    }
 
     public class NullOutputStream extends OutputStream {
 
@@ -287,8 +293,8 @@ public class SOAPConnection implements DatacollectorConnection {
         }
     }
     
-      @Override
-    public String getConnectionType() {
-        return ConnectionFactory.SOAP_CONNECTION;
-    }
+//      @Override
+//    public String getConnectionType() {
+//        return JEVisTypes.Connection.SOAP.Name;
+//    }
 }

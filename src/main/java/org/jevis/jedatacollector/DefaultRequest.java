@@ -6,7 +6,7 @@ package org.jevis.jedatacollector;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.jevis.commons.parsing.DataCollectorParser;
+import org.jevis.commons.parsing.GenericParser;
 import org.jevis.commons.parsing.ParsingRequest;
 import org.jevis.commons.parsing.inputHandler.InputHandler;
 import org.jevis.jedatacollector.connection.DatacollectorConnection;
@@ -25,7 +25,7 @@ public class DefaultRequest implements Request {
 
     private boolean _needConnection = false;
     private DatacollectorConnection _connection;
-    private DataCollectorParser _parser;
+    private GenericParser _parser;
     private DataPoint _datapoint;
     private Equipment _equipment;
     private Data _data;
@@ -63,7 +63,7 @@ public class DefaultRequest implements Request {
     }
 
     @Override
-    public DataCollectorParser getParser() {
+    public GenericParser getParser() {
         return _parser;
     }
 
@@ -73,7 +73,7 @@ public class DefaultRequest implements Request {
     }
 
     @Override
-    public void setParser(DataCollectorParser parsing) {
+    public void setParser(GenericParser parsing) {
         _parser = parsing;
     }
 

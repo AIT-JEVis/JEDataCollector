@@ -4,14 +4,16 @@
  */
 package org.jevis.jedatacollector.connection.HTTP;
 
-import java.io.BufferedReader;
+import java.io.BufferedInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -33,10 +35,11 @@ import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
 import org.jevis.api.JEVisType;
 import org.jevis.commons.DatabaseHelper;
-import org.jevis.jedatacollector.connection.ConnectionFactory;
 import org.jevis.jedatacollector.connection.ConnectionHelper;
 import org.jevis.jedatacollector.data.DataPoint;
 import org.jevis.jedatacollector.connection.DatacollectorConnection;
+import org.jevis.commons.JEVisTypes;
+import org.jevis.jedatacollector.Launcher;
 import org.jevis.jedatacollector.exception.FetchingException;
 import org.jevis.jedatacollector.exception.FetchingExceptionType;
 import org.joda.time.DateTime;
@@ -235,64 +238,38 @@ public class HTTPConnection implements DatacollectorConnection {
     @Override
     public void initialize(JEVisObject node) throws FetchingException {
         try {
-            //        _dateFormat = node.<String>getPropertyValue("Date Format");
-            //        _filePath = node.<String>getPropertyValue("File Path");
-            //        _serverURL = node.<String>getPropertyValue("Server URL");
-            //        _port = node.<Long>getPropertyValue("Port");
-            //        _connectionTimeout = node.<Long>getPropertyValue("Connection Timeout");
-            //        _readTimeout = node.<Long>getPropertyValue("Read Timeout");
-            //        _maximumDayRequest = node.<Long>getPropertyValue("Maximum days for Request");
-            //        _id = node.getID();
-            //        
-            //        _userName = node.<String>getPropertyValue("User name");
-            //        if(_userName==null)_userName="";
-            //        if(_password ==null)_password="";
-            //        if(_password ==null)_password="";
+            JEVisClass httpType = Launcher.getClient().getJEVisClass(JEVisTypes.Connection.HTTP.Name);
+            JEVisObject httpObject = node.getChildren(httpType, true).get(0);
+            JEVisType dateFormat = httpType.getType(JEVisTypes.Connection.HTTP.DateFormat);
+            JEVisType filePath = httpType.getType(JEVisTypes.Connection.HTTP.FilePath);
+            JEVisType server = httpType.getType(JEVisTypes.Connection.HTTP.Server);
+            JEVisType port = httpType.getType(JEVisTypes.Connection.HTTP.Port);
+            JEVisType sslType = httpType.getType(JEVisTypes.Connection.HTTP.SSLType);
+            JEVisType connectionTimeout = httpType.getType(JEVisTypes.Connection.HTTP.ConnectionTimeout);
+            JEVisType readTimeout = httpType.getType(JEVisTypes.Connection.HTTP.ReadTimeout);
+            JEVisType user = httpType.getType(JEVisTypes.Connection.HTTP.User);
+            JEVisType password = httpType.getType(JEVisTypes.Connection.HTTP.Password);
 
-            JEVisClass type = node.getJEVisClass();
-            JEVisType dateFormat = type.getType("Date format");
-            JEVisType filePath = type.getType("File Path");
-            JEVisType server = type.getType("Server URL");
-            JEVisType port = type.getType("Port");
-            JEVisType sslType = type.getType("SSL");
-            JEVisType connectionTimeout = type.getType("Connection timeout");
-            JEVisType readTimeout = type.getType("Read timeout");
-//            JEVisType maxRequest = type.getType("Maxrequestdays");
-            JEVisType user = type.getType("User");
-            JEVisType password = type.getType("Password");
-
-            _id = node.getID();
-            _dateFormat = DatabaseHelper.getObjectAsString(node, dateFormat);
-            _filePath = DatabaseHelper.getObjectAsString(node, filePath);
-            _serverURL = DatabaseHelper.getObjectAsString(node, server);
-            _port = DatabaseHelper.getObjectAsInteger(node, port);
-            _connectionTimeout = DatabaseHelper.getObjectAsInteger(node, connectionTimeout);
-            _readTimeout = DatabaseHelper.getObjectAsInteger(node, readTimeout);
-            _ssl = DatabaseHelper.getObjectAsBoolean(node, sslType);
-//            if (node.getAttribute(maxRequest).hasSample()) {
-//                _maximumDayRequest = Integer.parseInt((String) node.getAttribute(maxRequest).getLatestSample().getValue());
-//            }
-            JEVisAttribute userAttr = node.getAttribute(user);
+            _id = httpObject.getID();
+            _dateFormat = DatabaseHelper.getObjectAsString(httpObject, dateFormat);
+            _filePath = DatabaseHelper.getObjectAsString(httpObject, filePath);
+            _serverURL = DatabaseHelper.getObjectAsString(httpObject, server);
+            _port = DatabaseHelper.getObjectAsInteger(httpObject, port);
+            _connectionTimeout = DatabaseHelper.getObjectAsInteger(httpObject, connectionTimeout);
+            _readTimeout = DatabaseHelper.getObjectAsInteger(httpObject, readTimeout);
+            _ssl = DatabaseHelper.getObjectAsBoolean(httpObject, sslType);
+            JEVisAttribute userAttr = httpObject.getAttribute(user);
             if (!userAttr.hasSample()) {
                 _userName = "";
             } else {
                 _userName = (String) userAttr.getLatestSample().getValue();
             }
-            JEVisAttribute passAttr = node.getAttribute(password);
+            JEVisAttribute passAttr = httpObject.getAttribute(password);
             if (!passAttr.hasSample()) {
                 _password = "";
             } else {
                 _password = (String) passAttr.getLatestSample().getValue();
             }
-//            _id = 61l;
-//            _dateFormat = "ddMMyyyyHHmmss";
-//            _filePath = "/DP*DATAPOINT*-*DATE_FROM*-*DATE_TO*";
-//            _serverURL = "172.22.182.2";
-//            _port = 8350;
-//            _connectionTimeout = 30;
-//            _readTimeout = 300;
-//            _userName = "";
-//            _password = "";
         } catch (JEVisException ex) {
             Logger.getLogger(HTTPConnection.class.getName()).log(Level.ERROR, null, ex);
         }
@@ -345,27 +322,43 @@ public class HTTPConnection implements DatacollectorConnection {
 //                    }
                 //                System.out.println("read timeout: " + _readTimeout.intValue() / 1000 + "s");
                 request.setReadTimeout(_readTimeout.intValue());
-
+                System.out.println("HTTPContenttype: " + request.getContentType());
                 InputStream inputStream = request.getInputStream();
-                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-                BufferedReader bufReader = new BufferedReader(inputStreamReader);
-                boolean firstLine = true;
-                String output;
+                BufferedInputStream rd = new BufferedInputStream(inputStream);
 
-                while ((output = bufReader.readLine()) != null) {
-                    System.out.println(output);
-                    if (firstLine && output.equals(" ")) {
-                        firstLine = false;
-                        continue;
+                ZipInputStream zin = new ZipInputStream(rd);
+                ZipEntry ze = null;
+                while ((ze = zin.getNextEntry()) != null) {
+                    System.out.println("Unzipping " + ze.getName());
+                    List<String> tmp = new ArrayList<String>();
+                    StringBuilder sb = new StringBuilder();
+                    for (int c = zin.read(); c != -1; c = zin.read()) {
+                        sb.append((char) c);
                     }
-
-                    l.add(output);
-                    res.add(l);
+                    System.out.println("input,"+sb.toString());
+                    zin.closeEntry();
                 }
+                zin.close();
+//                InputStream inputStream = request.getInputStream();
+//                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+//                BufferedReader bufReader = new BufferedReader(inputStreamReader);
+//                boolean firstLine = true;
+//                String output;
+//
+//                while ((output = bufReader.readLine()) != null) {
+//                    System.out.println(output);
+//                    if (firstLine && output.equals(" ")) {
+//                        firstLine = false;
+//                        continue;
+//                    }
+//
+//                    l.add(output);
+//                    res.add(l);
+//                }
             } catch (MalformedURLException ex) {
                 throw new FetchingException(_id, FetchingExceptionType.URL_ERROR);
             } catch (Exception ex) {
-                throw new FetchingException(_id, FetchingExceptionType.CONNECTION_TIMEOUT);
+                ex.printStackTrace();
             }
         } else {
             DefaultHttpClient _httpClient;
@@ -429,11 +422,10 @@ public class HTTPConnection implements DatacollectorConnection {
         return res;
     }
 
-    @Override
-    public boolean returnsLimitedSampleCount() {
-        return false;
-    }
-
+//    @Override
+//    public boolean returnsLimitedSampleCount() {
+//        return false;
+//    }
     private List<String> getAllPaths(DataPoint dp, DateTime from, DateTime until) {
         List<String> paths = new ArrayList<String>();
         if (_filePath.contains("TIME_START") || _filePath.contains("TIME_END")) {
@@ -455,10 +447,10 @@ public class HTTPConnection implements DatacollectorConnection {
         return paths;
     }
 
-    @Override
-    public String getConnectionType() {
-        return ConnectionFactory.HTTP_CONNECTION;
-    }
+//    @Override
+//    public String getConnectionType() {
+//        return JEVisTypes.Connection.HTTP.Name;
+//    }
 //
 //    public String parseString(DataPoint dp, DateTime from, DateTime until) {
 //        String parsedString = _filePath;
@@ -468,4 +460,8 @@ public class HTTPConnection implements DatacollectorConnection {
 //        parsedString = ConnectionHelper.parseDateTo(parsedString, dp, _dateFormat, until);
 //        return parsedString;
 //    }
+    @Override
+    public String getWholeFilePath() {
+        return _filePath;
+    }
 }

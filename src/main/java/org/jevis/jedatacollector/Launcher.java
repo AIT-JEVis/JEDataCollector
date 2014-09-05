@@ -6,7 +6,6 @@ package org.jevis.jedatacollector;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.commons.cli.Option;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.jevis.api.JEVisClass;
@@ -15,7 +14,7 @@ import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
 import org.jevis.api.sql.JEVisDataSourceSQL;
 import org.jevis.commons.cli.JEVisCommandLine;
-import org.jevis.commons.parsing.DataCollectorParser;
+import org.jevis.commons.parsing.GenericParser;
 import org.jevis.commons.parsing.GeneralDateParser;
 import org.jevis.commons.parsing.GeneralMappingParser;
 import org.jevis.commons.parsing.GeneralValueParser;
@@ -33,6 +32,9 @@ import org.jevis.jedatacollector.connection.HTTP.HTTPConnection;
 import org.jevis.jedatacollector.data.Data;
 import org.jevis.jedatacollector.data.Equipment;
 import org.jevis.jedatacollector.data.DataPoint;
+import org.jevis.commons.JEVisTypes;
+import org.jevis.jedatacollector.connection.ConnectionFactory;
+import org.jevis.jedatacollector.connection.ConnectionHelper;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
@@ -46,50 +48,32 @@ public class Launcher {
 
     private static JEVisDataSource _client;
     private Logger _logger;
-    //Command line Parameter
-    public static String SINGLE = "single";
-    public static String DRY = "dry";
-    public static String OUTPUT = "output";
-    public static String QUERY_SERVER = "query-server";
-    public static String QUERY_USER = "query-user";
-    public static String QUERY_PASS = "query-pass";
-    public static String DATA_SOURCE = "data-source";
-    public static String DATA_POINT = "data-point";
-    public static String EQUIPMENT = "equipment";
-    public static String FROM = "from";
-    public static String UNTIL = "until";
-    public static String PROTOCOL = "protocol";
-    public static String CSV = "csv";
-    public static String CONNETION_FILE = "connection";
-    public static String PARSING_FILE = "parsing";
-    public static String OUTPUT_FILE = "path";
-    public static String OUTPUT_ONLINE = "dp";
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        Logger.getLogger(Launcher.class.getName()).log(Level.INFO, "-------Start JEDataCollector r33-------");
-        initializeCommandLine(args);
-        initializeLogger(JEVisCommandLine.getInstance().getDebugLevel());
+        Logger.getLogger(Launcher.class.getName()).log(Level.INFO, "-------Start JEDataCollector r34-------");
+        Helper.initializeCommandLine(args);
+        Helper.initializeLogger(JEVisCommandLine.getInstance().getDebugLevel());
 
-        //starts a new Logger
+        JEVisCommandLine cmd = JEVisCommandLine.getInstance();
+        boolean cliJob = cmd.isUsed();
 
         Launcher launcher = new Launcher();
-        launcher.connectAlphaServer();
+        List<Request> requestJobs;
 
-
-        //hier müssen verschiedene Modi an und abgestellt werden können
-        List<Request> requestJobs = new ArrayList<Request>();
-        boolean cliJob = false;
+        //starts a new launcher
         if (cliJob) {
-            Logger.getLogger(Launcher.class.getName()).log(Level.INFO, "Start CLI Job");
             requestJobs = launcher.fetchCLIJob();
         } else {
-            Logger.getLogger(Launcher.class.getName()).log(Level.INFO, "Start Jevis Job");
-//            List<Data> dataList = getAllJEvisData();
+            launcher.establishConnection();
             requestJobs = launcher.fetchJEVisDataJobs();
         }
+
+        //hier müssen verschiedene Modi an und abgestellt werden können
+//        boolean cliJob = false;
+
         launcher.excecuteRequsts(requestJobs);
         Logger.getLogger(Launcher.class.getName()).log(Level.INFO, "########## Finish JEDataCollector #########");
 
@@ -110,11 +94,13 @@ public class Launcher {
     private void excecuteRequsts(List<Request> requestJobs) {
         for (Request request : requestJobs) {
             Logger.getLogger(this.getClass().getName()).log(Level.INFO, "-----Execute Request------");
-            Logger.getLogger(this.getClass().getName()).log(Level.INFO, "ID; " + request.getEquipment().getID());
-            Logger.getLogger(this.getClass().getName()).log(Level.ALL, "Datapoints:");
-            for (DataPoint p : request.getDataPoints()) {
-                Logger.getLogger(this.getClass().getName()).log(Level.ALL, p.getDatapointId());
+            if (request.getEquipment() != null) {
+                Logger.getLogger(this.getClass().getName()).log(Level.INFO, "ID; " + request.getEquipment().getID());
+                Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Datapoints:");
+                for (DataPoint p : request.getDataPoints()) {
+                    Logger.getLogger(this.getClass().getName()).log(Level.ALL, p.getDatapointId());
 
+                }
             }
             DataCollector datalogger = new DataCollector(request);
             try {
@@ -139,40 +125,7 @@ public class Launcher {
         }
     }
 
-    private static void initializeCommandLine(String[] args) {
-        JEVisCommandLine cmd = JEVisCommandLine.getInstance();
-        //Execution Control
-        cmd.addOption(new Option(SINGLE, false, "Invokes Single Mode, usefull for debug mode"));
-        cmd.addOption(new Option(DRY, false, "starts a dry run -> fetching data without DB import"));
-        cmd.addOption(new Option(OUTPUT, true, "the outputfile is saved under this path"));
-        //Fetch Job Parameters
-        cmd.addOption(new Option("qs", QUERY_SERVER, true, "Defines the server url for the device request"));
-        cmd.addOption(new Option("qu", QUERY_USER, true, "Defines a user for authentication"));
-        cmd.addOption(new Option("qp", QUERY_PASS, true, "Defines a password for authentication"));
-        cmd.addOption(new Option("ds", DATA_SOURCE, true, "Forces a specific data source"));
-        cmd.addOption(new Option("dp", DATA_POINT, true, "Forces a specific data point"));
-        cmd.addOption(new Option("e", EQUIPMENT, true, "Forces a specific equipment"));
-        cmd.addOption(new Option(FROM, true, "Forces the \"from\" timestamp in UTC format"));
-        cmd.addOption(new Option(UNTIL, true, "Forces the \"until\" timestamp in UTC format"));
-        cmd.addOption(new Option(PROTOCOL, true, "Forces the protocol type"));
-        cmd.addOption(new Option(CSV, true, "Forces the CSV format"));
-
-        cmd.addOption(new Option(OUTPUT_FILE, true, "Saves the output under the given path"));
-        cmd.addOption(new Option(OUTPUT_ONLINE, true, "Saves the output under the given online node in the jevis system"));
-        cmd.addOption(new Option(CONNETION_FILE, true, "Path of the connection file"));
-        cmd.addOption(new Option(PARSING_FILE, true, "Path of the parsing file"));
-
-        //Create Options
-
-        cmd.parse(args);
-    }
-
-    private static void initializeLogger(Level debugLevel) {
-//        PropertyConfigurator.configure("log4j.properties");
-        Logger.getRootLogger().setLevel(debugLevel);
-    }
-
-    private boolean connectAlphaServer() {
+    private boolean establishConnection() {
         Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Connect to JEConfig");
         JEVisCommandLine cmd = JEVisCommandLine.getInstance();
         String configFile = cmd.getConfigPath();
@@ -198,37 +151,43 @@ public class Launcher {
 
     private List<Request> fetchJEVisDataJobs() {
         //getJEVIS Data
-        Logger.getLogger(this.getClass().getName()).log(Level.ALL, "fetch JEVis Data Jobs");
+        Logger.getLogger(this.getClass().getName()).log(Level.INFO, "fetch JEVis Data Jobs");
         List<JEVisObject> equipments;
         List<Data> dataList = new ArrayList<Data>();
         try {
-            JEVisClass jeVisClass = _client.getJEVisClass("VIDA350");
+            JEVisClass jeVisClass = _client.getJEVisClass(JEVisTypes.Equipment.NAME);
+//            Logger.getLogger(this.getClass().getName()).log(Level.INFO, "----------class,"+jeVisClass.getName());
             equipments = _client.getObjects(jeVisClass, true);
-
-            JEVisClass parser = _client.getJEVisClass("CSV");
-            JEVisClass connection = _client.getJEVisClass("HTTPCon");
+            JEVisClass parser = _client.getJEVisClass(JEVisTypes.Parser.CSVParser.NAME);
+            JEVisClass connectionType = _client.getJEVisClass(JEVisTypes.Connection.HTTP.Name);
             //workaround for inherit bug, normally only with jevic class parser and connection
-            JEVisClass ftpConnection = _client.getJEVisClass("FTP");
-            JEVisClass sftpConnection = _client.getJEVisClass("sFTP");
-            JEVisClass datapoints = _client.getJEVisClass("Data Point Directory");
+            JEVisClass ftpConnection = _client.getJEVisClass(JEVisTypes.Connection.FTP.Name);
+            JEVisClass sftpConnection = _client.getJEVisClass(JEVisTypes.Connection.sFTP.Name);
+            JEVisClass datapoints = _client.getJEVisClass(JEVisTypes.DataPointDirectory.NAME);
             for (JEVisObject equip : equipments) {
                 try {
                     List<JEVisObject> parserObject = equip.getChildren(parser, true);
-                    List<JEVisObject> connectionObject = equip.getChildren(connection, true);
+                    List<JEVisObject> connectionObject = equip.getChildren(connectionType, true);
 
                     if (parserObject.size() != 1) {
-                        Logger.getLogger(this.getClass().getName()).log(Level.ALL, "Number of Parsing Objects != 1");
+                        Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Number of Parsing Objects != 1 under: " + equip.getID());
+                        for (JEVisObject tmp : parserObject) {
+                            Logger.getLogger(this.getClass().getName()).log(Level.INFO, "ID" + tmp.getID());
+                        }
                         continue;
                     }
                     if (connectionObject.size() != 1) {
-                        Logger.getLogger(this.getClass().getName()).log(Level.ALL, "Number of Connection Objects != 1");
+                        for (JEVisObject tmp : connectionObject) {
+                            Logger.getLogger(this.getClass().getName()).log(Level.INFO, "ID" + tmp.getID());
+                        }
+                        Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Number of Connection Objects != 1 under: " + equip.getID());
                         //same workaround as above
                         connectionObject = equip.getChildren(ftpConnection, true);
                         if (connectionObject.size() != 1) {
                             connectionObject = equip.getChildren(sftpConnection, true);
-                            Logger.getLogger(this.getClass().getName()).log(Level.INFO, "$$$$$ SFTP $$$$$$$");
+                            Logger.getLogger(this.getClass().getName()).log(Level.INFO, "ftp Connection");
                             if (connectionObject.size() != 1) {
-                                Logger.getLogger(this.getClass().getName()).log(Level.INFO, "NOTNOTNOTNOT");
+                                Logger.getLogger(this.getClass().getName()).log(Level.WARN, "no connection");
                                 continue;
                             }
                         }
@@ -238,9 +197,14 @@ public class Launcher {
                     if (datapointsDir.size() != 1) {
                         continue;
                     }
+                    //hier kommt der Connection/Parsing class loader rein? connection direkt übergeben
                     List<JEVisObject> datapointsJEVis = getDatapoints(datapointsDir.get(0));
+                    DatacollectorConnection connection = ConnectionFactory.getConnection(connectionObject.get(0));
+                    connection.initialize(equip);
+                    Logger.getLogger(this.getClass().getName()).log(Level.INFO, "path," + connection.getWholeFilePath());
+                    boolean needMultiConnection = ConnectionHelper.containsToken(connection.getWholeFilePath());
                     Equipment equipment = new Equipment(equip);
-                    if (equipment.isSingleConnection()) {
+                    if (needMultiConnection) {
                         for (JEVisObject dps : datapointsJEVis) {
                             List<JEVisObject> tmpList = new ArrayList<JEVisObject>();
                             tmpList.add(dps);
@@ -266,38 +230,58 @@ public class Launcher {
         }
 
         Logger.getLogger(
-                this.getClass().getName()).log(Level.ALL, "Number of Requests: " + requests.size());
+                this.getClass().getName()).log(Level.INFO, "Number of Requests: " + requests.size());
         return requests;
     }
 
     private List<Request> fetchCLIJob() {
-        Logger.getLogger(this.getClass().getName()).log(Level.ALL, "fetch CLI Job");
+        Logger.getLogger(this.getClass().getName()).log(Level.INFO, "fetch CLI Job");
         JEVisCommandLine cmd = JEVisCommandLine.getInstance();
-        //Define the file for the connection (e.g. http)
-        String connectionFile = cmd.getValue(CONNETION_FILE);
-        Logger.getLogger(this.getClass().getName()).log(Level.ALL, "ConnectionFile: " + connectionFile);
-        ConnectionCLIParser con = new ConnectionCLIParser(connectionFile);
-        //Define the file for the parsing (e.g. csv)
-        String parsingFile = cmd.getValue(PARSING_FILE);
-        Logger.getLogger(this.getClass().getName()).log(Level.ALL, "ParsingFile: " + parsingFile);
-        ParsingCLIParser par = new ParsingCLIParser(parsingFile);
-        //the output online id from the jevis system
-        long outputOnlineID = Long.parseLong(cmd.getValue(OUTPUT_ONLINE));
-        Logger.getLogger(this.getClass().getName()).log(Level.ALL, "Output Online ID: " + outputOnlineID);
+
         //Define the date format and from/until date
         String dateFormat = "ddMMyyyyHHmmss"; //TODO this should come from a parameter
-        Logger.getLogger(this.getClass().getName()).log(Level.ALL, "DateFormat: " + dateFormat);
+        Logger.getLogger(this.getClass().getName()).log(Level.INFO, "DateFormat: " + dateFormat);
         DateTimeFormatter dtf = DateTimeFormat.forPattern(dateFormat);
-        String fromString = cmd.getValue(FROM);
+        String fromString = null;
+        if (cmd.getValue(Helper.FROM) != null) {
+            fromString = cmd.getValue(Helper.FROM);
+        } else {
+            fromString = "01012000000000";
+        }
         DateTime from = dtf.parseDateTime(fromString);
-        Logger.getLogger(this.getClass().getName()).log(Level.ALL, "Timestamp from: " + fromString);
-        String untilString = cmd.getValue(UNTIL);
-        DateTime until = dtf.parseDateTime(untilString);
-        Logger.getLogger(this.getClass().getName()).log(Level.ALL, "Timestamp until: " + untilString);
+        Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Timestamp from: " + fromString);
+        DateTime until = null;
+        if (cmd.getValue(Helper.UNTIL) != null) {
+            String untilString = cmd.getValue(Helper.UNTIL);
+            until = dtf.parseDateTime(untilString);
+        } else {
+            until = new DateTime();
+        }
+        Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Timestamp until: " + until.toString());
 
-        DatacollectorConnection connection = new HTTPConnection(con.getIP(), con.getPath(), con.getPort(), con.getConnectionTimeout(), con.getReadTimeout(), con.getDateFormat());
-        DataCollectorParser fileParser = new CSVParsing(par.getQuote(), par.getDelim(), par.getHeaderlines());
+        //Define the file for the connection (e.g. http)
+        String connectionFile = cmd.getValue(Helper.CONNETION_FILE);
+        Logger.getLogger(this.getClass().getName()).log(Level.INFO, "ConnectionFile: " + connectionFile);
+        ConnectionCLIParser con = new ConnectionCLIParser(connectionFile);
+        //Define the file for the parsing (e.g. csv)
+        String parsingFile = cmd.getValue(Helper.PARSING_FILE);
+        Logger.getLogger(this.getClass().getName()).log(Level.INFO, "ParsingFile: " + parsingFile);
+        ParsingCLIParser par = new ParsingCLIParser(parsingFile);
+        //the output online id from the jevis system
 
+
+
+        DatacollectorConnection connection = ConnectionFactory.getConnection(con);
+        GenericParser fileParser = new CSVParsing(par.getQuote(), par.getDelim(), par.getHeaderlines());
+
+        Long outputOnlineID = null;
+        String outputFile = null;
+        if (cmd.getValue(Helper.OUTPUT_ONLINE) != null) {
+            outputOnlineID = Long.parseLong(cmd.getValue(Helper.OUTPUT_ONLINE));
+            Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Output Online ID: " + outputOnlineID);
+        } else if (cmd.getValue(Helper.OUTPUT_FILE) != null) {
+            outputFile = cmd.getValue(Helper.OUTPUT_FILE);
+        }
         GeneralMappingParser datapointParser = new MappingFixCSVParser(false, outputOnlineID);
         GeneralDateParser dateParser = new DateCSVParser(par.getTimeformat(), par.getTimeIndex(), par.getDateformat(), par.getDateIndex());
         GeneralValueParser valueParser = new ValueCSVParser(par.getValueIndex(), par.getDecimalSep(), par.getThousandSep());
@@ -306,14 +290,35 @@ public class Launcher {
         fileParser.addSampleContainer(sampleContainer);
 
         String datapointID = "16"; //TODO this should come from a file
-        Logger.getLogger(this.getClass().getName()).log(Level.ALL, "Datapoint id: " + datapointID);
-        DataPoint datapoint = new DataPoint(datapointID, "VIDA350", outputOnlineID);
+        Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Datapoint id: " + datapointID);
+        DataPoint datapoint = new DataPoint(datapointID, JEVisTypes.Equipment.NAME, outputOnlineID);
 
         DateTimeZone timeZone = DateTimeZone.getDefault(); //TODO this should come from a file
 
         List<Request> requests = new ArrayList<Request>();
-        Request request = RequestGenerator.createCLIRequest(connection, fileParser, datapoint, from, until, timeZone);
+        Request request = null;
+        if (cmd.getValue(Helper.OUTPUT_ONLINE) != null) {
+        } else if (cmd.getValue(Helper.OUTPUT_FILE) != null) {
+            outputFile = cmd.getValue(Helper.OUTPUT_FILE);
+            request = RequestGenerator.createCLIRequestWithFileOutput(connection, fileParser, datapoint, from, until, timeZone, outputFile);
+        }
+
         requests.add(request);
+        return requests;
+    }
+
+    private List<Request> requestedJobs() {
+        List<Request> requests = new ArrayList<Request>();
+        JEVisCommandLine cmd = JEVisCommandLine.getInstance();
+        boolean cliJob = cmd.isUsed();
+        if (cliJob) {
+            Logger.getLogger(Launcher.class.getName()).log(Level.INFO, "Start CLI Job");
+            requests = fetchCLIJob();
+        } else {
+            Logger.getLogger(Launcher.class.getName()).log(Level.INFO, "Start Jevis Job");
+//            List<Data> dataList = getAllJEvisData();
+            requests = fetchJEVisDataJobs();
+        }
         return requests;
     }
 }
