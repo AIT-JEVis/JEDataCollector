@@ -127,9 +127,8 @@ public class DataCollector {
         if (!_request.getDataPoints().isEmpty()) {
             dp = _request.getDataPoints().get(0);
         }
-        List<Object> rawResult = _connectionService.sendSamplesRequest(from, until, dp);
-
-        initializeInputConverter(rawResult);
+       _inputHandler = _connectionService.sendSamplesRequest(from, until, dp);
+       _inputHandler.convertInput();
     }
 
     public DateTime getFrom(DataPoint dp) {
@@ -158,9 +157,9 @@ public class DataCollector {
 //        _inputHandler = handler;
 //    }
 
-    private void initializeInputConverter(List<Object> rawResult) {
-        Logger.getLogger(DataCollector.class.getName()).log(Level.INFO, "Initialize Input Converter");
-        _inputHandler = InputHandlerFactory.getInputConverter(rawResult);
-        _inputHandler.convertInput(); //this should happn in the converter
-    }
+//    private void initializeInputConverter(List<Object> rawResult) {
+//        Logger.getLogger(DataCollector.class.getName()).log(Level.INFO, "Initialize Input Converter");
+//        _inputHandler = InputHandlerFactory.getInputConverter(rawResult);
+//        _inputHandler.convertInput(); //this should happn in the converter
+//    }
 }

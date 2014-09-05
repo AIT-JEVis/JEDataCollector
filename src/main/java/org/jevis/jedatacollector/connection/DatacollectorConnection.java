@@ -4,8 +4,10 @@
  */
 package org.jevis.jedatacollector.connection;
 
+import java.io.InputStream;
 import java.util.List;
 import org.jevis.api.JEVisObject;
+import org.jevis.commons.parsing.inputHandler.InputHandler;
 import org.jevis.jedatacollector.data.DataPoint;
 import org.jevis.jedatacollector.exception.FetchingException;
 import org.joda.time.DateTime;
@@ -34,7 +36,7 @@ public interface DatacollectorConnection {
      * @return Returns an object which's type is determined by the connection
      * type
      */
-    List<Object> sendSampleRequest(DataPoint dp, DateTime from, DateTime until) throws FetchingException;
+    InputHandler sendSampleRequest(DataPoint dp, DateTime from, DateTime until) throws FetchingException;
 
     /**
      * Indicates, whether a device returns all the values it was asked for or

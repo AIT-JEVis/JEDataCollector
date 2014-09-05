@@ -17,10 +17,11 @@ import org.jevis.api.JEVisClass;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
 import org.jevis.api.JEVisType;
+import org.jevis.commons.parsing.inputHandler.InputHandler;
+import org.jevis.commons.parsing.inputHandler.InputHandlerFactory;
 import org.jevis.jedatacollector.connection.ConnectionHelper;
 import org.jevis.jedatacollector.data.DataPoint;
 import org.jevis.jedatacollector.connection.DatacollectorConnection;
-import org.jevis.commons.JEVisTypes;
 import org.jevis.jedatacollector.exception.FetchingException;
 
 import org.joda.time.DateTime;
@@ -72,7 +73,7 @@ public class SQLConnection implements DatacollectorConnection {
     }
 
     @Override
-    public List<Object> sendSampleRequest(DataPoint dp, DateTime from, DateTime until) throws FetchingException {
+    public InputHandler sendSampleRequest(DataPoint dp, DateTime from, DateTime until) throws FetchingException {
         List<Object> returnList = new LinkedList<Object>();
 
         try {
@@ -94,7 +95,7 @@ public class SQLConnection implements DatacollectorConnection {
             Logger.getLogger(SQLConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        return returnList;
+        return InputHandlerFactory.getInputConverter(returnList);
     }
 
 //    @Override

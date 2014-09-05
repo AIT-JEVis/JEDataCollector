@@ -5,6 +5,7 @@
 package org.jevis.jedatacollector.service;
 
 import java.util.*;
+import org.jevis.commons.parsing.inputHandler.InputHandler;
 import org.jevis.jedatacollector.data.DataPoint;
 import org.jevis.jedatacollector.connection.DatacollectorConnection;
 import org.jevis.jedatacollector.exception.FetchingException;
@@ -28,7 +29,7 @@ public class ConnectionService {
         System.out.println("---Verbinden erfolgreich---");
     }
 
-    public List<Object> sendSamplesRequest(DateTime from, DateTime until, DataPoint dp) throws FetchingException {
+    public InputHandler sendSamplesRequest(DateTime from, DateTime until, DataPoint dp) throws FetchingException {
         System.out.println("---Send Sample Request---");
 
 //        Calendar fromAfter = GregorianCalendar.getInstance();
@@ -37,7 +38,7 @@ public class ConnectionService {
 //        Calendar toAfter = GregorianCalendar.getInstance();
 //        toAfter.setTimeZone(timeZone);
 //        TimeSet timeSet = new TimeSet(new Date(fromAfter.getTimeInMillis()), new Date(toAfter.getTimeInMillis()));
-        List<Object> answer = _connection.sendSampleRequest(dp, from, until);  //TODO dp in den converter
+        InputHandler answer = _connection.sendSampleRequest(dp, from, until);  //TODO dp in den converter
         return answer;
         
     }

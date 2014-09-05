@@ -1,7 +1,7 @@
 type=sFTP
 ip=192.168.1.113
 path=/home/bf/
-file=sftp.dat
+file=sftp.tar
 connection-timeout=300
 read-timeout=30
 user=bf

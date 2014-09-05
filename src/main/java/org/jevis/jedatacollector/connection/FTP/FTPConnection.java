@@ -20,6 +20,8 @@ import org.jevis.jedatacollector.connection.ConnectionHelper;
 import org.jevis.jedatacollector.connection.DatacollectorConnection;
 import org.jevis.jedatacollector.data.DataPoint;
 import org.jevis.commons.JEVisTypes;
+import org.jevis.commons.parsing.inputHandler.InputHandler;
+import org.jevis.commons.parsing.inputHandler.InputHandlerFactory;
 import org.jevis.jedatacollector.Launcher;
 import org.jevis.jedatacollector.exception.FetchingException;
 import org.jevis.jedatacollector.exception.FetchingExceptionType;
@@ -208,8 +210,8 @@ public class FTPConnection implements DatacollectorConnection {
 //        return false;
 //    }
     @Override
-    public List<Object> sendSampleRequest(DataPoint dp, DateTime from, DateTime until) throws FetchingException {
-        List<Object> ret = new LinkedList<Object>();
+    public InputHandler sendSampleRequest(DataPoint dp, DateTime from, DateTime until) throws FetchingException {
+        Object answer = null;
         String fileNameTmp = ConnectionHelper.parseConnectionString(dp, from, until, _fileNameScheme, _dateFormat);
 //        _fileNameScheme = _fileNameScheme.replaceAll(ConnectionHelper.DATAPOINT, dp.getChannelID());
 //
@@ -231,19 +233,20 @@ public class FTPConnection implements DatacollectorConnection {
                 org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.INFO, "Request status: " + retrieveFile);
 
                 InputStream inputStream = new ByteArrayInputStream(out.toByteArray());
-
-                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-                String inputLine;
-
-                while ((inputLine = bufferedReader.readLine()) != null) {
-                    ret.add(inputLine);
-                }
+                answer = new BufferedInputStream(inputStream);
+                
+//                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+//                String inputLine;
+//
+//                while ((inputLine = bufferedReader.readLine()) != null) {
+//                    ret.add(inputLine);
+//                }
             } catch (IOException ex) {
                 throw new FetchingException(_id, FetchingExceptionType.CONNECTION_TIMEOUT);
             }
         }
 
-        return ret;
+        return InputHandlerFactory.getInputConverter(answer);
     }
 
     @Override

@@ -5,15 +5,12 @@
 package org.jevis.jedatacollector.connection.HTTP;
 
 import java.io.BufferedInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -39,6 +36,8 @@ import org.jevis.jedatacollector.connection.ConnectionHelper;
 import org.jevis.jedatacollector.data.DataPoint;
 import org.jevis.jedatacollector.connection.DatacollectorConnection;
 import org.jevis.commons.JEVisTypes;
+import org.jevis.commons.parsing.inputHandler.InputHandler;
+import org.jevis.commons.parsing.inputHandler.InputHandlerFactory;
 import org.jevis.jedatacollector.Launcher;
 import org.jevis.jedatacollector.exception.FetchingException;
 import org.jevis.jedatacollector.exception.FetchingExceptionType;
@@ -276,10 +275,10 @@ public class HTTPConnection implements DatacollectorConnection {
     }
 
     @Override
-    public List<Object> sendSampleRequest(DataPoint dp, DateTime from, DateTime until) throws FetchingException {
-        List<Object> res = new LinkedList<Object>();
+    public InputHandler sendSampleRequest(DataPoint dp, DateTime from, DateTime until) throws FetchingException {
+//        List<Object> res = new LinkedList<Object>();
         URL requestUrl;
-
+        Object answer = null;
         if (_userName == null || _password == null || _userName.equals("") || _password.equals("")) {
 
             try {
@@ -324,21 +323,24 @@ public class HTTPConnection implements DatacollectorConnection {
                 request.setReadTimeout(_readTimeout.intValue());
                 System.out.println("HTTPContenttype: " + request.getContentType());
                 InputStream inputStream = request.getInputStream();
-                BufferedInputStream rd = new BufferedInputStream(inputStream);
+               answer = new BufferedInputStream(inputStream);
 
-                ZipInputStream zin = new ZipInputStream(rd);
-                ZipEntry ze = null;
-                while ((ze = zin.getNextEntry()) != null) {
-                    System.out.println("Unzipping " + ze.getName());
-                    List<String> tmp = new ArrayList<String>();
-                    StringBuilder sb = new StringBuilder();
-                    for (int c = zin.read(); c != -1; c = zin.read()) {
-                        sb.append((char) c);
-                    }
-                    System.out.println("input,"+sb.toString());
-                    zin.closeEntry();
-                }
-                zin.close();
+//                return InputHandlerFactory.getInputConverter(rd);
+//                ZipInputStream zin = new ZipInputStream(rd);
+//                ZipEntry ze = null;
+//                while ((ze = zin.getNextEntry()) != null) {
+//                    System.out.println("Unzipping " + ze.getName());
+//                    List<String> tmp = new ArrayList<String>();
+//                    StringBuilder sb = new StringBuilder();
+//                    for (int c = zin.read(); c != -1; c = zin.read()) {
+//                        sb.append((char) c);
+//                    }
+//                    System.out.println("input,"+sb.toString());
+//                    zin.closeEntry();
+//                }
+//                zin.close();
+                
+                
 //                InputStream inputStream = request.getInputStream();
 //                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
 //                BufferedReader bufReader = new BufferedReader(inputStreamReader);
@@ -407,8 +409,8 @@ public class HTTPConnection implements DatacollectorConnection {
                 EntityUtils.consume(oEntity);
 
 
-
-                res.add(oXmlString);
+                
+                answer = oXmlString;
             } catch (ClientProtocolException ex) {
                 throw new FetchingException(_id, FetchingExceptionType.CONNECTION_ERROR);
                 //Logger.getLogger(HTTPAuthetificationConnection.class.getName()).log(Level.SEVERE, null, ex);
@@ -418,8 +420,7 @@ public class HTTPConnection implements DatacollectorConnection {
 
             }
         }
-        System.out.println("outputsize " + res.size());
-        return res;
+        return InputHandlerFactory.getInputConverter(answer);
     }
 
 //    @Override

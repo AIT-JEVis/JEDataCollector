@@ -10,12 +10,11 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
-import java.io.BufferedReader;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,6 +29,8 @@ import org.jevis.jedatacollector.connection.ConnectionHelper;
 import org.jevis.jedatacollector.connection.DatacollectorConnection;
 import org.jevis.jedatacollector.data.DataPoint;
 import org.jevis.commons.JEVisTypes;
+import org.jevis.commons.parsing.inputHandler.InputHandler;
+import org.jevis.commons.parsing.inputHandler.InputHandlerFactory;
 import org.jevis.jedatacollector.Launcher;
 import org.jevis.jedatacollector.exception.FetchingException;
 import org.joda.time.DateTime;
@@ -68,8 +69,8 @@ public class SFTPConnection implements DatacollectorConnection {
         _connectionTimeout = timeoutConnection;
         _readTimeout = timeoutRead;
     }
-    
-       public SFTPConnection(String dateFormat, String filePath, String fileNameScheme, String url,Integer port, String user, String password, Integer timeoutConnection, Integer timeoutRead) {
+
+    public SFTPConnection(String dateFormat, String filePath, String fileNameScheme, String url, Integer port, String user, String password, Integer timeoutConnection, Integer timeoutRead) {
         _dateFormat = dateFormat;
         _filePath = filePath;
         _fileNameScheme = fileNameScheme;
@@ -78,7 +79,7 @@ public class SFTPConnection implements DatacollectorConnection {
         _password = password;
         _connectionTimeout = timeoutConnection;
         _readTimeout = timeoutRead;
-        if(port!=null){
+        if (port != null) {
             _port = port;
         }
     }
@@ -114,8 +115,8 @@ public class SFTPConnection implements DatacollectorConnection {
     }
 
     @Override
-    public List<Object> sendSampleRequest(DataPoint dp, DateTime from, DateTime until) throws FetchingException {
-        List<Object> ret = new LinkedList<Object>();
+    public InputHandler sendSampleRequest(DataPoint dp, DateTime from, DateTime until) throws FetchingException {
+        Object answer = null;
         String fileName = ConnectionHelper.parseConnectionString(dp, from, until, _fileNameScheme, _dateFormat);
 //        String query = _filePath + fileName;
 
@@ -130,22 +131,34 @@ public class SFTPConnection implements DatacollectorConnection {
 //            Vector files = sftp.ls("*");
 //            System.out.printf("Found %d files in dir %s%n", files.size(), _filePath);
             InputStream get = sftp.get(fileName);
-
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(get));
-            String inputLine;
-
-            while ((inputLine = bufferedReader.readLine()) != null) {
-                ret.add(inputLine);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            
+            byte[] buffer = new byte[1024];
+            int len;
+            try {
+                while ((len = get.read(buffer)) > -1) {
+                    baos.write(buffer, 0, len);
+                }
+                baos.flush();
+            } catch (IOException ex) {
+                Logger.getLogger(SFTPConnection.class.getName()).log(Level.SEVERE, null, ex);
             }
+
+            answer = new ByteArrayInputStream(baos.toByteArray());
+
+//            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(get));
+//            String inputLine;
+//
+//            while ((inputLine = bufferedReader.readLine()) != null) {
+//                ret.add(inputLine);
+//            }
 
             _channel.disconnect();
             _session.disconnect();
         } catch (SftpException ex) {
             Logger.getLogger(SFTPConnection.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(SFTPConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return ret;
+        return InputHandlerFactory.getInputConverter(answer);
     }
 
 //    @Override
@@ -181,7 +194,7 @@ public class SFTPConnection implements DatacollectorConnection {
             } else {
                 _port = Integer.parseInt((String) sftpObject.getAttribute(port).getLatestSample().getValue());
             }
-             
+
             _connectionTimeout = DatabaseHelper.getObjectAsInteger(sftpObject, connectionTimeout);
             _readTimeout = DatabaseHelper.getObjectAsInteger(sftpObject, readTimeout);
             //            if (node.getAttribute(maxRequest).hasSample()) {
