@@ -102,7 +102,7 @@ public class HTTPConnection implements DatacollectorConnection {
 //        }
 
         if (port != 0) {
-            _wholePath = _serverURL + ":" + port + _filePath;
+            _wholePathes = _serverURL + ":" + port + _filePath;
         } else {
             _wholePath = _serverURL + _filePath;
         }
