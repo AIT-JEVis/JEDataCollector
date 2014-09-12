@@ -28,6 +28,7 @@ public class ConnectionCLIParser {
     private Integer _port;
     private Integer _connectionTimeout;
     private Integer _readTimeout;
+    private Boolean _ssl;
 
     public ConnectionCLIParser(String path) {
         Properties prop = new Properties();
@@ -48,6 +49,7 @@ public class ConnectionCLIParser {
             _connectionTimeout = getPropAsInteger(prop, "connection-timeout");
             _readTimeout = getPropAsInteger(prop, "read-timeout");
             _file = prop.getProperty("file");
+            _ssl = getPropAsBoolean(prop, "ssl");
 
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -86,6 +88,10 @@ public class ConnectionCLIParser {
     public Integer getReadTimeout() {
         return _readTimeout;
     }
+    
+    public Boolean getSecureConnection(){
+        return _ssl;
+    }
 
     public String getDateFormat() {
         return _dateFormat;
@@ -101,5 +107,13 @@ public class ConnectionCLIParser {
 
     public String getPassword() {
         return _password;
+    }
+
+    private Boolean getPropAsBoolean(Properties prop, String propertyName) {
+        if (prop.getProperty(propertyName) != null) {
+            return Boolean.parseBoolean(prop.getProperty(propertyName));
+        } else {
+            return false;
+        }
     }
 }

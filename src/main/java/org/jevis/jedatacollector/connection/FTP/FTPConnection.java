@@ -66,7 +66,7 @@ public class FTPConnection implements DatacollectorConnection {
         _readTimeout = timeoutRead;
     }
 
-    public FTPConnection(String dateFormat, String filePath, String fileNameScheme, String url, Integer port, String user, String password, Integer timeoutConnection, Integer timeoutRead) {
+    public FTPConnection(String dateFormat, String filePath, String fileNameScheme, String url, Integer port, String user, String password, Integer timeoutConnection, Integer timeoutRead, Boolean ssl) {
         _dateFormat = dateFormat;
         _filePath = filePath;
         _fileNameScheme = fileNameScheme;
@@ -75,6 +75,7 @@ public class FTPConnection implements DatacollectorConnection {
         _password = password;
         _connectionTimeout = timeoutConnection;
         _readTimeout = timeoutRead;
+        _ssl = ssl;
         if (port != null) {
             _port = port;
         }
@@ -84,6 +85,7 @@ public class FTPConnection implements DatacollectorConnection {
     public boolean connect() throws FetchingException {
         try {
             if (_ssl) {
+                 System.out.println("ftps verbindung");
                 _fc = new FTPSClient();
             } else {
                 _fc = new FTPClient();

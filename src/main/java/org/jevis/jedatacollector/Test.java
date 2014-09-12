@@ -24,15 +24,16 @@ class Test {
     }
 
     public static void main(String[] args) {
-        try {
-            JEVisDataSourceSQL client = new JEVisDataSourceSQL("192.168.2.55", "3306", "jevis", "jevis", "jevistest", "Sys Admin", "jevis");
-            client.connect("Sys Admin", "jevis");
-            JEVisClass jeVisClass = client.getJEVisClass(JEVisTypes.Equipment.NAME);
-            JEVisClass parser = client.getJEVisClass(JEVisTypes.Parser.CSVParser.NAME);
-            JEVisClass connection = client.getJEVisClass("HTTPCon");
-            connection.setName(JEVisTypes.Connection.HTTP.Name);
-        } catch (JEVisException ex) {
-            java.util.logging.Logger.getLogger(Test.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
+//        try {
+//            JEVisDataSourceSQL client = new JEVisDataSourceSQL("192.168.2.55", "3306", "jevis", "jevis", "jevistest", "Sys Admin", "jevis");
+//            client.connect("Sys Admin", "jevis");
+//            JEVisClass jeVisClass = client.getJEVisClass(JEVisTypes.Equipment.NAME);
+//            JEVisClass parser = client.getJEVisClass(JEVisTypes.Parser.CSVParser.NAME);
+//            JEVisClass connection = client.getJEVisClass("HTTPCon");
+//            connection.setName(JEVisTypes.Connection.HTTP.Name);
+//        } catch (JEVisException ex) {
+//            java.util.logging.Logger.getLogger(Test.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        }
+        System.out.println(Boolean.parseBoolean("0"));
     }
 }

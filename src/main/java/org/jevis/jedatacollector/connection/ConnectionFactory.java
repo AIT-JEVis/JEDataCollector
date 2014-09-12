@@ -64,7 +64,7 @@ public class ConnectionFactory {
         } else if (identifier.equals(JEVisTypes.Connection.SQL.Name)) {
             connection = new SQLConnection();
         } else if (identifier.equals(JEVisTypes.Connection.FTP.Name)) {
-            connection = new FTPConnection(con.getDateFormat(), con.getPath(), con.getFileName(), con.getIP(),con.getPort(), con.getUser(), con.getPassword(), con.getConnectionTimeout(), con.getReadTimeout());
+            connection = new FTPConnection(con.getDateFormat(), con.getPath(), con.getFileName(), con.getIP(),con.getPort(), con.getUser(), con.getPassword(), con.getConnectionTimeout(), con.getReadTimeout(),con.getSecureConnection());
         } else if (identifier.equals(JEVisTypes.Connection.sFTP.Name)) {
             connection = new SFTPConnection(con.getDateFormat(), con.getPath(), con.getFileName(), con.getIP(),con.getPort(), con.getUser(), con.getPassword(), con.getConnectionTimeout(), con.getReadTimeout());
         }
