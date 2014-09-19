@@ -8,6 +8,8 @@ import org.jevis.commons.parsing.DataCollectorParser;
 import org.jevis.commons.parsing.GenericParser;
 import org.jevis.commons.parsing.SampleParserContainer;
 import org.jevis.commons.parsing.inputHandler.InputHandler;
+import org.jevis.commons.parsing.outputHandler.OutputHandler;
+import org.jevis.jedatacollector.data.Data;
 
 /**
  *
@@ -43,6 +45,13 @@ public class ParsingService {
 //            }
 //            _fileParser.createSampleContainers(_fileParser.getJEVisParser(),datapoints);
 //        }
+    }
+
+    public ParsingService(GenericParser parser, String outputType, Data data) {
+        _fileParser = parser;
+        if (data != null && _fileParser.getSampleParserContianers().isEmpty()) {
+            _fileParser.createSampleContainers(data.getJEVisParser(), data.getJEVisDatapoints());
+        }
     }
 
 //    /**

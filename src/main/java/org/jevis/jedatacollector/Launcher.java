@@ -151,7 +151,7 @@ public class Launcher {
 
     private List<Request> fetchJEVisDataJobs() {
         //getJEVIS Data
-        Logger.getLogger(this.getClass().getName()).log(Level.INFO, "fetch JEVis Data Jobs");
+        Logger.getLogger(this.getClass().getName()).log(Level.INFO, "---------- fetch JEVis Data Jobs ----------");
         List<JEVisObject> equipments;
         List<Data> dataList = new ArrayList<Data>();
         try {
@@ -202,16 +202,22 @@ public class Launcher {
                     DatacollectorConnection connection = ConnectionFactory.getConnection(connectionObject.get(0));
                     connection.initialize(equip);
                     Logger.getLogger(this.getClass().getName()).log(Level.INFO, "path," + connection.getWholeFilePath());
-                    boolean needMultiConnection = ConnectionHelper.containsToken(connection.getWholeFilePath());
+                    boolean needMultiConnections = ConnectionHelper.containsToken(connection.getWholeFilePath());
+                    Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Need MultiConnection," + needMultiConnections);
+                   
+                    
+                    
                     Equipment equipment = new Equipment(equip);
-                    if (needMultiConnection) {
+                    if (needMultiConnections) {
                         for (JEVisObject dps : datapointsJEVis) {
                             List<JEVisObject> tmpList = new ArrayList<JEVisObject>();
                             tmpList.add(dps);
+                            Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Create Single File JEVisJob: EquipmentID(" +equip.getID()+");ParsingID("+parserObject.get(0).getID()+");ConnectionID("+connectionObject.get(0).getID()+");DatapointID("+dps.getID()+")");
                             Data data = new Data(parserObject.get(0), connectionObject.get(0), equip, tmpList);
                             dataList.add(data);
                         }
                     } else {
+                        Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Create Multi File JEVisJob: EquipmentID(" +equip.getID()+");ParsingID("+parserObject.get(0).getID()+");ConnectionID("+connectionObject.get(0).getID()+");NumberDatapoints("+datapointsJEVis.size()+")");
                         Data data = new Data(parserObject.get(0), connectionObject.get(0), equip, datapointsJEVis);
                         dataList.add(data);
                     }

@@ -26,8 +26,12 @@ public class Data {
     private GenericParser _parsingData;
     private Equipment _dataLoggerData;
     private List<DataPoint> _datapoints;
+    private List<JEVisObject> _datapointsJEVIS;
+    private JEVisObject _parserJEVIS;
 
     public Data(JEVisObject parser, JEVisObject connection, JEVisObject equipment, List<JEVisObject> datapoints) {
+        _parserJEVIS = parser;
+        _datapointsJEVIS = datapoints;
         _dataLoggerData = new Equipment(equipment);
         _datapoints = new ArrayList<DataPoint>();
         for (JEVisObject dp : datapoints) {
@@ -59,5 +63,13 @@ public class Data {
 
     public GenericParser getParsing() {
         return _parsingData;
+    }
+    
+    public JEVisObject getJEVisParser(){
+        return _parserJEVIS;
+    }
+    
+    public List<JEVisObject> getJEVisDatapoints(){
+        return _datapointsJEVIS;
     }
 }

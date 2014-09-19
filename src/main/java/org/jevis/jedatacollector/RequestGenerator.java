@@ -160,7 +160,7 @@ public class RequestGenerator {
         request.setEquipment(equipment);
         request.setDataPoints(datapoints);
 //            request.setSpecificDatapoint(dp);
-//                request.setData(data);
+        request.setData(data);
         request.setNeedImport(true);
         request.setNeedParsing(true);
         request.setTimeZone(equipment.getTimezone());

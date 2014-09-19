@@ -51,6 +51,7 @@ public class DataCollector {
             connect();
             getInput();
         }
+        System.out.println("Need Parsing:"+_request.needParsing());
         if (_request.needParsing()) {
             Logger.getLogger(DataCollector.class.getName()).log(Level.INFO, "Start Parsing");
             parse();
@@ -63,7 +64,7 @@ public class DataCollector {
 
     public void parse() throws FetchingException {
 //        if (_parsingService == null) {
-        _parsingService = new ParsingService(_request.getParser());
+        _parsingService = new ParsingService(_request.getParser(),_request.getOutputType(),_request.getData());
 //        }
         _parsingService.parseData(_inputHandler);
     }
@@ -74,6 +75,7 @@ public class DataCollector {
 
     public void importData() {
         OutputHandler outputHandler = OutputHandlerFactory.getOutputHandler(_request.getOutputType());
+        System.out.println("Outputtype: "+_request.getOutputType());
         outputHandler.writeOutput(_request.getParsingRequest(), getResults());
     }
 

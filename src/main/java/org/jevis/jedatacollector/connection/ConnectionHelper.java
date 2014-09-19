@@ -40,9 +40,12 @@ public class ConnectionHelper {
     public static final String DATE_TO_SECOND = "\\*DATE_TO_SECOND\\*";
     public static final String DATAPOINT = "\\*DATAPOINT\\*";
     public static final String SYSTEM_TIME = "\\*SYSTEM_TIME\\*";
-    public static final String NEW_DATAPOINT = "\\$\\{DATAPOINT\\}";
-    public static final String NEW_DATEFROM = "\\$\\{DATE_FROM\\}";
-    public static final String NEW_DATEUNTIL = "\\$\\{DATE_TO\\}";
+    public static final String NEW_DATAPOINT = "${DATAPOINT}";
+    public static final String NEW_DATEFROM = "${DATE_FROM}";
+    public static final String NEW_DATEUNTIL = "${DATE_TO}";
+        public static final String NEW_DATAPOINT_PATTERN = "\\$\\{DATAPOINT\\}";
+    public static final String NEW_DATEFROM_PATTERN = "\\$\\{DATE_FROM\\}";
+    public static final String NEW_DATEUNTIL_PATTERN = "\\$\\{DATE_TO\\}";
 
     public static List<String> parseString(String string, DataPoint datapoint, String datePattern, DateTime from, DateTime until) {
 //        string = Pattern.quote(string);
@@ -103,7 +106,7 @@ public class ConnectionHelper {
 
             DateTimeFormatter fmt = DateTimeFormat.forPattern(datePattern);
 
-            string = string.replaceAll(NEW_DATEFROM, fmt.print(from));
+            string = string.replaceAll(NEW_DATEFROM_PATTERN, fmt.print(from));
 //            string = string.replaceAll(DATE_FROM_YEAR, from.getYear() + "");
 //            string = string.replaceAll(DATE_FROM_MONTH, from.getMonthOfYear() + "");
 //            string = string.replaceAll(DATE_FROM_DAY, from.getDayOfMonth() + "");
@@ -133,7 +136,7 @@ public class ConnectionHelper {
         if (datePattern != null && !datePattern.equals("")) {
             DateTimeFormatter fmt = DateTimeFormat.forPattern(datePattern);
 
-            string = string.replaceAll(NEW_DATEUNTIL, fmt.print(until));
+            string = string.replaceAll(NEW_DATEUNTIL_PATTERN, fmt.print(until));
 //            string = string.replaceAll(DATE_TO_YEAR, until.getYear() + "");
 //            string = string.replaceAll(DATE_TO_MONTH, until.getMonthOfYear() + "");
 //            string = string.replaceAll(DATE_TO_DAY, until.getDayOfMonth() + "");
@@ -161,7 +164,7 @@ public class ConnectionHelper {
 
     public static String replaceDatapoint(String parsedString, DataPoint dp) {
         if(dp!=null){
-            return parsedString.replaceAll(ConnectionHelper.NEW_DATAPOINT, dp.getChannelID());
+            return parsedString.replaceAll(ConnectionHelper.NEW_DATAPOINT_PATTERN, dp.getChannelID());
         }else{
             return parsedString;
         }
@@ -203,7 +206,7 @@ public class ConnectionHelper {
     }
 
     public static boolean containsToken(String tokenString) {
-        if (tokenString.contains(NEW_DATAPOINT) || tokenString.contains(NEW_DATEFROM) || tokenString.contains(NEW_DATEUNTIL)) {
+        if (tokenString.contains(NEW_DATAPOINT)) {
             return true;
         } else {
             return false;
