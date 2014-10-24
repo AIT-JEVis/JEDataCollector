@@ -16,7 +16,7 @@ import org.joda.time.DateTime;
  *
  * @author max
  */
-public interface DatacollectorConnection {
+public interface DataCollectorConnection {
 
     /**
      * Connects to a device.
@@ -55,5 +55,4 @@ public interface DatacollectorConnection {
     public String getWholeFilePath();
     
 //    public String getConnectionType();
-    
 }

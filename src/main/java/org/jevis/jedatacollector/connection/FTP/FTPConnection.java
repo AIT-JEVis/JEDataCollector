@@ -5,7 +5,6 @@ package org.jevis.jedatacollector.connection.FTP;
  * and open the template in the editor.
  */
 import java.io.*;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,7 +17,7 @@ import org.jevis.api.JEVisObject;
 import org.jevis.api.JEVisType;
 import org.jevis.commons.DatabaseHelper;
 import org.jevis.jedatacollector.connection.ConnectionHelper;
-import org.jevis.jedatacollector.connection.DatacollectorConnection;
+import org.jevis.jedatacollector.connection.DataCollectorConnection;
 import org.jevis.jedatacollector.data.DataPoint;
 import org.jevis.commons.JEVisTypes;
 import org.jevis.commons.parsing.inputHandler.InputHandler;
@@ -32,7 +31,7 @@ import org.joda.time.DateTime;
  *
  * @author max
  */
-public class FTPConnection implements DatacollectorConnection {
+public class FTPConnection implements DataCollectorConnection {
 
     private long _id;
     private Long _triesRead;
@@ -85,7 +84,7 @@ public class FTPConnection implements DatacollectorConnection {
     public boolean connect() throws FetchingException {
         try {
             if (_ssl) {
-                 System.out.println("ftps verbindung");
+                 System.out.println("ftps connection");
                 _fc = new FTPSClient();
             } else {
                 _fc = new FTPClient();
@@ -274,20 +273,16 @@ public class FTPConnection implements DatacollectorConnection {
             JEVisType password = ftpType.getType(JEVisTypes.Connection.FTP.Password);
 
             _id = ftpObject.getID();
-            org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.INFO, "FTPdate " + dateFormat.getName());
             _dateFormat = DatabaseHelper.getObjectAsString(ftpObject, dateFormat);
             _filePath = DatabaseHelper.getObjectAsString(ftpObject, filePath);
             _fileNameScheme = DatabaseHelper.getObjectAsString(ftpObject, fileNameScheme);
             _ssl = DatabaseHelper.getObjectAsBoolean(ftpObject, SSL);
             _serverURL = DatabaseHelper.getObjectAsString(ftpObject, server);
-
             _port = DatabaseHelper.getObjectAsInteger(ftpObject, port);
             if (_port == null) {
                 _port = 21;
             }
-
             _connectionTimeout = DatabaseHelper.getObjectAsInteger(ftpObject, connectionTimeout);
-
             _readTimeout = DatabaseHelper.getObjectAsInteger(ftpObject, readTimeout);
             //            if (node.getAttribute(maxRequest).hasSample()) {
             //                _maximumDayRequest = Integer.parseInt((String) node.getAttribute(maxRequest).getLatestSample().getValue());
@@ -296,13 +291,14 @@ public class FTPConnection implements DatacollectorConnection {
             if (!userAttr.hasSample()) {
                 _username = "";
             } else {
-                _username = (String) userAttr.getLatestSample().getValue();
+                _username = DatabaseHelper.getObjectAsString(ftpObject, user);
             }
+                
             JEVisAttribute passAttr = ftpObject.getAttribute(password);
             if (!passAttr.hasSample()) {
                 _password = "";
             } else {
-                _password = (String) passAttr.getLatestSample().getValue();
+                _password = DatabaseHelper.getObjectAsString(ftpObject, password);
             }
             //        _id = cn.getID();
             //        _dateFormat = cn.<String>getPropertyValue("Date Format");

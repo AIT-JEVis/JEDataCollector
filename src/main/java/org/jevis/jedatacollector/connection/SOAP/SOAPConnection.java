@@ -24,7 +24,7 @@ import org.jevis.api.JEVisObject;
 import org.jevis.api.JEVisType;
 import org.jevis.jedatacollector.connection.ConnectionFactory;
 import org.jevis.jedatacollector.data.DataPoint;
-import org.jevis.jedatacollector.connection.DatacollectorConnection;
+import org.jevis.jedatacollector.connection.DataCollectorConnection;
 import org.jevis.commons.JEVisTypes;
 import org.jevis.commons.parsing.inputHandler.InputHandler;
 import org.jevis.commons.parsing.inputHandler.InputHandlerFactory;
@@ -41,7 +41,7 @@ import org.xml.sax.SAXException;
  *
  * @author max
  */
-public class SOAPConnection implements DatacollectorConnection {
+public class SOAPConnection implements DataCollectorConnection {
 
     private javax.xml.soap.SOAPConnection _conn;
     private String _xmlTemplate;
@@ -232,7 +232,7 @@ public class SOAPConnection implements DatacollectorConnection {
             soapPart.setContent(new DOMSource(doc));
 
         } catch (Exception ex) {
-            Logger.getLogger(DatacollectorConnection.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DataCollectorConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         MimeHeaders headers = message.getMimeHeaders();
@@ -270,7 +270,7 @@ public class SOAPConnection implements DatacollectorConnection {
                 }
             }
         } catch (Exception ex) {
-            Logger.getLogger(DatacollectorConnection.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DataCollectorConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         if (answer == null) {

@@ -66,4 +66,8 @@ public class Equipment {
             Logger.getLogger(Equipment.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
+    public Long getJEVisID() {
+        return _id;
+    }
 }

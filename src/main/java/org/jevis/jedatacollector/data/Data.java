@@ -9,9 +9,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
+import org.jevis.commons.parsing.DataCollectorParser;
 import org.jevis.commons.parsing.GenericParser;
 import org.jevis.commons.parsing.ParsingFactory;
-import org.jevis.jedatacollector.connection.DatacollectorConnection;
+import org.jevis.jedatacollector.connection.DataCollectorConnection;
 import org.jevis.jedatacollector.connection.ConnectionFactory;
 import org.jevis.jedatacollector.exception.FetchingException;
 
@@ -22,8 +23,8 @@ import org.jevis.jedatacollector.exception.FetchingException;
 public class Data {
 
 //    public static TimeZone _defaultTimezone = TimeZone.getDefault();
-    private DatacollectorConnection _connection;
-    private GenericParser _parsingData;
+    private DataCollectorConnection _connection;
+    private DataCollectorParser _parsingData;
     private Equipment _dataLoggerData;
     private List<DataPoint> _datapoints;
     private List<JEVisObject> _datapointsJEVIS;
@@ -49,6 +50,13 @@ public class Data {
         }
     }
 
+    public Data(DataCollectorParser parser, DataCollectorConnection connection, Equipment equip, List<DataPoint> tmpList) {
+        _dataLoggerData = equip;
+        _connection = connection;
+        _parsingData = parser;
+        _datapoints = tmpList;
+    }
+
     public List<DataPoint> getDatapoints() {
         return _datapoints;
     }
@@ -57,11 +65,11 @@ public class Data {
         return _dataLoggerData;
     }
 
-    public DatacollectorConnection getConnection() {
+    public DataCollectorConnection getConnection() {
         return _connection;
     }
 
-    public GenericParser getParsing() {
+    public DataCollectorParser getParsing() {
         return _parsingData;
     }
     

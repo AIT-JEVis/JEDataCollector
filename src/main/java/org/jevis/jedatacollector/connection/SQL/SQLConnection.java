@@ -21,7 +21,7 @@ import org.jevis.commons.parsing.inputHandler.InputHandler;
 import org.jevis.commons.parsing.inputHandler.InputHandlerFactory;
 import org.jevis.jedatacollector.connection.ConnectionHelper;
 import org.jevis.jedatacollector.data.DataPoint;
-import org.jevis.jedatacollector.connection.DatacollectorConnection;
+import org.jevis.jedatacollector.connection.DataCollectorConnection;
 import org.jevis.jedatacollector.exception.FetchingException;
 
 import org.joda.time.DateTime;
@@ -30,7 +30,7 @@ import org.joda.time.DateTime;
  *
  * @author max
  */
-public class SQLConnection implements DatacollectorConnection {
+public class SQLConnection implements DataCollectorConnection {
 
     private String _dbDriver;
     private String _dbHost;

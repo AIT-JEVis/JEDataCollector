@@ -15,7 +15,7 @@ import org.jevis.commons.parsing.inputHandler.SOAPMessageInputHandler;
 import org.jevis.jedatacollector.DataCollector;
 import org.jevis.jedatacollector.Request;
 import org.jevis.jedatacollector.RequestGenerator;
-import org.jevis.jedatacollector.connection.DatacollectorConnection;
+import org.jevis.jedatacollector.connection.DataCollectorConnection;
 import org.jevis.jedatacollector.connection.SOAP.SOAPConnection;
 import org.jevis.jedatacollector.data.DataPoint;
 import org.joda.time.DateTime;
@@ -32,11 +32,11 @@ public class LinxSOAPConnectionTest {
                 + "    <SOAP-ENV:Header/>\n"
                 + "    <SOAP-ENV:Body>\n"
                 + "        <LogRead xmlns=\"http://www.loytec.com/wsdl/XMLDL/1.0/\" NumItems=\"500\" ReturnCompleteSet=\"false\" StartDateTime=\"2014-04-15T10:30:00\">\n"
-                + "            <ReqBase logHandle=\"00/var/lib/dpal/trend-10C5.bin\"/>\n"
+                + "            <ReqBase logHandle=\"00/var/lib/dpal/trend-10DF.bin.1\"/>\n"
                 + "        </LogRead>\n"
                 + "    </SOAP-ENV:Body>\n"
                 + "</SOAP-ENV:Envelope>";
-        DatacollectorConnection connection = new SOAPConnection(template, "http://admin:envidatec4u@192.168.2.254/DL", "yyyy-MM-dd'T'HH:mm:ss'Z'", "0", 2l, 60l, null);
+        DataCollectorConnection connection = new SOAPConnection(template, "http://admin:envidatec4u@192.168.2.254/DL", "yyyy-MM-dd'T'HH:mm:ss'Z'", "0", 2l, 60l, null);
 
         DateTime until = new DateTime();
         DateTime from = until.minusDays(15);

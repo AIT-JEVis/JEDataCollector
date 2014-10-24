@@ -26,7 +26,7 @@ import org.jevis.api.JEVisObject;
 import org.jevis.api.JEVisType;
 import org.jevis.commons.DatabaseHelper;
 import org.jevis.jedatacollector.connection.ConnectionHelper;
-import org.jevis.jedatacollector.connection.DatacollectorConnection;
+import org.jevis.jedatacollector.connection.DataCollectorConnection;
 import org.jevis.jedatacollector.data.DataPoint;
 import org.jevis.commons.JEVisTypes;
 import org.jevis.commons.parsing.inputHandler.InputHandler;
@@ -39,7 +39,7 @@ import org.joda.time.DateTime;
  *
  * @author bf
  */
-public class SFTPConnection implements DatacollectorConnection {
+public class SFTPConnection implements DataCollectorConnection {
 
     private Channel _channel;
     private Session _session;
@@ -192,7 +192,7 @@ public class SFTPConnection implements DatacollectorConnection {
             if (!portAttr.hasSample()) {
                 _port = 22;
             } else {
-                _port = Integer.parseInt((String) sftpObject.getAttribute(port).getLatestSample().getValue());
+                _port =  DatabaseHelper.getObjectAsInteger(sftpObject, port);
             }
 
             _connectionTimeout = DatabaseHelper.getObjectAsInteger(sftpObject, connectionTimeout);
@@ -204,13 +204,13 @@ public class SFTPConnection implements DatacollectorConnection {
             if (!userAttr.hasSample()) {
                 _username = "";
             } else {
-                _username = (String) userAttr.getLatestSample().getValue();
+                _username =  DatabaseHelper.getObjectAsString(sftpObject, user);
             }
             JEVisAttribute passAttr = sftpObject.getAttribute(password);
             if (!passAttr.hasSample()) {
                 _password = "";
             } else {
-                _password = (String) passAttr.getLatestSample().getValue();
+                _password = DatabaseHelper.getObjectAsString(sftpObject, password);
             }
             //        _id = cn.getID();
             //        _dateFormat = cn.<String>getPropertyValue("Date Format");

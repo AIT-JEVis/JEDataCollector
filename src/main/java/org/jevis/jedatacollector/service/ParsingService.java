@@ -4,12 +4,17 @@
  */
 package org.jevis.jedatacollector.service;
 
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.jevis.api.JEVisObject;
 import org.jevis.commons.parsing.DataCollectorParser;
 import org.jevis.commons.parsing.GenericParser;
 import org.jevis.commons.parsing.SampleParserContainer;
 import org.jevis.commons.parsing.inputHandler.InputHandler;
-import org.jevis.commons.parsing.outputHandler.OutputHandler;
 import org.jevis.jedatacollector.data.Data;
+import org.jevis.jedatacollector.data.DataPoint;
 
 /**
  *
@@ -47,10 +52,14 @@ public class ParsingService {
 //        }
     }
 
-    public ParsingService(GenericParser parser, String outputType, Data data) {
+    public ParsingService(DataCollectorParser parser, String outputType, Data data) {
         _fileParser = parser;
         if (data != null && _fileParser.getSampleParserContianers().isEmpty()) {
-            _fileParser.createSampleContainers(data.getJEVisParser(), data.getJEVisDatapoints());
+            List<JEVisObject> jevisDatapoints = new ArrayList<JEVisObject>();
+            for (DataPoint dp : data.getDatapoints()) {
+                jevisDatapoints.add(dp.getJEVisDatapoint());
+            }
+            _fileParser.createSampleContainers(data.getParsing().getJEVisParser(), jevisDatapoints);
         }
     }
 

@@ -7,7 +7,7 @@ package org.jevis.jedatacollector.service;
 import java.util.*;
 import org.jevis.commons.parsing.inputHandler.InputHandler;
 import org.jevis.jedatacollector.data.DataPoint;
-import org.jevis.jedatacollector.connection.DatacollectorConnection;
+import org.jevis.jedatacollector.connection.DataCollectorConnection;
 import org.jevis.jedatacollector.exception.FetchingException;
 import org.joda.time.DateTime;
 
@@ -17,9 +17,9 @@ import org.joda.time.DateTime;
  */
 public class ConnectionService {
 
-    private DatacollectorConnection _connection;
+    private DataCollectorConnection _connection;
 
-    public ConnectionService(DatacollectorConnection connection) {
+    public ConnectionService(DataCollectorConnection connection) {
         _connection = connection;
     }
 

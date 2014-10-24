@@ -6,10 +6,11 @@ package org.jevis.jedatacollector;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.jevis.commons.parsing.DataCollectorParser;
 import org.jevis.commons.parsing.GenericParser;
 import org.jevis.commons.parsing.ParsingRequest;
 import org.jevis.commons.parsing.inputHandler.InputHandler;
-import org.jevis.jedatacollector.connection.DatacollectorConnection;
+import org.jevis.jedatacollector.connection.DataCollectorConnection;
 import org.jevis.jedatacollector.data.Data;
 import org.jevis.jedatacollector.data.Equipment;
 import org.jevis.jedatacollector.data.DataPoint;
@@ -24,8 +25,8 @@ import org.joda.time.DateTimeZone;
 public class DefaultRequest implements Request {
 
     private boolean _needConnection = false;
-    private DatacollectorConnection _connection;
-    private GenericParser _parser;
+    private DataCollectorConnection _connection;
+    private DataCollectorParser _parser;
     private DataPoint _datapoint;
     private Equipment _equipment;
     private Data _data;
@@ -54,7 +55,7 @@ public class DefaultRequest implements Request {
     }
 
     @Override
-    public DatacollectorConnection getConnectionData() {
+    public DataCollectorConnection getConnectionData() {
         return _connection;
     }
 
@@ -63,17 +64,17 @@ public class DefaultRequest implements Request {
     }
 
     @Override
-    public GenericParser getParser() {
+    public DataCollectorParser getParser() {
         return _parser;
     }
 
     @Override
-    public void setConnection(DatacollectorConnection connection) {
+    public void setConnection(DataCollectorConnection connection) {
         _connection = connection;
     }
 
     @Override
-    public void setParser(GenericParser parsing) {
+    public void setParser(DataCollectorParser parsing) {
         _parser = parsing;
     }
 

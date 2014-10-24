@@ -9,7 +9,7 @@ import java.util.List;
 import org.jevis.api.JEVisObject;
 import org.jevis.commons.parsing.inputHandler.InputHandler;
 import org.jevis.jedatacollector.data.DataPoint;
-import org.jevis.jedatacollector.connection.DatacollectorConnection;
+import org.jevis.jedatacollector.connection.DataCollectorConnection;
 import org.jevis.jedatacollector.exception.FetchingException;
 import org.joda.time.DateTime;
 
@@ -17,7 +17,7 @@ import org.joda.time.DateTime;
  *
  * @author max
  */
-public class OPCConnection implements DatacollectorConnection
+public class OPCConnection implements DataCollectorConnection
 {
 
     @Override

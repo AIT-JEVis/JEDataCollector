@@ -22,7 +22,7 @@ import org.jevis.jedatacollector.DataCollector;
 
 import org.jevis.jedatacollector.Request;
 import org.jevis.jedatacollector.RequestGenerator;
-import org.jevis.jedatacollector.connection.DatacollectorConnection;
+import org.jevis.jedatacollector.connection.DataCollectorConnection;
 import org.jevis.jedatacollector.connection.HTTP.HTTPConnection;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -53,7 +53,7 @@ public class HttpAlpha_CsvAit {
      */
     public void test_alphaConnect() throws Exception {
         
-        DatacollectorConnection connection = new HTTPConnection("192.168.2.55", "/Parsing/data-all.csv", 80, 300, 30);
+        DataCollectorConnection connection = new HTTPConnection("192.168.2.55", "/Parsing/data-all.csv", 80, 300, 30);
         GenericParser fileParser = new CSVParsing("\"", ";", 1);
 
         GeneralDateParser dateParser = new DateCSVParser(null, null, "dd-MM-yyyy HH:mm.ss", 1);

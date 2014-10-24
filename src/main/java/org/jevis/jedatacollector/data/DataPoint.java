@@ -80,4 +80,8 @@ public class DataPoint {
     public String getValueSpec() {
         return _valueSpec;
     }
+
+    public String getJEVisID() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

@@ -19,7 +19,7 @@ import org.jevis.commons.parsing.csvParsing.ValueCSVParser;
 import org.jevis.jedatacollector.DataCollector;
 import org.jevis.jedatacollector.Request;
 import org.jevis.jedatacollector.RequestGenerator;
-import org.jevis.jedatacollector.connection.DatacollectorConnection;
+import org.jevis.jedatacollector.connection.DataCollectorConnection;
 import org.jevis.jedatacollector.connection.FTP.FTPConnection;
 import org.jevis.jedatacollector.exception.FetchingException;
 

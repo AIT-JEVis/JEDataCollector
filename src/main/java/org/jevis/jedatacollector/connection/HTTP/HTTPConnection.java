@@ -34,8 +34,9 @@ import org.jevis.api.JEVisType;
 import org.jevis.commons.DatabaseHelper;
 import org.jevis.jedatacollector.connection.ConnectionHelper;
 import org.jevis.jedatacollector.data.DataPoint;
-import org.jevis.jedatacollector.connection.DatacollectorConnection;
+import org.jevis.jedatacollector.connection.DataCollectorConnection;
 import org.jevis.commons.JEVisTypes;
+import org.jevis.commons.parsing.ParsingFactory;
 import org.jevis.commons.parsing.inputHandler.InputHandler;
 import org.jevis.commons.parsing.inputHandler.InputHandlerFactory;
 import org.jevis.jedatacollector.Launcher;
@@ -47,7 +48,7 @@ import org.joda.time.DateTime;
  *
  * @author max
  */
-public class HTTPConnection implements DatacollectorConnection {
+public class HTTPConnection implements DataCollectorConnection {
 
     private String _serverURL;
     private String _filePath;
@@ -308,7 +309,7 @@ public class HTTPConnection implements DatacollectorConnection {
                 }
 
                 request = requestUrl.openConnection();
-                System.out.println("Requesting " + requestUrl);
+                org.apache.log4j.Logger.getLogger(HTTPConnection.class.getName()).log(org.apache.log4j.Level.INFO, "Connection URL: " + _serverURL);
 
 //                    if (_connectionTimeout == null) {
                 _connectionTimeout = 600 * 1000;
@@ -323,7 +324,7 @@ public class HTTPConnection implements DatacollectorConnection {
                 request.setReadTimeout(_readTimeout.intValue());
                 System.out.println("HTTPContenttype: " + request.getContentType());
                 InputStream inputStream = request.getInputStream();
-               answer = new BufferedInputStream(inputStream);
+                answer = new BufferedInputStream(inputStream);
 
 //                return InputHandlerFactory.getInputConverter(rd);
 //                ZipInputStream zin = new ZipInputStream(rd);
@@ -339,8 +340,8 @@ public class HTTPConnection implements DatacollectorConnection {
 //                    zin.closeEntry();
 //                }
 //                zin.close();
-                
-                
+
+
 //                InputStream inputStream = request.getInputStream();
 //                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
 //                BufferedReader bufReader = new BufferedReader(inputStreamReader);
@@ -409,7 +410,7 @@ public class HTTPConnection implements DatacollectorConnection {
                 EntityUtils.consume(oEntity);
 
 
-                
+
                 answer = oXmlString;
             } catch (ClientProtocolException ex) {
                 throw new FetchingException(_id, FetchingExceptionType.CONNECTION_ERROR);

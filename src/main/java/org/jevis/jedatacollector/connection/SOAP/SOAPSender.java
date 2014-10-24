@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 import javax.xml.soap.SOAPConnection;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
-import org.jevis.jedatacollector.connection.DatacollectorConnection;
+import org.jevis.jedatacollector.connection.DataCollectorConnection;
 
 /**
  *
@@ -25,9 +25,9 @@ public class SOAPSender extends Thread
     private SOAPMessage _answer;
     private SOAPMessage _message;
     private URL _server;
-    private DatacollectorConnection _con;
+    private DataCollectorConnection _con;
 
-    public SOAPSender(SOAPConnection c, SOAPMessage m, URL s, DatacollectorConnection con)
+    public SOAPSender(SOAPConnection c, SOAPMessage m, URL s, DataCollectorConnection con)
     {
         _con = con;
         _connection = c;
