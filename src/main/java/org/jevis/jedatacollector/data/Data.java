@@ -25,7 +25,7 @@ public class Data {
 //    public static TimeZone _defaultTimezone = TimeZone.getDefault();
     private DataCollectorConnection _connection;
     private DataCollectorParser _parsingData;
-    private Equipment _dataLoggerData;
+    private DataSource _dataLoggerData;
     private List<DataPoint> _datapoints;
     private List<JEVisObject> _datapointsJEVIS;
     private JEVisObject _parserJEVIS;
@@ -33,7 +33,7 @@ public class Data {
     public Data(JEVisObject parser, JEVisObject connection, JEVisObject equipment, List<JEVisObject> datapoints) {
         _parserJEVIS = parser;
         _datapointsJEVIS = datapoints;
-        _dataLoggerData = new Equipment(equipment);
+        _dataLoggerData = new DataSource(equipment);
         _datapoints = new ArrayList<DataPoint>();
         for (JEVisObject dp : datapoints) {
             _datapoints.add(new DataPoint(dp));
@@ -49,9 +49,16 @@ public class Data {
             Logger.getLogger(Data.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
 
-    public Data(DataCollectorParser parser, DataCollectorConnection connection, Equipment equip, List<DataPoint> tmpList) {
+    public Data(DataCollectorParser parser, DataCollectorConnection connection, DataSource equip, List<DataPoint> tmpList) {
         _dataLoggerData = equip;
+        _connection = connection;
+        _parsingData = parser;
+        _datapoints = tmpList;
+    }
+    
+        public Data(DataCollectorParser parser, DataCollectorConnection connection, List<DataPoint> tmpList) {
         _connection = connection;
         _parsingData = parser;
         _datapoints = tmpList;
@@ -61,7 +68,7 @@ public class Data {
         return _datapoints;
     }
 
-    public Equipment getEquipment() {
+    public DataSource getEquipment() {
         return _dataLoggerData;
     }
 

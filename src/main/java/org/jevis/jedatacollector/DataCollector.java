@@ -4,15 +4,18 @@
  */
 package org.jevis.jedatacollector;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.jevis.api.JEVisAttribute;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
+import org.jevis.api.JEVisSample;
+import org.jevis.commons.JEVisTypes;
+import org.jevis.commons.parsing.DataCollectorParser;
 import org.jevis.commons.parsing.Result;
 import org.jevis.commons.parsing.inputHandler.InputHandler;
-import org.jevis.commons.parsing.inputHandler.InputHandlerFactory;
 import org.jevis.commons.parsing.outputHandler.OutputHandler;
 import org.jevis.commons.parsing.outputHandler.OutputHandlerFactory;
 import org.jevis.jedatacollector.data.DataPoint;
@@ -51,7 +54,7 @@ public class DataCollector {
             connect();
             getInput();
         }
-        System.out.println("Need Parsing:"+_request.needParsing());
+        System.out.println("Need Parsing:" + _request.needParsing());
         if (_request.needParsing()) {
             Logger.getLogger(DataCollector.class.getName()).log(Level.INFO, "Start Parsing");
             parse();
@@ -60,12 +63,35 @@ public class DataCollector {
             Logger.getLogger(DataCollector.class.getName()).log(Level.INFO, "Import Data");
             importData();
         }
+        if (_request.getParsingRequest() != null && _request.getParsingRequest().getOutputType().equals(OutputHandler.JEVIS_OUTPUT)) {
+            for (DataPoint dp : _request.getDataPoints()) {
+                try {
+                    String currentReadout = null;
+                    JEVisSample latestSample = Launcher.getClient().getObject(Long.parseLong(dp.getTarget())).getAttribute("Value").getLatestSample();
+                    if (dp.getPeriodicallySampling()) {
+                        currentReadout = dp.getCurrentReadoutString();
+                    } else if (latestSample != null) {
+                        currentReadout = latestSample.getTimestamp().toString(dp.getDateFormat());
+                    }
+                    JEVisSample buildSample = dp.getJEVisDatapoint().getAttribute(JEVisTypes.DataPoint.LAST_READOUT).buildSample(new DateTime(), currentReadout);
+                    List<JEVisSample> sampleList = new ArrayList<JEVisSample>();
+                    sampleList.add(buildSample);
+                    dp.getJEVisDatapoint().getAttribute(JEVisTypes.DataPoint.LAST_READOUT).addSamples(sampleList);
+                } catch (JEVisException ex) {
+                    java.util.logging.Logger.getLogger(DataCollector.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                }
+            }
+        }
     }
 
     public void parse() throws FetchingException {
 //        if (_parsingService == null) {
-        _parsingService = new ParsingService(_request.getParser(),_request.getOutputType(),_request.getData());
-//        }
+        _parsingService = new ParsingService(_request.getParser(), _request.getOutputType(), _request.getData());
+        //        }
+        DataCollectorParser fileParser = _parsingService.getFileParser();
+        for (DataPoint dp : _request.getDataPoints()) {
+            fileParser.addDataPointParser(dp.getDatapointId(), dp.getTarget(), dp.getMappingIdentifier(), dp.getValueIdentifier());
+        }
         _parsingService.parseData(_inputHandler);
     }
 
@@ -74,8 +100,8 @@ public class DataCollector {
     }
 
     public void importData() {
-        OutputHandler outputHandler = OutputHandlerFactory.getOutputHandler(_request.getOutputType());
-        System.out.println("Outputtype: "+_request.getOutputType());
+        OutputHandler outputHandler = OutputHandlerFactory.getOutputHandler(_request.getParsingRequest().getOutputType());
+        System.out.println("Outputtype: " + _request.getParsingRequest().getOutputType());
         outputHandler.writeOutput(_request.getParsingRequest(), getResults());
     }
 
@@ -96,48 +122,32 @@ public class DataCollector {
     }
 
     private void connect() throws FetchingException {
-        _connectionService = new ConnectionService(_request.getConnectionData());
-        _connectionService.connect();
+//        _connectionService = new ConnectionService();
+        _request.getDataSource().connect();
     }
 
     private void getInput() throws FetchingException {
-        DateTime from = _request.getFrom();
-        DateTime until = _request.getUntil();
-        //get oldest timestamp from all online data rows
 
-        if (from == null) {
-            DateTime currentFrom;
-            for (DataPoint dp : _request.getDataPoints()) {
-                currentFrom = getFrom(dp);
-                if (from == null) {
-                    from = currentFrom;
-                } else if (from.isAfter(currentFrom)) {
-                    from = currentFrom;
-                }
+        for (DataPoint dp : _request.getDataPoints()) {
+            DateTime from = _request.getFrom();
+            if (from == null) {
+                from = dp.getLastReadout();
             }
+            DateTime until = _request.getUntil();
+            if (until == null) {
+                until = new DateTime();
+            }
+            _inputHandler = _request.getDataSource().sendSampleRequest(dp, from, until);
+            break;
         }
-        if (from == null && _request.getEquipment() != null) {
-            from = _request.getEquipment().getStartCollectingTime();
-        }
-        if (from == null) {
-            from = new DateTime(0);
-        }
-        if (until == null) {
-            until = new DateTime();
-        }
-        DataPoint dp = null;
-        if (!_request.getDataPoints().isEmpty()) {
-            dp = _request.getDataPoints().get(0);
-        }
-       _inputHandler = _connectionService.sendSamplesRequest(from, until, dp);
-       _inputHandler.convertInput();
+        _inputHandler.convertInput();
     }
 
     public DateTime getFrom(DataPoint dp) {
         if (dp != null) {
             try {
-                JEVisObject onlineData = Launcher.getClient().getObject(dp.getOnlineID());
-                JEVisAttribute attribute = onlineData.getAttribute("Raw Data"); //TODO iwo auslagern
+                JEVisObject onlineData = Launcher.getClient().getObject(Long.parseLong(dp.getTarget()));
+                JEVisAttribute attribute = onlineData.getAttribute("Value"); //TODO iwo auslagern
                 if (attribute.getLatestSample() != null) {
                     return attribute.getTimestampFromLastSample();
                 } else {
@@ -158,7 +168,6 @@ public class DataCollector {
 //    public void setInputConverter(InputHandler handler) {
 //        _inputHandler = handler;
 //    }
-
 //    private void initializeInputConverter(List<Object> rawResult) {
 //        Logger.getLogger(DataCollector.class.getName()).log(Level.INFO, "Initialize Input Converter");
 //        _inputHandler = InputHandlerFactory.getInputConverter(rawResult);

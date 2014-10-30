@@ -12,7 +12,7 @@ import org.jevis.commons.parsing.ParsingRequest;
 import org.jevis.commons.parsing.inputHandler.InputHandler;
 import org.jevis.jedatacollector.connection.DataCollectorConnection;
 import org.jevis.jedatacollector.data.Data;
-import org.jevis.jedatacollector.data.Equipment;
+import org.jevis.jedatacollector.data.DataSource;
 import org.jevis.jedatacollector.data.DataPoint;
 import org.jevis.jedatacollector.service.ParsingService;
 import org.joda.time.DateTime;
@@ -28,7 +28,7 @@ public class DefaultRequest implements Request {
     private DataCollectorConnection _connection;
     private DataCollectorParser _parser;
     private DataPoint _datapoint;
-    private Equipment _equipment;
+    private DataSource _equipment;
     private Data _data;
     private boolean _needImport;
     private ParsingService _parsingService;
@@ -55,7 +55,7 @@ public class DefaultRequest implements Request {
     }
 
     @Override
-    public DataCollectorConnection getConnectionData() {
+    public DataCollectorConnection getDataSource() {
         return _connection;
     }
 
@@ -79,12 +79,12 @@ public class DefaultRequest implements Request {
     }
 
     @Override
-    public void setEquipment(Equipment equipment) {
+    public void setEquipment(DataSource equipment) {
         _equipment = equipment;
     }
 
     @Override
-    public Equipment getEquipment() {
+    public DataSource getEquipment() {
         return _equipment;
     }
 

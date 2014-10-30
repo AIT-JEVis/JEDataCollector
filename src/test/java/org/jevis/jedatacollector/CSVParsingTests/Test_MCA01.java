@@ -16,7 +16,7 @@ import org.jevis.commons.parsing.Result;
 import org.jevis.commons.parsing.SampleParserContainer;
 import org.jevis.commons.parsing.csvParsing.CSVParsing;
 import org.jevis.commons.parsing.csvParsing.DateCSVParser;
-import org.jevis.commons.parsing.csvParsing.MappingCSVParser;
+import org.jevis.commons.parsing.csvParsing.CSVDatapointParser;
 import org.jevis.commons.parsing.csvParsing.ValueCSVParser;
 import org.jevis.commons.parsing.inputHandler.FileInputHandler;
 import org.jevis.commons.parsing.inputHandler.InputHandler;
@@ -42,9 +42,9 @@ public class Test_MCA01 {
 
         GenericParser fileParser = new CSVParsing(null, ",", 0);
 
-        GeneralMappingParser datapointParser1 = new MappingCSVParser(true, 3333l, "3", 2);
-        GeneralMappingParser datapointParser2 = new MappingCSVParser(true, 4444l, "4", 2);
-        GeneralMappingParser datapointParser3 = new MappingCSVParser(true, 5555l, "5", 2);
+        GeneralMappingParser datapointParser1 = new CSVDatapointParser(true, 3333l, "3", 2);
+        GeneralMappingParser datapointParser2 = new CSVDatapointParser(true, 4444l, "4", 2);
+        GeneralMappingParser datapointParser3 = new CSVDatapointParser(true, 5555l, "5", 2);
         GeneralDateParser dateParser = new DateCSVParser(null, null, "dd.MM.yyyy HH:mm:ss", 1);
         GeneralValueParser valueParser = new ValueCSVParser(3, ".", "");
 

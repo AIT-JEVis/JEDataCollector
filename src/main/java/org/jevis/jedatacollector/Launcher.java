@@ -29,7 +29,7 @@ import org.jevis.jedatacollector.CLIProperties.JEVisServerConnectionCLI;
 import org.jevis.jedatacollector.CLIProperties.ParsingCLIParser;
 import org.jevis.jedatacollector.connection.DataCollectorConnection;
 import org.jevis.jedatacollector.data.Data;
-import org.jevis.jedatacollector.data.Equipment;
+import org.jevis.jedatacollector.data.DataSource;
 import org.jevis.jedatacollector.data.DataPoint;
 import org.jevis.commons.JEVisTypes;
 import org.jevis.commons.parsing.DataCollectorParser;
@@ -69,6 +69,7 @@ public class Launcher {
             requestJobs = launcher.fetchCLIJob();
         } else {
             launcher.establishConnection();
+//            launcher.generateUseCases();
             requestJobs = launcher.fetchJEVisDataJobs();
         }
 
@@ -83,7 +84,7 @@ public class Launcher {
     private static List<DataPoint> getDatapoints(JEVisObject dpDir) {
         List<DataPoint> datapoints = new ArrayList<DataPoint>();
         try {
-            JEVisClass parser = _client.getJEVisClass("Data Point");
+            JEVisClass parser = _client.getJEVisClass(JEVisTypes.DataPoint.NAME);
             for (JEVisObject dps : dpDir.getChildren(parser, true)) {
                 datapoints.add(new DataPoint(dps));
             }
@@ -97,8 +98,8 @@ public class Launcher {
     private void excecuteRequsts(List<Request> requestJobs) {
         for (Request request : requestJobs) {
             Logger.getLogger(this.getClass().getName()).log(Level.INFO, "-----Execute Request------");
-            if (request.getEquipment() != null) {
-                Logger.getLogger(this.getClass().getName()).log(Level.INFO, "ID; " + request.getEquipment().getID());
+            if (request.getDataSource() != null) {
+                Logger.getLogger(this.getClass().getName()).log(Level.INFO, "ID; " + request.getDataSource().getName());
                 Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Datapoints:");
                 for (DataPoint p : request.getDataPoints()) {
                     Logger.getLogger(this.getClass().getName()).log(Level.ALL, p.getDatapointId());
@@ -154,76 +155,79 @@ public class Launcher {
     private List<Request> fetchJEVisDataJobs() {
         //getJEVIS Data
         Logger.getLogger(this.getClass().getName()).log(Level.INFO, "---------- fetch JEVis Data Jobs ----------");
-        List<JEVisObject> equipments;
-        List<Data> dataList = new ArrayList<Data>();
+        List<JEVisObject> dataSources;
+        List<Request> requests = new ArrayList<Request>();
         try {
-            JEVisClass jeVisClass = _client.getJEVisClass(JEVisTypes.Equipment.NAME);
+            JEVisClass jeVisClass = _client.getJEVisClass(JEVisTypes.DataServer.FTP.NAME);
 //            Logger.getLogger(this.getClass().getName()).log(Level.INFO, "----------class,"+jeVisClass.getName());
-            equipments = _client.getObjects(jeVisClass, true);
-            Logger.getLogger(this.getClass().getName()).log(Level.INFO, equipments.size() + " Equipments found");
+            dataSources = _client.getObjects(jeVisClass, true);
+            Logger.getLogger(this.getClass().getName()).log(Level.INFO, dataSources.size() + " Equipments found");
 
 //            JEVisClass connectionType = _client.getJEVisClass(JEVisTypes.Connection.HTTP.Name);
 //            //workaround for inherit bug, normally only with jevic class parser and connection
 //            JEVisClass ftpConnection = _client.getJEVisClass(JEVisTypes.Connection.FTP.Name);
 //            JEVisClass sftpConnection = _client.getJEVisClass(JEVisTypes.Connection.sFTP.Name);
             JEVisClass datapoints = _client.getJEVisClass(JEVisTypes.DataPointDirectory.NAME);
-            for (JEVisObject equip : equipments) {
+            for (JEVisObject dataSource : dataSources) {
                 try {
                     Logger.getLogger(this.getClass().getName()).log(Level.INFO, "------------------------------------------------");
-                    Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Current Equipment (ID,Name): (" + equip.getID() + "," + equip.getName() + ")");
+                    Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Current Equipment (ID,Name): (" + dataSource.getID() + "," + dataSource.getName() + ")");
                     //get parser //hier kommt der Connection/Parsing class loader rein? connection direkt übergeben //unten muss es neu erstellt werden
-                    DataCollectorParser parser = ParsingFactory.getParsing(equip);
-                    parser.initialize(equip);
-                    DataCollectorConnection connection = ConnectionFactory.getConnection(equip);
-                    connection.initialize(equip);
-                    List<JEVisObject> datapointsDir = equip.getChildren(datapoints, true);
+                    List<JEVisObject> datapointsDir = dataSource.getChildren(datapoints, true);
                     if (datapointsDir.size() != 1) {
                         continue;
                     }
                     List<DataPoint> datapointsJEVis = getDatapoints(datapointsDir.get(0));
-//                    Logger.getLogger(this.getClass().getName()).log(Level.INFO, "path," + connection.getWholeFilePath());
-                    boolean needMultiConnections = ConnectionHelper.containsToken(connection.getWholeFilePath());
-//                    Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Need MultiConnection," + needMultiConnections);
+
+                    //need improvment
+                    boolean needMultiConnections = false;
+                    String previousPath = null;
+                    for (DataPoint dp : datapointsJEVis) {
+                        if (dp.getFilePath().equals(previousPath)) {
+                            needMultiConnections = true;
+                            break;
+                        }
+                        previousPath = dp.getFilePath();
+                    }
 
 
-                    Equipment equipment = new Equipment(equip);
+                    DataCollectorParser parser = ParsingFactory.getParsing(dataSource);
+                    parser.initialize(dataSource);
+                    DataCollectorConnection connection = ConnectionFactory.getConnection(dataSource);
+                    connection.initialize(dataSource);
                     if (needMultiConnections) {
-                        Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Create Single File JEVisJob");
-                        for (DataPoint dps : datapointsJEVis) {
-                            DataCollectorParser newparser = ParsingFactory.getParsing(equip);
-                            parser.initialize(equip);
-                            DataCollectorConnection newconnection = ConnectionFactory.getConnection(equip);
-                            connection.initialize(equip);
-
+                        for (DataPoint dp : datapointsJEVis) {
+                            DataCollectorParser newParser = ParsingFactory.getParsing(dataSource);
+                            newParser.initialize(dataSource);
+                            DataCollectorConnection newConnection = ConnectionFactory.getConnection(dataSource);
+                            newConnection.initialize(dataSource);
                             List<DataPoint> tmpList = new ArrayList<DataPoint>();
-                            tmpList.add(dps);
-                            Data data = new Data(newparser, newconnection, equipment, tmpList);
-                            dataList.add(data);
+                            tmpList.add(dp);
+                            Request request = RequestGenerator.createJEVisRequest(parser, connection, datapointsJEVis);
+                            requests.add(request);
                         }
                     } else {
-                        DataCollectorParser newparser = ParsingFactory.getParsing(equip);
-                        parser.initialize(equip);
-                        DataCollectorConnection newconnection = ConnectionFactory.getConnection(equip);
-                        connection.initialize(equip);
-
-                        Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Create Multi File JEVisJob");
-                        Data data = new Data(newparser, newconnection, equipment, datapointsJEVis);
-                        dataList.add(data);
+                        Request request = RequestGenerator.createJEVisRequest(parser, connection, datapointsJEVis);
+                        requests.add(request);
                     }
+
+                    Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Create Multi File JEVisJob");
+//                    Data data = new Data(parser, connection, datapointsJEVis);
                 } catch (Exception ex) {
-                    Logger.getLogger(Launcher.class.getName()).log(Level.ERROR, "Problems with equip with id: " + equip.getID(), ex);
+                    ex.printStackTrace();
+                    Logger.getLogger(Launcher.class.getName()).log(Level.ERROR, "Problems with equip with id: " + dataSource.getID(), ex);
                 }
             }
         } catch (JEVisException ex) {
             Logger.getLogger(this.getClass().getName()).log(Level.ERROR, ex.getMessage());
         }
         //create Requests
-        List<Request> requests = new ArrayList<Request>();
-
-        for (Data data : dataList) {
-            Request request = RequestGenerator.createJEVisRequest(data);
-            requests.add(request);
-        }
+//        List<Request> requests = new ArrayList<Request>();
+//
+//        for (Data data : dataList) {
+//            Request request = RequestGenerator.createJEVisRequest(data);
+//            requests.add(request);
+//        }
 
         Logger.getLogger(
                 this.getClass().getName()).log(Level.INFO, "Number of Requests: " + requests.size());
@@ -316,5 +320,20 @@ public class Launcher {
             requests = fetchJEVisDataJobs();
         }
         return requests;
+    }
+
+    private void generateUseCases() {
+        try {
+//            JEVisClass jeVisClass = _client.getJEVisClass(JEVisTypes.DataServer.FTP.NAME);
+//            JEVisObject orga = _client.getObject(476l);
+//            JEVisClass monitoredObject = _client.getJEVisClass("Monitored Object Directory");
+//            orga.buildObject("Monitored Objects", monitoredObject);
+//            orga.commit();
+            JEVisObject jevisObject = _client.getObject(478l);
+            JEVisClass jevisClass = _client.getJEVisClass("Data Directory");
+            jevisObject.buildObject("Data Directory", jevisClass);
+        } catch (JEVisException ex) {
+            java.util.logging.Logger.getLogger(Launcher.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
     }
 }

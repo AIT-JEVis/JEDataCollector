@@ -54,5 +54,10 @@ public interface DataCollectorConnection {
     
     public String getWholeFilePath();
     
+    public String getTimezone();
+    
+    public String getName();
+    
 //    public String getConnectionType();
+
 }

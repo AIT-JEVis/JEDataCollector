@@ -11,7 +11,7 @@ import org.jevis.commons.parsing.ParsingRequest;
 import org.jevis.commons.parsing.inputHandler.InputHandler;
 import org.jevis.jedatacollector.connection.DataCollectorConnection;
 import org.jevis.jedatacollector.data.Data;
-import org.jevis.jedatacollector.data.Equipment;
+import org.jevis.jedatacollector.data.DataSource;
 import org.jevis.jedatacollector.data.DataPoint;
 import org.jevis.jedatacollector.service.ParsingService;
 import org.joda.time.DateTime;
@@ -27,7 +27,7 @@ public interface Request {
 
     public void setNeedConnection(boolean b);
 
-    public DataCollectorConnection getConnectionData();
+    public DataCollectorConnection getDataSource();
 
     public DataCollectorParser getParser();
 
@@ -35,12 +35,12 @@ public interface Request {
 
     public void setParser(DataCollectorParser parsing);
 
-    public void setEquipment(Equipment equipment);
+    public void setEquipment(DataSource equipment);
 
 //    public void setSpecificDatapoint(NewDataPoint datapoint);
 //
 //    public NewDataPoint getSpecificDatapoint();
-    public Equipment getEquipment();
+    public DataSource getEquipment();
 
     public void setData(Data data);
 

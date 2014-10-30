@@ -53,4 +53,8 @@ public class ConnectionService {
 //    public List<Object> sendSampleRequest(NewDataPoint dp, TimeSet timeSet, TimeZone timeZone) throws FetchingException {
 //        return _connection.sendSampleRequest(dp, timeSet, timeZone);
 //    }
+
+    public InputHandler sendSamplesRequest(DateTime from, DateTime until, List<DataPoint> dataPoints) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

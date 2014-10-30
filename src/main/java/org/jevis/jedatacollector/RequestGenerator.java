@@ -4,8 +4,10 @@
  */
 package org.jevis.jedatacollector;
 
+import com.mysql.jdbc.util.TimezoneDump;
 import java.util.ArrayList;
 import java.util.List;
+import org.jevis.api.JEVisClass;
 import org.jevis.commons.parsing.DataCollectorParser;
 import org.jevis.commons.parsing.GenericParser;
 import org.jevis.commons.parsing.ParsingRequest;
@@ -14,7 +16,7 @@ import org.jevis.commons.parsing.inputHandler.InputHandler;
 import org.jevis.commons.parsing.outputHandler.OutputHandler;
 import org.jevis.jedatacollector.connection.DataCollectorConnection;
 import org.jevis.jedatacollector.data.Data;
-import org.jevis.jedatacollector.data.Equipment;
+import org.jevis.jedatacollector.data.DataSource;
 import org.jevis.jedatacollector.data.DataPoint;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -151,7 +153,7 @@ public class RequestGenerator {
     static Request createJEVisRequest(Data data) {
         DataCollectorConnection connection = data.getConnection();
         DataCollectorParser parsing = data.getParsing();
-        Equipment equipment = data.getEquipment();
+        DataSource equipment = data.getEquipment();
         List<DataPoint> datapoints = data.getDatapoints();
 
         Request request = new DefaultRequest();
@@ -167,6 +169,26 @@ public class RequestGenerator {
         request.setTimeZone(equipment.getTimezone());
         request.setOutputType(OutputHandler.JEVIS_OUTPUT);
         ParsingRequest parsingReq = ParsingRequestGenerator.generateJEVisParsingRequest(equipment.getTimezone(), Launcher.getClient());
+        request.setParsingRequest(parsingReq);
+        return request;
+    }
+
+    static Request createJEVisRequest(DataCollectorParser parser, DataCollectorConnection connection, List<DataPoint> datapoints) {
+
+        Request request = new DefaultRequest();
+        request.setNeedConnection(true);
+        request.setConnection(connection);
+        request.setParser(parser);
+        request.setDataPoints(datapoints);
+//            request.setSpecificDatapoint(dp);
+        request.setNeedImport(true);
+        request.setNeedParsing(true);
+//        request.setOutputType(OutputHandler.JEVIS_OUTPUT);
+        String timezone = connection.getTimezone();
+        if(timezone == null){
+            timezone = "UTC";
+        }
+        ParsingRequest parsingReq = ParsingRequestGenerator.generateJEVisParsingRequest(DateTimeZone.forID(timezone), Launcher.getClient());
         request.setParsingRequest(parsingReq);
         return request;
     }

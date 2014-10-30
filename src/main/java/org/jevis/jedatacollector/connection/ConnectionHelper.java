@@ -5,6 +5,8 @@
 package org.jevis.jedatacollector.connection;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.logging.Level;
@@ -43,7 +45,7 @@ public class ConnectionHelper {
     public static final String NEW_DATAPOINT = "${DATAPOINT}";
     public static final String NEW_DATEFROM = "${DATE_FROM}";
     public static final String NEW_DATEUNTIL = "${DATE_TO}";
-        public static final String NEW_DATAPOINT_PATTERN = "\\$\\{DATAPOINT\\}";
+    public static final String NEW_DATAPOINT_PATTERN = "\\$\\{DATAPOINT\\}";
     public static final String NEW_DATEFROM_PATTERN = "\\$\\{DATE_FROM\\}";
     public static final String NEW_DATEUNTIL_PATTERN = "\\$\\{DATE_TO\\}";
 
@@ -125,9 +127,9 @@ public class ConnectionHelper {
 
         string = string.replaceAll(SYSTEM_TIME, String.valueOf(System.nanoTime()));
 
-        if (datapoint != null) {
-            string = string.replaceAll(DATAPOINT, datapoint.getChannelID());
-        }
+//        if (datapoint != null) {
+//            string = string.replaceAll(DATAPOINT, datapoint.g());
+//        }
 
         return string;
     }
@@ -147,9 +149,9 @@ public class ConnectionHelper {
 
         string = string.replaceAll(SYSTEM_TIME, String.valueOf(System.nanoTime()));
 
-        if (datapoint != null) {
-            string = string.replaceAll(DATAPOINT, datapoint.getChannelID());
-        }
+//        if (datapoint != null) {
+//            string = string.replaceAll(DATAPOINT, datapoint.getChannelID());
+//        }
 
         return string;
     }
@@ -162,20 +164,19 @@ public class ConnectionHelper {
         return path;
     }
 
-    public static String replaceDatapoint(String parsedString, DataPoint dp) {
-        if(dp!=null){
-            return parsedString.replaceAll(ConnectionHelper.NEW_DATAPOINT_PATTERN, dp.getChannelID());
-        }else{
-            return parsedString;
-        }
-        
-    }
-
+//    public static String replaceDatapoint(String parsedString, DataPoint dp) {
+//        if(dp!=null){
+//            return parsedString.replaceAll(ConnectionHelper.NEW_DATAPOINT_PATTERN, dp.getChannelID());
+//        }else{
+//            return parsedString;
+//        }
+//        
+//    }
     //gets the whole String of the Connection with all replacements
     public static String parseConnectionString(DataPoint dp, DateTime from, DateTime until, String fileNameScheme, String dateFormat) {
         String parsedString = fileNameScheme;
 //        parsedString = ConnectionHelper.replaceTime(_filePath);
-        parsedString = ConnectionHelper.replaceDatapoint(parsedString, dp);
+//        parsedString = ConnectionHelper.replaceDatapoint(parsedString, dp);
         parsedString = ConnectionHelper.parseDateFrom(parsedString, dp, dateFormat, from);
         parsedString = ConnectionHelper.parseDateTo(parsedString, dp, dateFormat, until);
         return parsedString;
@@ -211,5 +212,30 @@ public class ConnectionHelper {
         } else {
             return false;
         }
+    }
+
+//    public static boolean containsToken(List<DataPoint> datapointsJEVis) {
+//        //if its a reagular expression you need more than one 
+//    }
+    public static List<String> getFTPMatchedFileNames(FTPClient fc, String filePath) {
+        Path p = Paths.get(filePath);
+        String file = p.getFileName().toString();
+        String path = p.getParent().toString();
+        
+        List<String> fileNames = new ArrayList<String>();
+        String fileName = null;
+        try {
+            for (FTPFile f : fc.listFiles(path)) {
+                fileName = f.getName();
+
+                if (fitsFileNameScheme(fileName, file)) {
+                    fileNames.add(fileName);
+                }
+
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(ConnectionHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return fileNames;
     }
 }

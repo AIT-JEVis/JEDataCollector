@@ -155,10 +155,10 @@ public class SOAPConnection implements DataCollectorConnection {
 //            tsv.splitIntoChunks(_maximumDayRequest.intValue(), 0, 0);
 
 //            for (TimeSet tsPart : tsv) {
-            soapRequests.add(getSOAPMessage(new String(_xmlTemplate), from, until, _sampleCount, dp.getChannelID(), dp.getDataLoggerName(), fmt));
+//            soapRequests.add(getSOAPMessage(new String(_xmlTemplate), from, until, _sampleCount, dp.getChannelID(), dp.getDataLoggerName(), fmt));
 //            }
         } else {
-            soapRequests.add(getSOAPMessage(new String(_xmlTemplate), from, until, _sampleCount, dp.getChannelID(), dp.getDataLoggerName(), fmt));
+//            soapRequests.add(getSOAPMessage(new String(_xmlTemplate), from, until, _sampleCount, dp.getChannelID(), dp.getDataLoggerName(), fmt));
         }
 
         for (int i = 0; i < soapRequests.size(); i++) {
@@ -284,6 +284,17 @@ public class SOAPConnection implements DataCollectorConnection {
     public String getWholeFilePath() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+    @Override
+    public String getTimezone() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getName() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 
 //    @Override
 //    public boolean returnsLimitedSampleCount() {

@@ -5,6 +5,8 @@ package org.jevis.jedatacollector.connection.FTP;
  * and open the template in the editor.
  */
 import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -49,6 +51,8 @@ public class FTPConnection implements DataCollectorConnection {
     private FTPClient _fc;
     private String _parsedPath;
     private Boolean _ssl = false;
+    private String _startCollectingData;
+    private String _timezone;
 
     public FTPConnection() {
         super();
@@ -84,7 +88,7 @@ public class FTPConnection implements DataCollectorConnection {
     public boolean connect() throws FetchingException {
         try {
             if (_ssl) {
-                 System.out.println("ftps connection");
+                System.out.println("ftps connection");
                 _fc = new FTPSClient();
             } else {
                 _fc = new FTPClient();
@@ -108,6 +112,7 @@ public class FTPConnection implements DataCollectorConnection {
             _fc.enterLocalPassiveMode();
 
         } catch (IOException ex) {
+            ex.printStackTrace();
             throw new FetchingException(_id, FetchingExceptionType.CONNECTION_ERROR);
         }
 
@@ -219,26 +224,21 @@ public class FTPConnection implements DataCollectorConnection {
     @Override
     public InputHandler sendSampleRequest(DataPoint dp, DateTime from, DateTime until) throws FetchingException {
         Object answer = null;
-        String fileNameTmp = ConnectionHelper.parseConnectionString(dp, from, until, _fileNameScheme, _dateFormat);
-//        _fileNameScheme = _fileNameScheme.replaceAll(ConnectionHelper.DATAPOINT, dp.getChannelID());
-//
-//        if (_fileNameScheme.indexOf('*') != -1) {
-//            fileName = getNextFile(from, dp);
-//        } else {
-//            fileName = _fileNameScheme;
-//        }
-        List<String> fileNames = ConnectionHelper.getFTPMatchedFileNames(_fc, _filePath, fileNameTmp);
+        //multiple File pathes neccessary?
+        String filePath = ConnectionHelper.parseConnectionString(dp, from, until, dp.getFilePath(), dp.getDateFormat());
+        List<String> fileNames = ConnectionHelper.getFTPMatchedFileNames(_fc, filePath);
+        
+        String currentFilePath = Paths.get(filePath).getParent().toString();
 
         for (String fileName : fileNames) {
             System.out.println("file " + fileName);
             try {
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
-                String query = _filePath + fileName;
+                String query = currentFilePath + "/"+ fileName;
                 org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.INFO, "FTPQuery " + query);
                 boolean retrieveFile = _fc.retrieveFile(query, out);
-
+                String testString = new String(out.toByteArray());
                 org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.INFO, "Request status: " + retrieveFile);
-
                 InputStream inputStream = new ByteArrayInputStream(out.toByteArray());
                 answer = new BufferedInputStream(inputStream);
 
@@ -252,54 +252,57 @@ public class FTPConnection implements DataCollectorConnection {
                 throw new FetchingException(_id, FetchingExceptionType.CONNECTION_TIMEOUT);
             }
         }
-
+        
+        
         return InputHandlerFactory.getInputConverter(answer);
     }
 
     @Override
     public void initialize(JEVisObject node) throws FetchingException {
         try {
-            JEVisClass ftpType = Launcher.getClient().getJEVisClass(JEVisTypes.Connection.FTP.Name);
-            JEVisObject ftpObject = node.getChildren(ftpType, true).get(0);
-            JEVisType dateFormat = ftpType.getType(JEVisTypes.Connection.FTP.DateFormat);
-            JEVisType filePath = ftpType.getType(JEVisTypes.Connection.FTP.FilePath);
-            JEVisType fileNameScheme = ftpType.getType(JEVisTypes.Connection.FTP.FileNameScheme);
-            JEVisType SSL = ftpType.getType(JEVisTypes.Connection.FTP.SSL);
-            JEVisType server = ftpType.getType(JEVisTypes.Connection.FTP.Server);
-            JEVisType port = ftpType.getType(JEVisTypes.Connection.FTP.Port);
-            JEVisType connectionTimeout = ftpType.getType(JEVisTypes.Connection.FTP.ConnectionTimeout);
-            JEVisType readTimeout = ftpType.getType(JEVisTypes.Connection.FTP.ReadTimeout);
-            JEVisType user = ftpType.getType(JEVisTypes.Connection.FTP.User);
-            JEVisType password = ftpType.getType(JEVisTypes.Connection.FTP.Password);
+            JEVisClass ftpType = Launcher.getClient().getJEVisClass(JEVisTypes.DataServer.FTP.NAME);
+            JEVisObject ftpObject = node;
+            JEVisType sslType = ftpType.getType(JEVisTypes.DataServer.FTP.SSL);
+            JEVisType serverType = ftpType.getType(JEVisTypes.DataServer.FTP.HOST);
+            JEVisType portType = ftpType.getType(JEVisTypes.DataServer.FTP.PORT);
+            JEVisType connectionTimeoutType = ftpType.getType(JEVisTypes.DataServer.FTP.CONNECTION_TIMEOUT);
+            JEVisType readTimeoutType = ftpType.getType(JEVisTypes.DataServer.FTP.READ_TIMEOUT);
+            JEVisType userType = ftpType.getType(JEVisTypes.DataServer.FTP.USER);
+            JEVisType passwordType = ftpType.getType(JEVisTypes.DataServer.FTP.PASSWORD);
+            JEVisType startCollectingType = ftpType.getType(JEVisTypes.DataServer.FTP.START_DATA_COLLECTING);
+            JEVisType timezoneType = ftpType.getType(JEVisTypes.DataServer.FTP.TIMEZONE);
 
             _id = ftpObject.getID();
-            _dateFormat = DatabaseHelper.getObjectAsString(ftpObject, dateFormat);
-            _filePath = DatabaseHelper.getObjectAsString(ftpObject, filePath);
-            _fileNameScheme = DatabaseHelper.getObjectAsString(ftpObject, fileNameScheme);
-            _ssl = DatabaseHelper.getObjectAsBoolean(ftpObject, SSL);
-            _serverURL = DatabaseHelper.getObjectAsString(ftpObject, server);
-            _port = DatabaseHelper.getObjectAsInteger(ftpObject, port);
+//            _dateFormat = DatabaseHelper.getObjectAsString(ftpObject, dateFormat);
+//            _filePath = DatabaseHelper.getObjectAsString(ftpObject, filePath);
+//            _fileNameScheme = DatabaseHelper.getObjectAsString(ftpObject, fileNameScheme);
+            _ssl = DatabaseHelper.getObjectAsBoolean(ftpObject, sslType);
+            _serverURL = DatabaseHelper.getObjectAsString(ftpObject, serverType);
+            _port = DatabaseHelper.getObjectAsInteger(ftpObject, portType);
             if (_port == null) {
                 _port = 21;
             }
-            _connectionTimeout = DatabaseHelper.getObjectAsInteger(ftpObject, connectionTimeout);
-            _readTimeout = DatabaseHelper.getObjectAsInteger(ftpObject, readTimeout);
+            _connectionTimeout = DatabaseHelper.getObjectAsInteger(ftpObject, connectionTimeoutType);
+            _readTimeout = DatabaseHelper.getObjectAsInteger(ftpObject, readTimeoutType);
             //            if (node.getAttribute(maxRequest).hasSample()) {
             //                _maximumDayRequest = Integer.parseInt((String) node.getAttribute(maxRequest).getLatestSample().getValue());
             //            }
-            JEVisAttribute userAttr = ftpObject.getAttribute(user);
+            JEVisAttribute userAttr = ftpObject.getAttribute(userType);
             if (!userAttr.hasSample()) {
                 _username = "";
             } else {
-                _username = DatabaseHelper.getObjectAsString(ftpObject, user);
+                _username = DatabaseHelper.getObjectAsString(ftpObject, userType);
             }
-                
-            JEVisAttribute passAttr = ftpObject.getAttribute(password);
+
+            JEVisAttribute passAttr = ftpObject.getAttribute(passwordType);
             if (!passAttr.hasSample()) {
                 _password = "";
             } else {
-                _password = DatabaseHelper.getObjectAsString(ftpObject, password);
+                _password = DatabaseHelper.getObjectAsString(ftpObject, passwordType);
             }
+
+            _startCollectingData = DatabaseHelper.getObjectAsString(ftpObject, startCollectingType);
+            _timezone = DatabaseHelper.getObjectAsString(ftpObject, timezoneType);
             //        _id = cn.getID();
             //        _dateFormat = cn.<String>getPropertyValue("Date Format");
             //        _triesRead = cn.<Long>getPropertyValue("Read Tries");
@@ -314,6 +317,7 @@ public class FTPConnection implements DataCollectorConnection {
             //        _URL = cn.<String>getPropertyValue("Server URL");
             //        _seperator = cn.<String>getPropertyValue("File Detail Seperator");
         } catch (JEVisException ex) {
+            ex.printStackTrace();
             Logger.getLogger(FTPConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -325,5 +329,15 @@ public class FTPConnection implements DataCollectorConnection {
     @Override
     public String getWholeFilePath() {
         return _filePath + _fileNameScheme;
+    }
+
+    @Override
+    public String getTimezone() {
+        return _timezone;
+    }
+
+    @Override
+    public String getName() {
+        return String.valueOf(_id);
     }
 }

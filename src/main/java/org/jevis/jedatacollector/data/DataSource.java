@@ -21,7 +21,7 @@ import org.joda.time.format.DateTimeFormatter;
  *
  * @author Broder
  */
-public class Equipment {
+public class DataSource {
 
 //    private boolean _singleReader;
     private DateTimeZone _timezone;
@@ -45,7 +45,7 @@ public class Equipment {
         return _id;
     }
 
-    public Equipment(JEVisObject equipment) {
+    public DataSource(JEVisObject equipment) {
 
         try {
             _id = equipment.getID();
@@ -63,7 +63,7 @@ public class Equipment {
             String date = DatabaseHelper.getObjectAsString(equipment, startDateCollecting);
             _startDate = fmt.parseDateTime(date);
         } catch (JEVisException ex) {
-            Logger.getLogger(Equipment.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DataSource.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
