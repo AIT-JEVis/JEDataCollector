@@ -23,6 +23,8 @@ import org.jevis.jedatacollector.exception.FetchingException;
 import org.jevis.jedatacollector.service.ConnectionService;
 import org.jevis.jedatacollector.service.ParsingService;
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 /**
  *
@@ -71,7 +73,7 @@ public class DataCollector {
                     if (dp.getPeriodicallySampling()) {
                         currentReadout = dp.getCurrentReadoutString();
                     } else if (latestSample != null) {
-                        currentReadout = latestSample.getTimestamp().toString(dp.getDateFormat());
+                        currentReadout = latestSample.getTimestamp().toString(DateTimeFormat.forPattern("ddMMyyyyHHmmss"));
                     }
                     JEVisSample buildSample = dp.getJEVisDatapoint().getAttribute(JEVisTypes.DataPoint.LAST_READOUT).buildSample(new DateTime(), currentReadout);
                     List<JEVisSample> sampleList = new ArrayList<JEVisSample>();
