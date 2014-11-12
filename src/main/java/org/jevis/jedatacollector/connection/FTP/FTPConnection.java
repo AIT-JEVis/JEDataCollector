@@ -301,7 +301,7 @@ public class FTPConnection implements DataCollectorConnection {
                 _password = DatabaseHelper.getObjectAsString(ftpObject, passwordType);
             }
 
-            _startCollectingData = DatabaseHelper.getObjectAsString(ftpObject, startCollectingType);
+//            _startCollectingData = DatabaseHelper.getObjectAsString(ftpObject, startCollectingType);
             _timezone = DatabaseHelper.getObjectAsString(ftpObject, timezoneType);
             //        _id = cn.getID();
             //        _dateFormat = cn.<String>getPropertyValue("Date Format");
