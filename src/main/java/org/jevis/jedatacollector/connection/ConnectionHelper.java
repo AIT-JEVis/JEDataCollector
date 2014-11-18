@@ -5,6 +5,7 @@
 package org.jevis.jedatacollector.connection;
 
 import java.io.IOException;
+import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
@@ -13,12 +14,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.jevis.jedatacollector.data.DataPoint;
+import org.joda.time.Chronology;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.DateTimeFormatterBuilder;
 
 /**
  *
@@ -48,6 +52,74 @@ public class ConnectionHelper {
     public static final String NEW_DATAPOINT_PATTERN = "\\$\\{DATAPOINT\\}";
     public static final String NEW_DATEFROM_PATTERN = "\\$\\{DATE_FROM\\}";
     public static final String NEW_DATEUNTIL_PATTERN = "\\$\\{DATE_TO\\}";
+    public static final String DATEUNTIL_IDENTIFIER = "DU";
+    public static final String DATEFROM_IDENTIFIER = "DF";
+    public static final String DATE_IDENTIFIER = "D";
+
+    private static String getCompactDateString(String name, String[] pathStream) {
+        String[] realTokens = StringUtils.split(name, "/");
+        String compactDateString = null;
+        for (int i = 0; i < realTokens.length; i++) {
+            String currentString = pathStream[i];
+            if (currentString.contains("${D:")) {
+                int startindex = currentString.indexOf("${D:");
+                int endindex = currentString.indexOf("}");
+                if (compactDateString == null) {
+                    compactDateString = realTokens[i].substring(startindex, endindex - 4);
+                } else {
+                    compactDateString += " " + realTokens[i].substring(startindex, endindex - 4);
+                }
+            }
+        }
+        return compactDateString;
+    }
+
+    private static String getCompactDateFormatString(String name, String[] pathStream) {
+        String[] realTokens = StringUtils.split(name, "/");
+        String compactDateString = null;
+        //contains more than one date token?
+        for (int i = 0; i < realTokens.length; i++) {
+            String currentString = pathStream[i];
+            if (currentString.contains("${")) {
+                int startindex = currentString.indexOf("${");
+                int endindex = currentString.indexOf("}");
+                if (compactDateString == null) {
+                    compactDateString = currentString.substring(startindex + 4, endindex);
+                } else {
+                    compactDateString += " " + currentString.substring(startindex + 4, endindex);
+                }
+            }
+        }
+        return compactDateString;
+    }
+
+    private static boolean matchDateString(String currentFolder, String nextToken) {
+        String[] substringsBetween = StringUtils.substringsBetween(nextToken, "${D:", "}");
+        for (int i = 0; i < substringsBetween.length; i++) {
+            nextToken = nextToken.replace("${D:" + substringsBetween[i] + "}", ".{" + substringsBetween[i].length() + "}");
+        }
+        Pattern p = Pattern.compile(nextToken);
+        Matcher m = p.matcher(currentFolder);
+        return m.matches();
+    }
+
+    public static boolean fitsFileNameScheme(String fileName, String fileNameScheme) {
+        String[] substringsBetween = StringUtils.substringsBetween(fileNameScheme, "${", "}");
+        Pattern p = Pattern.compile(fileNameScheme);
+        Matcher m = p.matcher(fileName);
+        return m.matches();
+    }
+
+    private static boolean fitsDateTime(String fileName, String fileNameScheme, DateTime lastReadout) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public int _year;
+    public int _month;
+    public int _day;
+    public int _hour;
+    public int _min;
+    public int _sec;
 
     public static List<String> parseString(String string, DataPoint datapoint, String datePattern, DateTime from, DateTime until) {
 //        string = Pattern.quote(string);
@@ -70,7 +142,6 @@ public class ConnectionHelper {
                     options[i] = intToString(i + min, digits);
                 }
             }
-
 
             List<String> paths = new ArrayList<String>(options.length);
             String path;
@@ -105,7 +176,6 @@ public class ConnectionHelper {
 //            c.setTimeZone(TimeZone.getTimeZone("UTC"));
 //            c.setTime(date.getTime());
 //            c.add(Calendar.SECOND, deviceTimeZone.getRawOffset());
-
             DateTimeFormatter fmt = DateTimeFormat.forPattern(datePattern);
 
             string = string.replaceAll(NEW_DATEFROM_PATTERN, fmt.print(from));
@@ -130,7 +200,6 @@ public class ConnectionHelper {
 //        if (datapoint != null) {
 //            string = string.replaceAll(DATAPOINT, datapoint.g());
 //        }
-
         return string;
     }
 
@@ -152,7 +221,6 @@ public class ConnectionHelper {
 //        if (datapoint != null) {
 //            string = string.replaceAll(DATAPOINT, datapoint.getChannelID());
 //        }
-
         return string;
     }
 
@@ -164,15 +232,16 @@ public class ConnectionHelper {
         return path;
     }
 
-//    public static String replaceDatapoint(String parsedString, DataPoint dp) {
-//        if(dp!=null){
-//            return parsedString.replaceAll(ConnectionHelper.NEW_DATAPOINT_PATTERN, dp.getChannelID());
-//        }else{
-//            return parsedString;
-//        }
-//        
-//    }
+    public static String replaceDatapoint(String parsedString, DataPoint dp) {
+        if (dp != null) {
+            return parsedString.replaceAll(ConnectionHelper.NEW_DATAPOINT_PATTERN, dp.getMappingIdentifier());
+        } else {
+            return parsedString;
+        }
+
+    }
     //gets the whole String of the Connection with all replacements
+
     public static String parseConnectionString(DataPoint dp, DateTime from, DateTime until, String fileNameScheme, String dateFormat) {
         String parsedString = fileNameScheme;
 //        parsedString = ConnectionHelper.replaceTime(_filePath);
@@ -182,17 +251,37 @@ public class ConnectionHelper {
         return parsedString;
     }
 
-    public static List<String> getFTPMatchedFileNames(FTPClient fc, String filePath, String fileNameScheme) {
+    public static List<String> getFTPMatchedFileNames(FTPClient fc, DataPoint dp, String filePath) {
+        filePath = filePath.replace("\\", "/");
+        String[] pathStream = getPathTokens(filePath);
+        DateTime lastReadout = dp.getLastReadout();
+
+        Path dir = FileSystems.getDefault().getPath("");
+        String startPath = "";
+        if (filePath.startsWith("/")) {
+            startPath = "/";
+        }
+
+        List<String> folderPathes = getMatchingPathes(startPath, pathStream, new ArrayList<String>(), fc, lastReadout, new DateTimeFormatterBuilder());
+
         List<String> fileNames = new ArrayList<String>();
         String fileName = null;
+        String fileNameScheme = pathStream[pathStream.length - 1];
         try {
-            for (FTPFile file : fc.listFiles(filePath)) {
-                fileName = file.getName();
-
-                if (fitsFileNameScheme(fileName, fileNameScheme)) {
-                    fileNames.add(fileName);
+            for (String folder : folderPathes) {
+                fc.changeWorkingDirectory(folder);
+                int i = 0;
+                for (FTPFile file : fc.listFiles()) {
+                    i++;
+                    fileName = file.getName();
+                    DateTime folderTime = getFileTime(folder + fileName, pathStream);
+                    boolean match = matchDateString(fileName, fileNameScheme);
+                    boolean isLater = folderTime.isAfter(lastReadout);
+                    if (match && isLater) {
+                        System.out.println(fileName);
+                        fileNames.add(fileName);
+                    }
                 }
-
             }
         } catch (IOException ex) {
             Logger.getLogger(ConnectionHelper.class.getName()).log(Level.SEVERE, null, ex);
@@ -200,10 +289,56 @@ public class ConnectionHelper {
         return fileNames;
     }
 
-    public static boolean fitsFileNameScheme(String fileName, String fileNameScheme) {
-        Pattern p = Pattern.compile(fileNameScheme);
-        Matcher m = p.matcher(fileName);
-        return m.matches();
+    public static String[] getPathToken(String filePath) {
+//        List<String> tokens = new ArrayList<String>();
+        //        filePath.substring("\\$\\{","\\}");
+        String[] tokens = StringUtils.substringsBetween(filePath, "${", "}");
+//         String[] tokens = filePath.trim().split("\\%");
+        for (int i = 0; i < tokens.length; i++) {
+            System.out.println(tokens[i]);
+        }
+        return tokens;
+    }
+
+    public static String[] getPathTokens(String filePath) {
+//        List<String> tokens = new ArrayList<String>();
+        //        filePath.substring("\\$\\{","\\}");
+        String[] tokens = StringUtils.split(filePath, "/");
+//         String[] tokens = filePath.trim().split("\\%");
+        for (int i = 0; i < tokens.length; i++) {
+            System.out.println(tokens[i]);
+        }
+        return tokens;
+    }
+
+    public static List<String> getDateToken(String[] tokenStream) {
+        List<String> dateTokens = new ArrayList<String>();
+        for (int i = 0; i < tokenStream.length; i++) {
+            if (tokenStream[i].startsWith(DATE_IDENTIFIER)) {
+                dateTokens.add(tokenStream[i].replace(DATE_IDENTIFIER, ""));
+            }
+        }
+        return dateTokens;
+    }
+
+    public static List<String> getDateFromToken(String[] tokenStream) {
+        List<String> dateTokens = new ArrayList<String>();
+        for (int i = 0; i < tokenStream.length; i++) {
+            if (tokenStream[i].startsWith(DATEFROM_IDENTIFIER)) {
+                dateTokens.add(tokenStream[i].replace(DATEFROM_IDENTIFIER, ""));
+            }
+        }
+        return dateTokens;
+    }
+
+    public static List<String> getDateUntilToken(String[] tokenStream) {
+        List<String> dateTokens = new ArrayList<String>();
+        for (int i = 0; i < tokenStream.length; i++) {
+            if (tokenStream[i].startsWith(DATEUNTIL_IDENTIFIER)) {
+                dateTokens.add(tokenStream[i].replace(DATEUNTIL_IDENTIFIER, ""));
+            }
+        }
+        return dateTokens;
     }
 
     public static boolean containsToken(String tokenString) {
@@ -221,7 +356,7 @@ public class ConnectionHelper {
         Path p = Paths.get(filePath);
         String file = p.getFileName().toString();
         String path = p.getParent().toString();
-        
+
         List<String> fileNames = new ArrayList<String>();
         String fileName = null;
         try {
@@ -237,5 +372,119 @@ public class ConnectionHelper {
             Logger.getLogger(ConnectionHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         return fileNames;
+    }
+
+    private static boolean containsDateToken(String string) {
+        if (string.contains("${D:")) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private static DateTimeFormatter getDateFormatter(String string) {
+        if (containsDateToken(string)) {
+            String substringBetween = StringUtils.substringBetween(string, "${D:", "}");
+            int firstIndexOf = string.indexOf("${D:");
+            int lastIndexOf = string.indexOf("}");
+            String firstString = string.substring(0, firstIndexOf);
+            String lastString = string.substring(lastIndexOf, string.length() - 1);
+            DateTimeFormatter dtf = DateTimeFormat.forPattern(firstString + substringBetween + lastString);
+            return dtf;
+        } else {
+            DateTimeFormatter dtf = DateTimeFormat.forPattern("Dae" + "/");
+            return dtf;
+        }
+
+    }
+
+    private static boolean containsDate(String name, DateTimeFormatter dtf) {
+        DateTime parseDateTime = dtf.parseDateTime(name);
+        if (parseDateTime != null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private static DateTime getFolderTime(String name, String[] pathStream) {
+        String compactDateString = getCompactDateString(name, pathStream);
+        String compactDataFormatString = getCompactDateFormatString(name, pathStream);
+
+        DateTimeFormatter dtf = DateTimeFormat.forPattern(compactDataFormatString);
+
+        DateTime parseDateTime = dtf.parseDateTime(compactDateString);
+        if (parseDateTime.year().get() == parseDateTime.year().getMinimumValue()) {
+            parseDateTime = parseDateTime.year().withMaximumValue();
+        }
+        if (parseDateTime.monthOfYear().get() == parseDateTime.monthOfYear().getMinimumValue()) {
+            parseDateTime = parseDateTime.monthOfYear().withMaximumValue();
+        }
+        if (parseDateTime.dayOfMonth().get() == parseDateTime.dayOfMonth().getMinimumValue()) {
+            parseDateTime = parseDateTime.dayOfMonth().withMaximumValue();
+        }
+        if (parseDateTime.hourOfDay().get() == parseDateTime.hourOfDay().getMinimumValue()) {
+            parseDateTime = parseDateTime.hourOfDay().withMaximumValue();
+        }
+        if (parseDateTime.minuteOfHour().get() == parseDateTime.minuteOfHour().getMinimumValue()) {
+            parseDateTime = parseDateTime.minuteOfHour().withMaximumValue();
+        }
+        if (parseDateTime.secondOfMinute().get() == parseDateTime.secondOfMinute().getMinimumValue()) {
+            parseDateTime = parseDateTime.secondOfMinute().withMaximumValue();
+        }
+        if (parseDateTime.millisOfSecond().get() == parseDateTime.millisOfSecond().getMinimumValue()) {
+            parseDateTime = parseDateTime.millisOfSecond().withMaximumValue();
+        }
+        return parseDateTime;
+    }
+
+    private static DateTime getFileTime(String name, String[] pathStream) {
+        String compactDateString = getCompactDateString(name, pathStream);
+        String compactDataFormatString = getCompactDateFormatString(name, pathStream);
+
+        DateTimeFormatter dtf = DateTimeFormat.forPattern(compactDataFormatString);
+
+        DateTime parseDateTime = dtf.parseDateTime(compactDateString);
+        return parseDateTime;
+    }
+
+    private static List<String> getMatchingPathes(String path, String[] pathStream, ArrayList<String> arrayList, FTPClient fc, DateTime lastReadout, DateTimeFormatterBuilder dtfbuilder) {
+        int nextTokenPos = getPathTokens(path).length;
+        if (nextTokenPos == pathStream.length - 1) {
+            arrayList.add(path);
+            return arrayList;
+        }
+
+        String nextToken = pathStream[nextTokenPos];
+        String nextFolder = null;
+
+        try {
+            if (containsDateToken(nextToken)) {
+                FTPFile[] listDirectories = fc.listFiles(path);
+//                DateTimeFormatter ftmTemp = getDateFormatter(nextToken);
+                for (FTPFile folder : listDirectories) {
+                    if (!matchDateString(folder.getName(), nextToken)) {
+                        continue;
+                    }
+                    System.out.println("listdir," + folder.getName());
+//                    if (containsDate(folder.getName(), ftmTemp)) {
+                    DateTime folderTime = getFolderTime(path + folder.getName() + "/", pathStream);
+                    System.out.println("foldertime," + folderTime);
+                    if (folderTime.isAfter(lastReadout)) {
+                        nextFolder = folder.getName();
+                        System.out.println("dateFolder," + nextFolder);
+                        getMatchingPathes(path + nextFolder + "/", pathStream, arrayList, fc, lastReadout, dtfbuilder);
+                    }
+//                    }
+                }
+            } else {
+                nextFolder = nextToken;
+                System.out.println("normalFolder," + nextFolder);
+                getMatchingPathes(path + nextFolder + "/", pathStream, arrayList, fc, lastReadout, dtfbuilder);
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(ConnectionHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return arrayList;
     }
 }

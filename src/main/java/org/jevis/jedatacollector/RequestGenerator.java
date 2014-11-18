@@ -192,4 +192,15 @@ public class RequestGenerator {
         request.setParsingRequest(parsingReq);
         return request;
     }
+    
+        public static Request createConnectionRequest(DataCollectorConnection connection, List<DataPoint> datapoints) {
+
+        Request request = new DefaultRequest();
+        request.setNeedConnection(true);
+        request.setConnection(connection);
+        request.setDataPoints(datapoints);
+        request.setNeedImport(false);
+        request.setNeedParsing(false);
+        return request;
+    }
 }

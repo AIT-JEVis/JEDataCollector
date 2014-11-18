@@ -5,7 +5,6 @@ package org.jevis.jedatacollector.connection.FTP;
  * and open the template in the editor.
  */
 import java.io.*;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.logging.Level;
@@ -82,6 +81,18 @@ public class FTPConnection implements DataCollectorConnection {
         if (port != null) {
             _port = port;
         }
+    }
+
+    public FTPConnection(Long id, Boolean ssl, String url, Integer port, Integer connectionTimeout, Integer readTimeout, String username, String password, String timezone) {
+        _id = id;
+        _ssl = ssl;
+        _serverURL = url;
+        _port = port;
+        _connectionTimeout = connectionTimeout;
+        _readTimeout = readTimeout;
+        _username = username;
+        _password = password;
+        _timezone = timezone;
     }
 
     @Override
@@ -226,17 +237,17 @@ public class FTPConnection implements DataCollectorConnection {
         Object answer = null;
         //multiple File pathes neccessary?
         String filePath = ConnectionHelper.parseConnectionString(dp, from, until, dp.getFilePath(), dp.getDateFormat());
-        List<String> fileNames = ConnectionHelper.getFTPMatchedFileNames(_fc, filePath);
-        
-        String currentFilePath = Paths.get(filePath).getParent().toString();
+        List<String> fileNames = ConnectionHelper.getFTPMatchedFileNames(_fc, dp,filePath);
+
+//        String currentFilePath = Paths.get(filePath).getParent().toString();
 
         for (String fileName : fileNames) {
             System.out.println("file " + fileName);
             try {
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
-                String query = currentFilePath + "/"+ fileName;
-                org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.INFO, "FTPQuery " + query);
-                boolean retrieveFile = _fc.retrieveFile(query, out);
+//                String query = Paths.get(fileName);
+                org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.INFO, "FTPQuery " + fileName);
+                boolean retrieveFile = _fc.retrieveFile(fileName, out);
                 String testString = new String(out.toByteArray());
                 org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.INFO, "Request status: " + retrieveFile);
                 InputStream inputStream = new ByteArrayInputStream(out.toByteArray());
@@ -252,8 +263,8 @@ public class FTPConnection implements DataCollectorConnection {
                 throw new FetchingException(_id, FetchingExceptionType.CONNECTION_TIMEOUT);
             }
         }
-        
-        
+
+
         return InputHandlerFactory.getInputConverter(answer);
     }
 
@@ -269,13 +280,9 @@ public class FTPConnection implements DataCollectorConnection {
             JEVisType readTimeoutType = ftpType.getType(JEVisTypes.DataServer.FTP.READ_TIMEOUT);
             JEVisType userType = ftpType.getType(JEVisTypes.DataServer.FTP.USER);
             JEVisType passwordType = ftpType.getType(JEVisTypes.DataServer.FTP.PASSWORD);
-            JEVisType startCollectingType = ftpType.getType(JEVisTypes.DataServer.FTP.START_DATA_COLLECTING);
             JEVisType timezoneType = ftpType.getType(JEVisTypes.DataServer.FTP.TIMEZONE);
 
             _id = ftpObject.getID();
-//            _dateFormat = DatabaseHelper.getObjectAsString(ftpObject, dateFormat);
-//            _filePath = DatabaseHelper.getObjectAsString(ftpObject, filePath);
-//            _fileNameScheme = DatabaseHelper.getObjectAsString(ftpObject, fileNameScheme);
             _ssl = DatabaseHelper.getObjectAsBoolean(ftpObject, sslType);
             _serverURL = DatabaseHelper.getObjectAsString(ftpObject, serverType);
             _port = DatabaseHelper.getObjectAsInteger(ftpObject, portType);
@@ -284,9 +291,7 @@ public class FTPConnection implements DataCollectorConnection {
             }
             _connectionTimeout = DatabaseHelper.getObjectAsInteger(ftpObject, connectionTimeoutType);
             _readTimeout = DatabaseHelper.getObjectAsInteger(ftpObject, readTimeoutType);
-            //            if (node.getAttribute(maxRequest).hasSample()) {
-            //                _maximumDayRequest = Integer.parseInt((String) node.getAttribute(maxRequest).getLatestSample().getValue());
-            //            }
+
             JEVisAttribute userAttr = ftpObject.getAttribute(userType);
             if (!userAttr.hasSample()) {
                 _username = "";
@@ -301,21 +306,7 @@ public class FTPConnection implements DataCollectorConnection {
                 _password = DatabaseHelper.getObjectAsString(ftpObject, passwordType);
             }
 
-            _startCollectingData = DatabaseHelper.getObjectAsString(ftpObject, startCollectingType);
             _timezone = DatabaseHelper.getObjectAsString(ftpObject, timezoneType);
-            //        _id = cn.getID();
-            //        _dateFormat = cn.<String>getPropertyValue("Date Format");
-            //        _triesRead = cn.<Long>getPropertyValue("Read Tries");
-            //        _timeoutRead = cn.<Long>getPropertyValue("Read Timeout (in sec.)");
-            //        _triesConnection = cn.<Long>getPropertyValue("Connection Tries");
-            //        _timeoutConnection = cn.<Long>getPropertyValue("Connection Timeout (in sec.)");
-            //        _filePath = cn.<String>getPropertyValue("File Path");
-            //        _fileNameScheme = cn.<String>getPropertyValue("File Name Scheme");
-            //        _password = cn.<String>getPropertyValue("Password");
-            //        _port = cn.<Long>getPropertyValue("Port");
-            //        _username = cn.<String>getPropertyValue("Username");
-            //        _URL = cn.<String>getPropertyValue("Server URL");
-            //        _seperator = cn.<String>getPropertyValue("File Detail Seperator");
         } catch (JEVisException ex) {
             ex.printStackTrace();
             Logger.getLogger(FTPConnection.class.getName()).log(Level.SEVERE, null, ex);

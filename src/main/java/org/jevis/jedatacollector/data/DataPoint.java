@@ -53,6 +53,19 @@ public class DataPoint {
 //        _onlineID = onlineID;
     }
 
+    public DataPoint(String filePath, String mappingIdentifier, String target, String valueIdentifier, DateTime lastReadout, Boolean periodicallySampling) {
+        _filePath = filePath;
+        _mappingIdentifier = mappingIdentifier;
+        _target = target;
+        _valueIdentifier = valueIdentifier;
+
+        DateTimeFormatter fmt = DateTimeFormat.forPattern("ddMMyyyyHHmmss");
+
+        _lastReadout = lastReadout;
+        _currentReadoutString = new DateTime().toString(fmt);
+        _periodicallySampling = periodicallySampling;
+    }
+
     public DataPoint(JEVisObject dp) {
         _jevisDatapoint = dp;
         _datapointID = dp.getID();
@@ -80,7 +93,7 @@ public class DataPoint {
 
             DateTimeFormatter fmt = DateTimeFormat.forPattern("ddMMyyyyHHmmss");
             String dateString = DatabaseHelper.getObjectAsString(dp, lastReadoutType);
-            if (dateString == null){
+            if (dateString == null) {
                 dateString = "01012000000000";
             }
             DateTime tmpDate = fmt.parseDateTime(dateString);
