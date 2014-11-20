@@ -48,7 +48,7 @@ public class FTPConnection implements DataCollectorConnection {
     private String _password;
     private Integer _port = 21;
     private String _username;
-    private FTPClient _fc;
+    protected FTPClient _fc;
     private String _parsedPath;
     private Boolean _ssl = false;
     private String _startCollectingData;
