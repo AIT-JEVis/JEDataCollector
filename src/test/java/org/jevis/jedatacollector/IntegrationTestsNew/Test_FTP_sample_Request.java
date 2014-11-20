@@ -94,8 +94,10 @@ public class Test_FTP_sample_Request {
         monthList_30.add(nov);
         monthList_31.add(dec);
 
+        
+        //setup day files
         for (String month : monthList_28) {
-            for (int i = 0; i <= 28; i++) {
+            for (int i = 1; i <= 28; i++) {
                 String dd = String.valueOf(i);
                 if (dd.length() == 1) {
                     dd = "0" + String.valueOf(i);
@@ -105,7 +107,7 @@ public class Test_FTP_sample_Request {
         }
 
         for (String month : monthList_30) {
-            for (int i = 0; i <= 30; i++) {
+            for (int i = 1; i <= 30; i++) {
                 String dd = String.valueOf(i);
                 if (dd.length() == 1) {
                     dd = "0" + String.valueOf(i);
@@ -115,7 +117,7 @@ public class Test_FTP_sample_Request {
         }
 
         for (String month : monthList_31) {
-            for (int i = 0; i <= 31; i++) {
+            for (int i = 1; i <= 31; i++) {
                 String dd = String.valueOf(i);
                 if (dd.length() == 1) {
                     dd = "0" + String.valueOf(i);

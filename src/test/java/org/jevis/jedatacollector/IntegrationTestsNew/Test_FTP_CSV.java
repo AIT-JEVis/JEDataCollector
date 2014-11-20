@@ -113,6 +113,8 @@ public class Test_FTP_CSV {
         monthList_30.add(nov);
 //        monthList_31.add(dec);
 
+        
+        //setup day folder with data
         for (String month : monthList_28) {
             for (int i = 1; i <= 28; i++) {
                 String dd = String.valueOf(i);
