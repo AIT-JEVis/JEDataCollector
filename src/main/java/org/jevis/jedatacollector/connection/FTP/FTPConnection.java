@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPSClient;
 import org.jevis.api.JEVisAttribute;
@@ -34,7 +35,7 @@ import org.joda.time.DateTime;
  */
 public class FTPConnection implements DataCollectorConnection {
 
-    private long _id;
+    private Long _id;
     private Long _triesRead;
     private Integer _readTimeout;
     private Long _triesConnection;
@@ -242,7 +243,7 @@ public class FTPConnection implements DataCollectorConnection {
 //        String currentFilePath = Paths.get(filePath).getParent().toString();
         List<InputHandler> answerList = new ArrayList<InputHandler>();
         for (String fileName : fileNames) {
-            System.out.println("file " + fileName);
+//            System.out.println("file " + fileName);
             try {
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
 //                String query = Paths.get(fileName);
@@ -252,7 +253,11 @@ public class FTPConnection implements DataCollectorConnection {
                 org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.INFO, "Request status: " + retrieveFile);
                 InputStream inputStream = new ByteArrayInputStream(out.toByteArray());
                 answer = new BufferedInputStream(inputStream);
-                answerList.add(InputHandlerFactory.getInputConverter(answer));
+//                String toString = IOUtils.toString((BufferedInputStream) answer, "UTF-8");
+//                System.out.println(toString);
+                InputHandler inputConverter = InputHandlerFactory.getInputConverter(answer);
+                inputConverter.setFilePath(fileName);
+                answerList.add(inputConverter);
 //                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
 //                String inputLine;
 //

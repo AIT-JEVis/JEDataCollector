@@ -4,6 +4,7 @@
  */
 package org.jevis.jedatacollector.IntegrationTestsNew;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -14,7 +15,6 @@ import java.util.logging.Logger;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
-import org.mockftpserver.fake.filesystem.FileEntry;
 import org.mockftpserver.fake.filesystem.FileSystem;
 
 /**
@@ -32,19 +32,19 @@ public class FakeFTPClient extends FTPClient {
 
     @Override
     public boolean retrieveFile(String remote, OutputStream local) throws IOException {
-        FileEntry entry = (FileEntry) _fileSystem.getEntry(remote);
-        InputStream createInputStream = entry.createInputStream();
+        String tmpRemote = remote.substring(1,remote.length());
+//        FileEntry entry = (FileEntry) _fileSystem.getEntry(remote);
+//        InputStream createInputStream = entry.createInputStream();
+        InputStream createInputStream = new FileInputStream(tmpRemote);
         try {
-            String theString = IOUtils.toString(createInputStream, "UTF-8");
+//            String theString = IOUtils.toString(createInputStream, "UTF-8");
             int nRead;
             byte[] data = new byte[16384];
 
             while ((nRead = createInputStream.read(data, 0, data.length)) != -1) {
                 local.write(data, 0, nRead);
             }
-
-            local.flush();
-            System.out.println(theString);
+//            System.out.println(theString);
         } catch (IOException ex) {
             Logger.getLogger(Test_FTP_sample_Request.class.getName()).log(Level.SEVERE, null, ex);
             return false;
@@ -58,9 +58,10 @@ public class FakeFTPClient extends FTPClient {
 
     @Override
     public FTPFile[] listFiles(String pathname) throws IOException {
-        List<String> listFiles = _fileSystem.listFiles(pathname);
+        List<String> listFiles = _fileSystem.listNames(pathname);
         FTPFile[] fakeFiles = new FTPFile[listFiles.size()];
         for (int i = 0; i < listFiles.size(); i++) {
+            
             fakeFiles[i] = new FakeFTPFile(listFiles.get(i));
         }
         return fakeFiles;

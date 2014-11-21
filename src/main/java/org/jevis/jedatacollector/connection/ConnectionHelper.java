@@ -263,29 +263,30 @@ public class ConnectionHelper {
         }
 
         List<String> folderPathes = getMatchingPathes(startPath, pathStream, new ArrayList<String>(), fc, lastReadout, new DateTimeFormatterBuilder());
-
+//        System.out.println("foldersize,"+folderPathes.size());
+        
         List<String> fileNames = new ArrayList<String>();
         String fileName = null;
         String fileNameScheme = pathStream[pathStream.length - 1];
         try {
             for (String folder : folderPathes) {
-                fc.changeWorkingDirectory(folder);
-                int i = 0;
-                for (FTPFile file : fc.listFiles()) {
-                    i++;
+//                fc.changeWorkingDirectory(folder);
+//                System.out.println("currentFolder,"+folder);
+                for (FTPFile file : fc.listFiles(folder)) {
                     fileName = file.getName();
                     DateTime folderTime = getFileTime(folder + fileName, pathStream);
                     boolean match = matchDateString(fileName, fileNameScheme);
                     boolean isLater = folderTime.isAfter(lastReadout);
                     if (match && isLater) {
                         System.out.println(fileName);
-                        fileNames.add(fileName);
+                        fileNames.add(folder + fileName);
                     }
                 }
             }
         } catch (IOException ex) {
             Logger.getLogger(ConnectionHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
+//        System.out.println("filenamesize"+fileNames.size());
         return fileNames;
     }
 

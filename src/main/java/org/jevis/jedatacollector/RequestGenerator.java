@@ -88,13 +88,22 @@ public class RequestGenerator {
         return req;
     }
 
-    public static Request createConnectionParsingRequest(DataCollectorConnection connection, GenericParser parsing) {
+    public static Request createConnectionParsingRequest(DataCollectorConnection connection, DataCollectorParser parsing, List<DataPoint> datapoints) {
         Request request = new DefaultRequest();
         request.setNeedConnection(true);
         request.setConnection(connection);
         request.setParser(parsing);
+        request.setDataPoints(datapoints);
+//            request.setSpecificDatapoint(dp);
         request.setNeedImport(false);
         request.setNeedParsing(true);
+//        request.setOutputType(OutputHandler.JEVIS_OUTPUT);
+        String timezone = connection.getTimezone();
+//        if (timezone == null) {
+//            timezone = "UTC";
+//        }
+//        ParsingRequest parsingReq = ParsingRequestGenerator.g(DateTimeZone.forID(timezone), Launcher.getClient());
+//        request.setParsingRequest(parsingReq);
         return request;
     }
 
@@ -185,15 +194,15 @@ public class RequestGenerator {
         request.setNeedParsing(true);
 //        request.setOutputType(OutputHandler.JEVIS_OUTPUT);
         String timezone = connection.getTimezone();
-        if(timezone == null){
+        if (timezone == null) {
             timezone = "UTC";
         }
         ParsingRequest parsingReq = ParsingRequestGenerator.generateJEVisParsingRequest(DateTimeZone.forID(timezone), Launcher.getClient());
         request.setParsingRequest(parsingReq);
         return request;
     }
-    
-        public static Request createConnectionRequest(DataCollectorConnection connection, List<DataPoint> datapoints) {
+
+    public static Request createConnectionRequest(DataCollectorConnection connection, List<DataPoint> datapoints) {
 
         Request request = new DefaultRequest();
         request.setNeedConnection(true);

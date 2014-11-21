@@ -18,8 +18,8 @@ import org.jevis.jedatacollector.exception.FetchingException;
  */
 public class FakeFTPConnection extends FTPConnection{
 
-    FakeFTPConnection(String filePath, boolean b) {
-        super(null,filePath,null,null,null,null,null,null,null,b);
+    FakeFTPConnection(boolean b) {
+        super(null, b, null, null, null, null, null, null, null);
     }
     
     @Override

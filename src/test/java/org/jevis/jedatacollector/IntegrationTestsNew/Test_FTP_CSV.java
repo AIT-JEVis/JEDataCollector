@@ -13,7 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import junit.framework.Assert;
 import org.jevis.commons.parsing.DataCollectorParser;
+import org.jevis.commons.parsing.Result;
 import org.jevis.commons.parsing.csvParsing.CSVParsing;
 import org.jevis.commons.parsing.inputHandler.InputHandler;
 import org.jevis.jedatacollector.DataCollector;
@@ -21,6 +23,9 @@ import org.jevis.jedatacollector.Request;
 import org.jevis.jedatacollector.RequestGenerator;
 import org.jevis.jedatacollector.connection.DataCollectorConnection;
 import org.jevis.jedatacollector.data.DataPoint;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.junit.Test;
 import org.mockftpserver.fake.filesystem.DirectoryEntry;
 import org.mockftpserver.fake.filesystem.FileEntry;
@@ -36,26 +41,36 @@ public class Test_FTP_CSV {
     @Test
     public void test_send_sample_request_and_parse() throws Exception {
 //        //hier der neue konstruktor
-//        DataCollectorConnection ftpConnection = new FakeFTPConnection("/Jahresdaten_${D:yyyy}/Monatsdaten_${D:MM}/Tagesdaten_${D:dd HH:mm:ss}.csv", false);
-//
-//        //hier neuer konstruktor
-//        DataPoint datapoint = new DataPoint(null, null, null);
+        DataCollectorConnection ftpConnection = new FakeFTPConnection(false);
+        String lastReadoutText = "01112014000000";
+        DateTimeFormatter forPattern = DateTimeFormat.forPattern("ddMMyyyyHHmmss");
+        DateTime lastReadout = forPattern.parseDateTime(lastReadoutText);
+        DataPoint datapoint = new DataPoint("/Daten/Jahresdaten_${D:yyyy}/Monatsdaten_${D:MM}/Tagesdaten_${D:dd_HH:mm:ss}.csv", null, null, "1", lastReadout, true);
 
         //unix and windowsfile system possible
         FileSystem fileSystem = setupFilesystem();
 
-//        FakeFTPClient fakeClient = new FakeFTPClient();
-//        fakeClient.setFileSystem(fileSystem);
-//        ((FakeFTPConnection) ftpConnection).setClient(fakeClient);
-//
-//        DataCollectorParser parser = new CSVParsing();
-//
-//        Request request = RequestGenerator.createConnectionParsingRequest(ftpConnection, null);
-//
-//        DataCollector dataCollector = new DataCollector(request);
-//        dataCollector.run();
-//        //check the results here
-//        InputHandler inputHandler = dataCollector.getInputHandler();
+        FakeFTPClient fakeClient = new FakeFTPClient();
+        fakeClient.setFileSystem(fileSystem);
+        ((FakeFTPConnection) ftpConnection).setClient(fakeClient);
+
+        DataCollectorParser parser = new CSVParsing(null, ";", 0, 1, null, null, "yyyy.MM.dd HH:mm:ss", null, null, null);
+
+        List<DataPoint> datapoints = new ArrayList<DataPoint>();
+        datapoints.add(datapoint);
+        Request request = RequestGenerator.createConnectionParsingRequest(ftpConnection, parser, datapoints);
+//Request request = RequestGenerator.createConnectionRequest(ftpConnection, datapoints);
+
+        DataCollector dataCollector = new DataCollector(request);
+        dataCollector.run();
+        //check the results here
+        List<InputHandler> inputHandlers = dataCollector.getInputHandler();
+        for (InputHandler input : inputHandlers) {
+            System.out.println(input.getFilePath());
+        }
+        Assert.assertTrue(inputHandlers.size() == 29);
+        List<Result> results = parser.getResults();
+         Assert.assertTrue(results.size() == 2784);
     }
 
     protected void setUp() throws Exception {
@@ -64,7 +79,7 @@ public class Test_FTP_CSV {
     protected void tearDown() throws Exception {
     }
 
-    private FileSystem setupFilesystem() {
+   private FileSystem setupFilesystem() {
         FileSystem fileSystem = new UnixFakeFileSystem();
         fileSystem.add(new DirectoryEntry("/Daten/Jahresdaten_2012"));
         fileSystem.add(new DirectoryEntry("/Daten/Jahresdaten_2013"));
@@ -95,7 +110,7 @@ public class Test_FTP_CSV {
         fileSystem.add(new DirectoryEntry(sep));
         fileSystem.add(new DirectoryEntry(oct));
         fileSystem.add(new DirectoryEntry(nov));
-        fileSystem.add(new DirectoryEntry(dec));
+//        fileSystem.add(new DirectoryEntry(dec));
 
         List<String> monthList_28 = new ArrayList<String>();
         List<String> monthList_30 = new ArrayList<String>();
@@ -113,38 +128,15 @@ public class Test_FTP_CSV {
         monthList_30.add(nov);
 //        monthList_31.add(dec);
 
-        
-        //setup day folder with data
+
+        //setup day files
         for (String month : monthList_28) {
             for (int i = 1; i <= 28; i++) {
                 String dd = String.valueOf(i);
                 if (dd.length() == 1) {
                     dd = "0" + String.valueOf(i);
                 }
-                String filePath = month + "/Tagesdaten_" + dd + "_00:00:00.csv";
-                String fileInputText = null;
-                try {
-                    BufferedReader br = new BufferedReader(new FileReader(filePath.substring(1, filePath.length())));
-                    try {
-                        StringBuilder sb = new StringBuilder();
-                        String line = br.readLine();
-
-                        while (line != null) {
-                            sb.append(line);
-                            sb.append(System.lineSeparator());
-                            line = br.readLine();
-                        }
-                        fileInputText = sb.toString();
-                    } catch (FileNotFoundException ex) {
-                        Logger.getLogger(Test_FTP_CSV.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (IOException ex) {
-                        Logger.getLogger(Test_FTP_CSV.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                } catch (FileNotFoundException ex) {
-                    Logger.getLogger(Test_FTP_CSV.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                System.out.println(fileInputText);
-                fileSystem.add(new FileEntry(filePath, fileInputText));
+                fileSystem.add(new FileEntry(month + "/Tagesdaten_" + dd + "_00:00:00.csv"));
             }
         }
 
@@ -154,30 +146,7 @@ public class Test_FTP_CSV {
                 if (dd.length() == 1) {
                     dd = "0" + String.valueOf(i);
                 }
-                String filePath = month + "/Tagesdaten_" + dd + "_00:00:00.csv";
-                String fileInputText = null;
-                try {
-                    BufferedReader br = new BufferedReader(new FileReader(filePath.substring(1, filePath.length())));
-                    try {
-                        StringBuilder sb = new StringBuilder();
-                        String line = br.readLine();
-
-                        while (line != null) {
-                            sb.append(line);
-                            sb.append(System.lineSeparator());
-                            line = br.readLine();
-                        }
-                        fileInputText = sb.toString();
-                    } catch (FileNotFoundException ex) {
-                        Logger.getLogger(Test_FTP_CSV.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (IOException ex) {
-                        Logger.getLogger(Test_FTP_CSV.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                } catch (FileNotFoundException ex) {
-                    Logger.getLogger(Test_FTP_CSV.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                System.out.println(fileInputText);
-                fileSystem.add(new FileEntry(filePath, fileInputText));
+                fileSystem.add(new FileEntry(month + "/Tagesdaten_" + dd + "_00:00:00.csv"));
             }
         }
 
@@ -187,30 +156,7 @@ public class Test_FTP_CSV {
                 if (dd.length() == 1) {
                     dd = "0" + String.valueOf(i);
                 }
-                String filePath = month + "/Tagesdaten_" + dd + "_00:00:00.csv";
-                String fileInputText = null;
-                try {
-                    BufferedReader br = new BufferedReader(new FileReader(filePath.substring(1, filePath.length())));
-                    try {
-                        StringBuilder sb = new StringBuilder();
-                        String line = br.readLine();
-
-                        while (line != null) {
-                            sb.append(line);
-                            sb.append(System.lineSeparator());
-                            line = br.readLine();
-                        }
-                        fileInputText = sb.toString();
-                    } catch (FileNotFoundException ex) {
-                        Logger.getLogger(Test_FTP_CSV.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (IOException ex) {
-                        Logger.getLogger(Test_FTP_CSV.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                } catch (FileNotFoundException ex) {
-                    Logger.getLogger(Test_FTP_CSV.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                System.out.println(fileInputText);
-                fileSystem.add(new FileEntry(filePath, fileInputText));
+                fileSystem.add(new FileEntry(month + "/Tagesdaten_" + dd + "_00:00:00.csv"));
             }
         }
         return fileSystem;
