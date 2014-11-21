@@ -36,7 +36,7 @@ public interface DataCollectorConnection {
      * @return Returns an object which's type is determined by the connection
      * type
      */
-    InputHandler sendSampleRequest(DataPoint dp, DateTime from, DateTime until) throws FetchingException;
+    List<InputHandler> sendSampleRequest(DataPoint dp, DateTime from, DateTime until) throws FetchingException;
 
     /**
      * Indicates, whether a device returns all the values it was asked for or

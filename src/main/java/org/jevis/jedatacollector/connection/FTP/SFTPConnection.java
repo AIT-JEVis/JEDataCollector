@@ -10,11 +10,11 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
-import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
@@ -116,7 +116,7 @@ public class SFTPConnection implements DataCollectorConnection {
     }
 
     @Override
-    public InputHandler sendSampleRequest(DataPoint dp, DateTime from, DateTime until) throws FetchingException {
+    public List<InputHandler> sendSampleRequest(DataPoint dp, DateTime from, DateTime until) throws FetchingException {
         Object answer = null;
         String fileName = ConnectionHelper.parseConnectionString(dp, from, until, _fileNameScheme, _dateFormat);
 //        String query = _filePath + fileName;
@@ -159,7 +159,9 @@ public class SFTPConnection implements DataCollectorConnection {
         } catch (SftpException ex) {
             Logger.getLogger(SFTPConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return InputHandlerFactory.getInputConverter(answer);
+        List<InputHandler> answerList = new ArrayList<InputHandler>();
+        answerList.add(InputHandlerFactory.getInputConverter(answer));
+        return answerList;
     }
 
 //    @Override

@@ -276,7 +276,7 @@ public class HTTPConnection implements DataCollectorConnection {
     }
 
     @Override
-    public InputHandler sendSampleRequest(DataPoint dp, DateTime from, DateTime until) throws FetchingException {
+    public List<InputHandler> sendSampleRequest(DataPoint dp, DateTime from, DateTime until) throws FetchingException {
 //        List<Object> res = new LinkedList<Object>();
         URL requestUrl;
         Object answer = null;
@@ -421,7 +421,9 @@ public class HTTPConnection implements DataCollectorConnection {
 
             }
         }
-        return InputHandlerFactory.getInputConverter(answer);
+        List<InputHandler> answerList = new ArrayList<InputHandler>();
+        answerList.add(InputHandlerFactory.getInputConverter(answer));
+        return answerList;
     }
 
 //    @Override

@@ -29,19 +29,7 @@ public class ConnectionService {
         System.out.println("---Verbinden erfolgreich---");
     }
 
-    public InputHandler sendSamplesRequest(DateTime from, DateTime until, DataPoint dp) throws FetchingException {
-        System.out.println("---Send Sample Request---");
 
-//        Calendar fromAfter = GregorianCalendar.getInstance();
-//        fromAfter.setTimeInMillis(from.getMillis());
-//        fromAfter.setTimeZone(timeZone);
-//        Calendar toAfter = GregorianCalendar.getInstance();
-//        toAfter.setTimeZone(timeZone);
-//        TimeSet timeSet = new TimeSet(new Date(fromAfter.getTimeInMillis()), new Date(toAfter.getTimeInMillis()));
-        InputHandler answer = _connection.sendSampleRequest(dp, from, until);  //TODO dp in den converter
-        return answer;
-        
-    }
 //    /**
 //     * Get Samples from the connected device with the specified time set and
 //     * channel

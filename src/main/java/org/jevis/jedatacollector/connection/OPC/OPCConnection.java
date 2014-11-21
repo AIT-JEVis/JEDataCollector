@@ -27,7 +27,7 @@ public class OPCConnection implements DataCollectorConnection
     }
 
     @Override
-    public InputHandler sendSampleRequest(DataPoint dp, DateTime from, DateTime until) throws FetchingException
+    public List<InputHandler> sendSampleRequest(DataPoint dp, DateTime from, DateTime until) throws FetchingException
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }

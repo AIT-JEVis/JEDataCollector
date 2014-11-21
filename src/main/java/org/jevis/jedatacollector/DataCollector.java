@@ -34,7 +34,7 @@ public class DataCollector {
 
     private ParsingService _parsingService;
     private ConnectionService _connectionService;
-    private InputHandler _inputHandler;
+    private List<InputHandler> _inputHandler;
     private Request _request;
     private DateTime _lastDateInUTC;
 
@@ -45,7 +45,8 @@ public class DataCollector {
         _request = req;
 
         if (req.getInputHandler() != null) {
-            _inputHandler = req.getInputHandler();
+            _inputHandler = new ArrayList<InputHandler>();
+            _inputHandler.add(req.getInputHandler());
         }
     }
     //TODO validate EACH Step.. for example "Exist all information for the conenction, parsing...?
@@ -94,10 +95,11 @@ public class DataCollector {
         for (DataPoint dp : _request.getDataPoints()) {
             fileParser.addDataPointParser(dp.getDatapointId(), dp.getTarget(), dp.getMappingIdentifier(), dp.getValueIdentifier());
         }
-        _parsingService.parseData(_inputHandler);
+        for (InputHandler inputHandler : _inputHandler) {
+            _parsingService.parseData(inputHandler);
+        }
     }
-
-    public InputHandler getInputHandler() {
+    public List<InputHandler> getInputHandler() {
         return _inputHandler;
     }
 
@@ -142,9 +144,10 @@ public class DataCollector {
             _inputHandler = _request.getDataSource().sendSampleRequest(dp, from, until);
             break;
         }
-        _inputHandler.convertInput();
+        for (InputHandler inputHandler : _inputHandler) {
+            inputHandler.convertInput();
+        }
     }
-
     public DateTime getFrom(DataPoint dp) {
         if (dp != null) {
             try {

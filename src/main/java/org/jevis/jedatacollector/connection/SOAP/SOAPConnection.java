@@ -5,7 +5,6 @@
 package org.jevis.jedatacollector.connection.SOAP;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.net.MalformedURLException;
@@ -22,10 +21,8 @@ import org.jevis.api.JEVisClass;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
 import org.jevis.api.JEVisType;
-import org.jevis.jedatacollector.connection.ConnectionFactory;
 import org.jevis.jedatacollector.data.DataPoint;
 import org.jevis.jedatacollector.connection.DataCollectorConnection;
-import org.jevis.commons.JEVisTypes;
 import org.jevis.commons.parsing.inputHandler.InputHandler;
 import org.jevis.commons.parsing.inputHandler.InputHandlerFactory;
 import org.jevis.jedatacollector.exception.FetchingException;
@@ -140,7 +137,7 @@ public class SOAPConnection implements DataCollectorConnection {
     }
 
     @Override
-    public InputHandler sendSampleRequest(DataPoint dp, DateTime from, DateTime until) throws FetchingException {
+    public List<InputHandler> sendSampleRequest(DataPoint dp, DateTime from, DateTime until) throws FetchingException {
 //        SimpleDateFormat sdf = null;
         DateTimeFormatter fmt = null;
         if (_dateFormat != null && !_dateFormat.equals("")) {
@@ -165,8 +162,8 @@ public class SOAPConnection implements DataCollectorConnection {
             soapResponses.add(sendRequest(soapRequests.get(i)));
         }
         
-
-        return InputHandlerFactory.getInputConverter(soapResponses);
+//{InputHandlerFactory.getInputConverter(soapResponses)
+        return new ArrayList<InputHandler>();
     }
 
     private SOAPMessage getSOAPMessage(String template, DateTime from, DateTime until, String sampleCount, String dpName, String loggerName, DateTimeFormatter fmt) {

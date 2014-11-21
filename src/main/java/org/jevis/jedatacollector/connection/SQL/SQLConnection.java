@@ -7,6 +7,7 @@ package org.jevis.jedatacollector.connection.SQL;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,7 +19,6 @@ import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
 import org.jevis.api.JEVisType;
 import org.jevis.commons.parsing.inputHandler.InputHandler;
-import org.jevis.commons.parsing.inputHandler.InputHandlerFactory;
 import org.jevis.jedatacollector.connection.ConnectionHelper;
 import org.jevis.jedatacollector.data.DataPoint;
 import org.jevis.jedatacollector.connection.DataCollectorConnection;
@@ -73,7 +73,7 @@ public class SQLConnection implements DataCollectorConnection {
     }
 
     @Override
-    public InputHandler sendSampleRequest(DataPoint dp, DateTime from, DateTime until) throws FetchingException {
+    public List<InputHandler> sendSampleRequest(DataPoint dp, DateTime from, DateTime until) throws FetchingException {
         List<Object> returnList = new LinkedList<Object>();
 
         try {
@@ -94,8 +94,8 @@ public class SQLConnection implements DataCollectorConnection {
         } catch (SQLException ex) {
             Logger.getLogger(SQLConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-        return InputHandlerFactory.getInputConverter(returnList);
+//InputHandlerFactory.getInputConverter(returnList)
+        return new ArrayList<InputHandler>();
     }
 
 //    @Override

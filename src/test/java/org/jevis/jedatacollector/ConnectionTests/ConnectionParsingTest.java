@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.jevis.commons.parsing.DataCollectorParser;
+import org.jevis.commons.parsing.csvParsing.CSVParsing;
 import org.jevis.jedatacollector.DataCollector;
 import org.jevis.jedatacollector.Request;
 import org.jevis.jedatacollector.RequestGenerator;
@@ -126,10 +128,11 @@ public class ConnectionParsingTest {
 //    }
     public void test_matching_pathes_kaust() {
         DataCollectorConnection connection = new FTPConnection(50l, true, "ftps.kaust.edu.sa", 21, 20, 200, "neo_ext1", "ftneo1", "UTC");
+//        DataCollectorParser parser = new CSVParsing("\"", ",", 6, Integer dateIndex, Integer timeIndex, Integer dpIndex, String dateFormat, String timeFormat, String decimalSep, String thousandSep)
         DateTime lastReadout = new DateTime();
 
         DateTimeFormatter dtf = DateTimeFormat.forPattern("ddMMyyyyHHmmss");
-        DateTime from = dtf.parseDateTime("10062014090000");
+        DateTime from = dtf.parseDateTime("10072014090000");
 
         DataPoint datapoint = new DataPoint("CR/${D:yyyy_MM_dd_HH_mm_ss}_Gen4_.{5}_IV.dat", null, null, "2", from, true);
 

@@ -5,7 +5,7 @@ package org.jevis.jedatacollector.connection.FTP;
  * and open the template in the editor.
  */
 import java.io.*;
-import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -233,14 +233,14 @@ public class FTPConnection implements DataCollectorConnection {
 //        return false;
 //    }
     @Override
-    public InputHandler sendSampleRequest(DataPoint dp, DateTime from, DateTime until) throws FetchingException {
+    public List<InputHandler> sendSampleRequest(DataPoint dp, DateTime from, DateTime until) throws FetchingException {
         Object answer = null;
         //multiple File pathes neccessary?
         String filePath = ConnectionHelper.parseConnectionString(dp, from, until, dp.getFilePath(), dp.getDateFormat());
         List<String> fileNames = ConnectionHelper.getFTPMatchedFileNames(_fc, dp,filePath);
 
 //        String currentFilePath = Paths.get(filePath).getParent().toString();
-
+        List<InputHandler> answerList = new ArrayList<InputHandler>();
         for (String fileName : fileNames) {
             System.out.println("file " + fileName);
             try {
@@ -252,7 +252,7 @@ public class FTPConnection implements DataCollectorConnection {
                 org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.INFO, "Request status: " + retrieveFile);
                 InputStream inputStream = new ByteArrayInputStream(out.toByteArray());
                 answer = new BufferedInputStream(inputStream);
-
+                answerList.add(InputHandlerFactory.getInputConverter(answer));
 //                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
 //                String inputLine;
 //
@@ -265,7 +265,7 @@ public class FTPConnection implements DataCollectorConnection {
         }
 
 
-        return InputHandlerFactory.getInputConverter(answer);
+        return answerList;
     }
 
     @Override
