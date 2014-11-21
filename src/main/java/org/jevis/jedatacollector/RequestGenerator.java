@@ -62,14 +62,15 @@ public class RequestGenerator {
 //
 //        return requests;
 //    }
-    public static Request createOnlyParsingRequest(GenericParser fileParser, InputHandler input) {
+    public static Request createOnlyParsingRequest(DataCollectorParser fileParser, List<DataPoint> datapoints, List<InputHandler> inputHandlers) {
         Request req = new DefaultRequest();
         req.setNeedConnection(false);
         req.setNeedImport(false);
         req.setNeedParsing(true);
         req.setParser(null);
         req.setParser(fileParser);
-        req.setInputHandler(input);
+        req.setInputHandlers(inputHandlers);
+        req.setDataPoints(datapoints);
         return req;
     }
 
@@ -212,4 +213,5 @@ public class RequestGenerator {
         request.setNeedParsing(false);
         return request;
     }
+
 }

@@ -4,6 +4,7 @@
  */
 package org.jevis.jedatacollector.connection.SOAP;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringReader;
@@ -24,7 +25,6 @@ import org.jevis.api.JEVisType;
 import org.jevis.jedatacollector.data.DataPoint;
 import org.jevis.jedatacollector.connection.DataCollectorConnection;
 import org.jevis.commons.parsing.inputHandler.InputHandler;
-import org.jevis.commons.parsing.inputHandler.InputHandlerFactory;
 import org.jevis.jedatacollector.exception.FetchingException;
 import org.jevis.jedatacollector.exception.FetchingExceptionType;
 import org.joda.time.DateTime;
@@ -124,9 +124,6 @@ public class SOAPConnection implements DataCollectorConnection {
             } else {
                 _serverURL = new URL("http", _address, "");
             }
-
-
-
         } catch (MalformedURLException ex) {
             throw new FetchingException(_id, FetchingExceptionType.URL_ERROR);
         } catch (SOAPException ex) {
@@ -147,21 +144,34 @@ public class SOAPConnection implements DataCollectorConnection {
         List<SOAPMessage> soapRequests = new LinkedList<SOAPMessage>();
         List<Object> soapResponses = new LinkedList<Object>();
 
-        if (_maximumDayRequest != null && _maximumDayRequest > 0) {
+//        if (_maximumDayRequest != null && _maximumDayRequest > 0) {
 //            TimeSetVector tsv = new TimeSetVector(ts);
 //            tsv.splitIntoChunks(_maximumDayRequest.intValue(), 0, 0);
 
 //            for (TimeSet tsPart : tsv) {
 //            soapRequests.add(getSOAPMessage(new String(_xmlTemplate), from, until, _sampleCount, dp.getChannelID(), dp.getDataLoggerName(), fmt));
 //            }
-        } else {
+//        } else {
 //            soapRequests.add(getSOAPMessage(new String(_xmlTemplate), from, until, _sampleCount, dp.getChannelID(), dp.getDataLoggerName(), fmt));
+//        }
+        Document doc = buildDocument(dp.getFilePath());
+        SOAPMessage buildSOAPMessage = buildSOAPMessage(doc);
+        try {
+            SOAPMessage call = _conn.call(buildSOAPMessage, _address);
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            call.writeTo(out);
+            String strMsg = new String(out.toByteArray());
+            System.out.println(strMsg);
+            //        soapRequests.add(buildSOAPMessage);
+            //        for (int i = 0; i < soapRequests.size(); i++) {
+            //        }
+            //        }
+        } catch (SOAPException ex) {
+            Logger.getLogger(SOAPConnection.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(SOAPConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        for (int i = 0; i < soapRequests.size(); i++) {
-            soapResponses.add(sendRequest(soapRequests.get(i)));
-        }
-        
 //{InputHandlerFactory.getInputConverter(soapResponses)
         return new ArrayList<InputHandler>();
     }
@@ -292,19 +302,16 @@ public class SOAPConnection implements DataCollectorConnection {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-
 //    @Override
 //    public boolean returnsLimitedSampleCount() {
 //        return true;
 //    }
-
     public class NullOutputStream extends OutputStream {
 
         @Override
         public void write(int b) throws IOException {
         }
     }
-    
 //      @Override
 //    public String getConnectionType() {
 //        return JEVisTypes.Connection.SOAP.Name;

@@ -36,13 +36,12 @@ public class DefaultRequest implements Request {
     private DateTime _from;
     private DateTime _until;
     private InputHandler _inputHandler;
+    private List<InputHandler> _inputHandlers;
     private List<DataPoint> _dataPoints = new ArrayList<DataPoint>();
     private DateTimeZone _dateTimeZone;
     private String _importType;
     private String _outputPath;
     private ParsingRequest _parsingRequest;
-    
-    
 
     @Override
     public boolean needConnection() {
@@ -201,5 +200,15 @@ public class DefaultRequest implements Request {
     @Override
     public void setParsingRequest(ParsingRequest preq) {
         _parsingRequest = preq;
+    }
+
+    @Override
+    public void setInputHandlers(List<InputHandler> inputHandlers) {
+        _inputHandlers = inputHandlers;
+    }
+
+    @Override
+    public List<InputHandler> getInputHandlers() {
+        return _inputHandlers;
     }
 }

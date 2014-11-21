@@ -1,0 +1,9 @@
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+    <SOAP-ENV:Header/>
+    <SOAP-ENV:Body>
+        <LogRead xmlns="http://www.loytec.com/wsdl/XMLDL/1.0/" NumItems="500" ReturnCompleteSet="false" StartDateTime="2013-09-15T22:15:00">
+            <ReqBase clientItemHandle="360003409" logHandle="00/var/lib//dpal/trend-15ED.bin"/>
+        </LogRead>
+    </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
+

@@ -44,9 +44,8 @@ public class DataCollector {
     public DataCollector(Request req) {
         _request = req;
 
-        if (req.getInputHandler() != null) {
-            _inputHandler = new ArrayList<InputHandler>();
-            _inputHandler.add(req.getInputHandler());
+        if (req.getInputHandlers() != null) {
+            _inputHandler = req.getInputHandlers();
         }
     }
     //TODO validate EACH Step.. for example "Exist all information for the conenction, parsing...?

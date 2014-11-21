@@ -87,4 +87,8 @@ public interface Request {
     public ParsingRequest getParsingRequest();
     
     public void setParsingRequest(ParsingRequest preq);
+
+    public void setInputHandlers(List<InputHandler> inputHandlers);
+    
+    public List<InputHandler> getInputHandlers();
 }
