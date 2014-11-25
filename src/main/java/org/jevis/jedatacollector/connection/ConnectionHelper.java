@@ -113,7 +113,6 @@ public class ConnectionHelper {
     private static boolean fitsDateTime(String fileName, String fileNameScheme, DateTime lastReadout) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
     public int _year;
     public int _month;
     public int _day;
@@ -264,14 +263,14 @@ public class ConnectionHelper {
 
         List<String> folderPathes = getMatchingPathes(startPath, pathStream, new ArrayList<String>(), fc, lastReadout, new DateTimeFormatterBuilder());
 //        System.out.println("foldersize,"+folderPathes.size());
-        
+
         List<String> fileNames = new ArrayList<String>();
         String fileName = null;
         String fileNameScheme = pathStream[pathStream.length - 1];
         try {
             for (String folder : folderPathes) {
-//                fc.changeWorkingDirectory(folder);
-//                System.out.println("currentFolder,"+folder);
+                //                fc.changeWorkingDirectory(folder);
+                //                System.out.println("currentFolder,"+folder);
                 for (FTPFile file : fc.listFiles(folder)) {
                     fileName = file.getName();
                     DateTime folderTime = getFileTime(folder + fileName, pathStream);

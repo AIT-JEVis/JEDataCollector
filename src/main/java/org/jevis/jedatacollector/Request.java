@@ -6,13 +6,13 @@ package org.jevis.jedatacollector;
 
 import java.util.List;
 import org.jevis.commons.parsing.DataCollectorParser;
-import org.jevis.commons.parsing.GenericParser;
 import org.jevis.commons.parsing.ParsingRequest;
 import org.jevis.commons.parsing.inputHandler.InputHandler;
 import org.jevis.jedatacollector.connection.DataCollectorConnection;
 import org.jevis.jedatacollector.data.Data;
 import org.jevis.jedatacollector.data.DataSource;
 import org.jevis.jedatacollector.data.DataPoint;
+import org.jevis.jedatacollector.data.DataPointDir;
 import org.jevis.jedatacollector.service.ParsingService;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;

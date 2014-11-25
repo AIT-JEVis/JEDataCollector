@@ -4,10 +4,8 @@
  */
 package org.jevis.jedatacollector;
 
-import com.mysql.jdbc.util.TimezoneDump;
 import java.util.ArrayList;
 import java.util.List;
-import org.jevis.api.JEVisClass;
 import org.jevis.commons.parsing.DataCollectorParser;
 import org.jevis.commons.parsing.GenericParser;
 import org.jevis.commons.parsing.ParsingRequest;
@@ -18,6 +16,7 @@ import org.jevis.jedatacollector.connection.DataCollectorConnection;
 import org.jevis.jedatacollector.data.Data;
 import org.jevis.jedatacollector.data.DataSource;
 import org.jevis.jedatacollector.data.DataPoint;
+import org.jevis.jedatacollector.data.DataPointDir;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 

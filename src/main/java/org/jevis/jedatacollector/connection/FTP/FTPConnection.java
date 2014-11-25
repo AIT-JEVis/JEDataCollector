@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPSClient;
 import org.jevis.api.JEVisAttribute;
@@ -25,6 +24,7 @@ import org.jevis.commons.JEVisTypes;
 import org.jevis.commons.parsing.inputHandler.InputHandler;
 import org.jevis.commons.parsing.inputHandler.InputHandlerFactory;
 import org.jevis.jedatacollector.Launcher;
+import org.jevis.jedatacollector.data.DataPointDir;
 import org.jevis.jedatacollector.exception.FetchingException;
 import org.jevis.jedatacollector.exception.FetchingExceptionType;
 import org.joda.time.DateTime;
@@ -53,6 +53,7 @@ public class FTPConnection implements DataCollectorConnection {
     private Boolean _ssl = false;
     private String _startCollectingData;
     private String _timezone;
+    private Boolean _enabled;
 
     public FTPConnection() {
         super();
@@ -237,7 +238,32 @@ public class FTPConnection implements DataCollectorConnection {
     public List<InputHandler> sendSampleRequest(DataPoint dp, DateTime from, DateTime until) throws FetchingException {
         Object answer = null;
         //multiple File pathes neccessary?
-        String filePath = ConnectionHelper.parseConnectionString(dp, from, until, dp.getFilePath(), dp.getDateFormat());
+//        String filePath = ConnectionHelper.parseConnectionString(dp, from, until, dp.getFilePath(), dp.getDateFormat());
+        //this should be outsourced
+        String filePath = "";
+        String currentDir = null;
+        boolean compress = false;
+        for (DataPointDir dir :dp.getDirectory().getParentDirs()){
+            currentDir = dir.getFolderName();
+            if (filePath.equals("")){
+                filePath+=currentDir;
+            }else{
+                if (filePath.endsWith("/") && currentDir.startsWith("/")){
+                    filePath += currentDir.substring(1,currentDir.length());
+                }else if (!filePath.endsWith("/") && !currentDir.startsWith("/")){
+                    filePath += "/"+currentDir;
+                }
+            }
+            if (dir.getCompressed()){
+                compress = true;
+                break;
+            }
+        }
+        
+        if (!compress){
+            filePath += dp.getFilePath();
+        }
+        
         List<String> fileNames = ConnectionHelper.getFTPMatchedFileNames(_fc, dp,filePath);
 
 //        String currentFilePath = Paths.get(filePath).getParent().toString();
@@ -274,10 +300,9 @@ public class FTPConnection implements DataCollectorConnection {
     }
 
     @Override
-    public void initialize(JEVisObject node) throws FetchingException {
+    public void initialize(JEVisObject ftpObject) throws FetchingException {
         try {
             JEVisClass ftpType = Launcher.getClient().getJEVisClass(JEVisTypes.DataServer.FTP.NAME);
-            JEVisObject ftpObject = node;
             JEVisType sslType = ftpType.getType(JEVisTypes.DataServer.FTP.SSL);
             JEVisType serverType = ftpType.getType(JEVisTypes.DataServer.FTP.HOST);
             JEVisType portType = ftpType.getType(JEVisTypes.DataServer.FTP.PORT);
@@ -286,6 +311,7 @@ public class FTPConnection implements DataCollectorConnection {
             JEVisType userType = ftpType.getType(JEVisTypes.DataServer.FTP.USER);
             JEVisType passwordType = ftpType.getType(JEVisTypes.DataServer.FTP.PASSWORD);
             JEVisType timezoneType = ftpType.getType(JEVisTypes.DataServer.FTP.TIMEZONE);
+            JEVisType enableType = ftpType.getType(JEVisTypes.DataServer.ENABLE);
 
             _id = ftpObject.getID();
             _ssl = DatabaseHelper.getObjectAsBoolean(ftpObject, sslType);
@@ -312,6 +338,8 @@ public class FTPConnection implements DataCollectorConnection {
             }
 
             _timezone = DatabaseHelper.getObjectAsString(ftpObject, timezoneType);
+            
+            _enabled = DatabaseHelper.getObjectAsBoolean(ftpObject, enableType);
         } catch (JEVisException ex) {
             ex.printStackTrace();
             Logger.getLogger(FTPConnection.class.getName()).log(Level.SEVERE, null, ex);
@@ -335,5 +363,10 @@ public class FTPConnection implements DataCollectorConnection {
     @Override
     public String getName() {
         return String.valueOf(_id);
+    }
+    
+    @Override
+    public Boolean isEnabled(){
+        return _enabled;
     }
 }

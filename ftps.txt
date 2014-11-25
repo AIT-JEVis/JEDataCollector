@@ -1,9 +1,0 @@
-type=FTP
-ip=ftps.kaust.edu.sa
-path=/
-file=sftp.tar
-connection-timeout=300
-read-timeout=30
-user=neo_ext1
-password=ftneo1
-ssl=true

@@ -14,6 +14,7 @@ import org.jevis.jedatacollector.connection.DataCollectorConnection;
 import org.jevis.jedatacollector.data.Data;
 import org.jevis.jedatacollector.data.DataSource;
 import org.jevis.jedatacollector.data.DataPoint;
+import org.jevis.jedatacollector.data.DataPointDir;
 import org.jevis.jedatacollector.service.ParsingService;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -42,6 +43,7 @@ public class DefaultRequest implements Request {
     private String _importType;
     private String _outputPath;
     private ParsingRequest _parsingRequest;
+    private DataPointDir _directory;
 
     @Override
     public boolean needConnection() {

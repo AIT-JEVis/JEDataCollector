@@ -38,6 +38,7 @@ public class DataPoint {
     private DateTime _lastReadout;
     private String _currentReadoutString;
     private Boolean _periodicallySampling;
+    private DataPointDir _directory;
 
     public DateTime getLastReadout() {
         return _lastReadout;
@@ -163,5 +164,13 @@ public class DataPoint {
 //    }
     public String getJEVisID() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void addDirectory(DataPointDir dir) {
+        _directory = dir;
+    }
+    
+    public DataPointDir getDirectory(){
+        return _directory;
     }
 }

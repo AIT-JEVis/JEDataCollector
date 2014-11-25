@@ -18,13 +18,19 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.soap.*;
 import javax.xml.transform.dom.DOMSource;
+import org.jevis.api.JEVisAttribute;
 import org.jevis.api.JEVisClass;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
 import org.jevis.api.JEVisType;
+import org.jevis.commons.DatabaseHelper;
+import org.jevis.commons.JEVisTypes;
 import org.jevis.jedatacollector.data.DataPoint;
 import org.jevis.jedatacollector.connection.DataCollectorConnection;
 import org.jevis.commons.parsing.inputHandler.InputHandler;
+import org.jevis.commons.parsing.inputHandler.InputHandlerFactory;
+import org.jevis.jedatacollector.Launcher;
+import org.jevis.jedatacollector.connection.HTTP.HTTPConnection;
 import org.jevis.jedatacollector.exception.FetchingException;
 import org.jevis.jedatacollector.exception.FetchingExceptionType;
 import org.joda.time.DateTime;
@@ -41,76 +47,135 @@ import org.xml.sax.SAXException;
 public class SOAPConnection implements DataCollectorConnection {
 
     private javax.xml.soap.SOAPConnection _conn;
-    private String _xmlTemplate;
-    private String _address;
+//    private String _xmlTemplate;
+//    private String _address;
+//    private URL _serverURL;
+//    private String _dateFormat;
+//    private String _sampleCount;
+//    private Long _triesRead;
+//    private Long _timeoutRead;
+//    private Long _triesConnection;
+//    private Long _timeoutConnection;
+//    private Long _maximumDayRequest;
+//    private Long _id;
     private URL _serverURL;
+    private String _server;
     private String _dateFormat;
-    private String _sampleCount;
-    private Long _triesRead;
-    private Long _timeoutRead;
-    private Long _triesConnection;
-    private Long _timeoutConnection;
-    private Long _maximumDayRequest;
+    private Integer _port;
+    private Integer _connectionTimeout;
+    private Integer _readTimeout;
+    private Integer _maximumDayRequest;
     private Long _id;
+    private String _userName;
+    private String _password;
+    private Boolean _ssl = false;
+    private String _timezone;
+    private String _uri;
 
     public SOAPConnection() {
     }
 
-    public SOAPConnection(String template, String address, String dateFormat, String sampleCount, Long triesRead, Long timeoutRead, Long maximumDayRequest) {
-        _xmlTemplate = template;
-        _address = address;
-        _dateFormat = dateFormat;
-        _sampleCount = sampleCount;
-        _triesRead = triesRead;
-        _timeoutRead = timeoutRead;
-        _maximumDayRequest = maximumDayRequest;
+//    public SOAPConnection(String template, String address, String dateFormat, String sampleCount, Long triesRead, Long timeoutRead, Long maximumDayRequest) {
+//        _xmlTemplate = template;
+//        _address = address;
+//        _dateFormat = dateFormat;
+//        _sampleCount = sampleCount;
+//        _triesRead = triesRead;
+//        _timeoutRead = timeoutRead;
+//        _maximumDayRequest = maximumDayRequest;
+//    }
+    public SOAPConnection(Long id, Boolean ssl, String server, Integer port, Integer connectionTimeout, Integer readTimeout, String username, String password, String timezone) {
+        _id = id;
+        _ssl = ssl;
+        _server = server;
+        _port = port;
+        _connectionTimeout = connectionTimeout;
+        _readTimeout = readTimeout;
+        _userName = username;
+        _password = password;
+        _timezone = timezone;
     }
 
     @Override
-    public void initialize(JEVisObject cn) throws FetchingException {
+    public void initialize(JEVisObject node) throws FetchingException {
+//        try {
+//            //        _id = cn.getID();
+//            //        _xmlTemplate = cn.<String>getPropertyValue("XML Template");
+//            //        _address = cn.<String>getPropertyValue("Server URL");
+//            //        _dateFormat = cn.<String>getPropertyValue("Date Format");
+//            //        _sampleCount = String.valueOf(cn.<Long>getPropertyValue("Sample Count"));
+//            //        _triesRead = cn.<Long>getPropertyValue("Read Tries");
+//            //        _timeoutRead = cn.<Long>getPropertyValue("Read Timeout (in sec.)");
+//            //        _triesConnection = cn.<Long>getPropertyValue("Connection Tries");
+//            //        _maximumDayRequest = cn.<Long>getPropertyValue("Maximum days for Request");
+//            //        _maximumDayRequest = cn.<Long>getPropertyValue("Maximum days for Request");
+//
+//            JEVisClass type = cn.getJEVisClass();
+//            JEVisType template = type.getType("XML Template");
+//            JEVisType address = type.getType("Server URL");
+//            JEVisType dateFormat = type.getType("Date Format");
+//            JEVisType sampleCound = type.getType("Sample Count");
+//            JEVisType triesRead = type.getType("Read Tries");
+//            JEVisType timeoutRead = type.getType("Read Timeout (in sec.)");
+//            JEVisType triesConnection = type.getType("Connection Tries");
+//            JEVisType timeoutConnection = type.getType("Connection Timeout (in sec.)");
+//            JEVisType maxRequests = type.getType("Maximum days for Request");
+//
+//            _id = cn.getID();
+//            _xmlTemplate = (String) cn.getAttribute(template).getLatestSample().getValue();
+//            _address = (String) cn.getAttribute(address).getLatestSample().getValue();
+//            _dateFormat = (String) cn.getAttribute(dateFormat).getLatestSample().getValue();
+//            _sampleCount = (String) cn.getAttribute(sampleCound).getLatestSample().getValue();
+//            _triesRead = (Long) cn.getAttribute(triesRead).getLatestSample().getValue();
+//            _timeoutRead = (Long) cn.getAttribute(timeoutRead).getLatestSample().getValue();
+//            _triesConnection = (Long) cn.getAttribute(triesConnection).getLatestSample().getValue();
+//            _timeoutConnection = (Long) cn.getAttribute(timeoutConnection).getLatestSample().getValue();
+//            _maximumDayRequest = (Long) cn.getAttribute(maxRequests).getLatestSample().getValue();
+//
+//            if (_maximumDayRequest == null || _maximumDayRequest < 1) {
+//                _maximumDayRequest = 10l;
+//            }
+//
+//            if (_sampleCount.equals("0")) {
+//                _sampleCount = "1000";
+//            }
+//        } catch (JEVisException ex) {
+//            Logger.getLogger(SOAPConnection.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+
         try {
-            //        _id = cn.getID();
-            //        _xmlTemplate = cn.<String>getPropertyValue("XML Template");
-            //        _address = cn.<String>getPropertyValue("Server URL");
-            //        _dateFormat = cn.<String>getPropertyValue("Date Format");
-            //        _sampleCount = String.valueOf(cn.<Long>getPropertyValue("Sample Count"));
-            //        _triesRead = cn.<Long>getPropertyValue("Read Tries");
-            //        _timeoutRead = cn.<Long>getPropertyValue("Read Timeout (in sec.)");
-            //        _triesConnection = cn.<Long>getPropertyValue("Connection Tries");
-            //        _maximumDayRequest = cn.<Long>getPropertyValue("Maximum days for Request");
-            //        _maximumDayRequest = cn.<Long>getPropertyValue("Maximum days for Request");
+            JEVisClass httpType = Launcher.getClient().getJEVisClass(JEVisTypes.Connection.HTTP.Name);
+            JEVisObject httpObject = node.getChildren(httpType, true).get(0);
+            JEVisType dateFormat = httpType.getType(JEVisTypes.Connection.HTTP.DateFormat);
+            JEVisType server = httpType.getType(JEVisTypes.Connection.HTTP.Server);
+            JEVisType port = httpType.getType(JEVisTypes.Connection.HTTP.Port);
+            JEVisType sslType = httpType.getType(JEVisTypes.Connection.HTTP.SSL);
+            JEVisType connectionTimeout = httpType.getType(JEVisTypes.Connection.HTTP.ConnectionTimeout);
+            JEVisType readTimeout = httpType.getType(JEVisTypes.Connection.HTTP.ReadTimeout);
+            JEVisType user = httpType.getType(JEVisTypes.Connection.HTTP.User);
+            JEVisType password = httpType.getType(JEVisTypes.Connection.HTTP.Password);
 
-            JEVisClass type = cn.getJEVisClass();
-            JEVisType template = type.getType("XML Template");
-            JEVisType address = type.getType("Server URL");
-            JEVisType dateFormat = type.getType("Date Format");
-            JEVisType sampleCound = type.getType("Sample Count");
-            JEVisType triesRead = type.getType("Read Tries");
-            JEVisType timeoutRead = type.getType("Read Timeout (in sec.)");
-            JEVisType triesConnection = type.getType("Connection Tries");
-            JEVisType timeoutConnection = type.getType("Connection Timeout (in sec.)");
-            JEVisType maxRequests = type.getType("Maximum days for Request");
-
-            _id = cn.getID();
-            _xmlTemplate = (String) cn.getAttribute(template).getLatestSample().getValue();
-            _address = (String) cn.getAttribute(address).getLatestSample().getValue();
-            _dateFormat = (String) cn.getAttribute(dateFormat).getLatestSample().getValue();
-            _sampleCount = (String) cn.getAttribute(sampleCound).getLatestSample().getValue();
-            _triesRead = (Long) cn.getAttribute(triesRead).getLatestSample().getValue();
-            _timeoutRead = (Long) cn.getAttribute(timeoutRead).getLatestSample().getValue();
-            _triesConnection = (Long) cn.getAttribute(triesConnection).getLatestSample().getValue();
-            _timeoutConnection = (Long) cn.getAttribute(timeoutConnection).getLatestSample().getValue();
-            _maximumDayRequest = (Long) cn.getAttribute(maxRequests).getLatestSample().getValue();
-
-            if (_maximumDayRequest == null || _maximumDayRequest < 1) {
-                _maximumDayRequest = 10l;
+            _id = httpObject.getID();
+            _dateFormat = DatabaseHelper.getObjectAsString(httpObject, dateFormat);
+            _server = DatabaseHelper.getObjectAsString(httpObject, server);
+            _port = DatabaseHelper.getObjectAsInteger(httpObject, port);
+            _connectionTimeout = DatabaseHelper.getObjectAsInteger(httpObject, connectionTimeout);
+            _readTimeout = DatabaseHelper.getObjectAsInteger(httpObject, readTimeout);
+            _ssl = DatabaseHelper.getObjectAsBoolean(httpObject, sslType);
+            JEVisAttribute userAttr = httpObject.getAttribute(user);
+            if (!userAttr.hasSample()) {
+                _userName = "";
+            } else {
+                _userName = (String) userAttr.getLatestSample().getValue();
             }
-
-            if (_sampleCount.equals("0")) {
-                _sampleCount = "1000";
+            JEVisAttribute passAttr = httpObject.getAttribute(password);
+            if (!passAttr.hasSample()) {
+                _password = "";
+            } else {
+                _password = (String) passAttr.getLatestSample().getValue();
             }
         } catch (JEVisException ex) {
-            Logger.getLogger(SOAPConnection.class.getName()).log(Level.SEVERE, null, ex);
+            org.apache.log4j.Logger.getLogger(HTTPConnection.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
         }
     }
 
@@ -118,12 +183,24 @@ public class SOAPConnection implements DataCollectorConnection {
     public boolean connect() throws FetchingException {
         try {
             _conn = SOAPConnectionFactory.newInstance().createConnection();
-
-            if (_address.contains("://")) {
-                _serverURL = new URL(_address);
-            } else {
-                _serverURL = new URL("http", _address, "");
+            _uri = "http://";
+            if (_userName != null) {
+                 _uri += _userName;
+                 if (_password != null){
+                     _uri += ":" + _password + "@";
+                 }else{
+                     _uri += "@";
+                 }
             }
+            _uri += _server;
+            if(_port!=null){
+                _uri += ":" + _port+"/DL";
+            }else{
+                _uri += ":80/DL";
+            }
+            System.out.println(_uri);
+            _serverURL = new URL(_uri);
+
         } catch (MalformedURLException ex) {
             throw new FetchingException(_id, FetchingExceptionType.URL_ERROR);
         } catch (SOAPException ex) {
@@ -141,8 +218,7 @@ public class SOAPConnection implements DataCollectorConnection {
             fmt = DateTimeFormat.forPattern(_dateFormat);
         }
 
-        List<SOAPMessage> soapRequests = new LinkedList<SOAPMessage>();
-        List<Object> soapResponses = new LinkedList<Object>();
+        List<SOAPMessage> soapResponses = new LinkedList<SOAPMessage>();
 
 //        if (_maximumDayRequest != null && _maximumDayRequest > 0) {
 //            TimeSetVector tsv = new TimeSetVector(ts);
@@ -154,10 +230,14 @@ public class SOAPConnection implements DataCollectorConnection {
 //        } else {
 //            soapRequests.add(getSOAPMessage(new String(_xmlTemplate), from, until, _sampleCount, dp.getChannelID(), dp.getDataLoggerName(), fmt));
 //        }
+
+//        String soapRequest = ConnectionHelper.buildSoapRequest(dp.getFilePath(),dp.)
         Document doc = buildDocument(dp.getFilePath());
         SOAPMessage buildSOAPMessage = buildSOAPMessage(doc);
+        List<InputHandler> inputHandler = new ArrayList<InputHandler>();
         try {
-            SOAPMessage call = _conn.call(buildSOAPMessage, _address);
+            SOAPMessage call = _conn.call(buildSOAPMessage, _uri);
+            soapResponses.add(call);
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             call.writeTo(out);
             String strMsg = new String(out.toByteArray());
@@ -172,37 +252,8 @@ public class SOAPConnection implements DataCollectorConnection {
             Logger.getLogger(SOAPConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-//{InputHandlerFactory.getInputConverter(soapResponses)
-        return new ArrayList<InputHandler>();
-    }
-
-    private SOAPMessage getSOAPMessage(String template, DateTime from, DateTime until, String sampleCount, String dpName, String loggerName, DateTimeFormatter fmt) {
-        if (dpName != null) {
-            template = template.replace("*DATAPOINT*", dpName);
-        }
-
-        if (loggerName != null) {
-            template = template.replace("*DATALOGGER*", loggerName);
-        }
-
-        if (sampleCount != null) {
-            template = template.replace("*SAMPLE_COUNT*", sampleCount);
-        }
-
-        if (fmt != null) {
-            template = template.replace("*DATE_FROM*", fmt.print(from));
-            template = template.replace("*DATE_TO*", fmt.print(until));
-        }
-//        else {
-//            template = template.replace("*DATE_FROM*", fmt.getFrom().toXMLCalendar().toString());
-//            template = template.replace("*DATE_TO*", fmt.getUntil().toXMLCalendar().toString());
-//        }
-
-        template = template.replace("*SYSTEM_TIME*", String.valueOf(System.nanoTime()));
-
-        System.out.println("Soap Message #### " + template);
-        Document doc = buildDocument(template);
-        return buildSOAPMessage(doc);
+        inputHandler.add(InputHandlerFactory.getInputConverter(soapResponses));
+        return inputHandler;
     }
 
     private Document buildDocument(String s) {
@@ -252,7 +303,7 @@ public class SOAPConnection implements DataCollectorConnection {
         SOAPMessage answer = null;
 
         try {
-            for (int i = 0; i < _triesRead; i++) {
+            for (int i = 0; i < _connectionTimeout; i++) {
                 SOAPSender s = new SOAPSender(_conn, sm, _serverURL, this);
                 s.start();
 
@@ -260,7 +311,7 @@ public class SOAPConnection implements DataCollectorConnection {
                 while (true) {
                     j++;
 
-                    if (j > _timeoutRead) {
+                    if (j > _readTimeout) {
                         break;
                     }
 
@@ -294,7 +345,7 @@ public class SOAPConnection implements DataCollectorConnection {
 
     @Override
     public String getTimezone() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return _timezone;
     }
 
     @Override
@@ -302,18 +353,8 @@ public class SOAPConnection implements DataCollectorConnection {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-//    @Override
-//    public boolean returnsLimitedSampleCount() {
-//        return true;
-//    }
-    public class NullOutputStream extends OutputStream {
-
-        @Override
-        public void write(int b) throws IOException {
-        }
+    @Override
+    public Boolean isEnabled() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-//      @Override
-//    public String getConnectionType() {
-//        return JEVisTypes.Connection.SOAP.Name;
-//    }
 }

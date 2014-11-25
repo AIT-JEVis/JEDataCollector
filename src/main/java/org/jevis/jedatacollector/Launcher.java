@@ -28,14 +28,12 @@ import org.jevis.jedatacollector.CLIProperties.ConnectionCLIParser;
 import org.jevis.jedatacollector.CLIProperties.JEVisServerConnectionCLI;
 import org.jevis.jedatacollector.CLIProperties.ParsingCLIParser;
 import org.jevis.jedatacollector.connection.DataCollectorConnection;
-import org.jevis.jedatacollector.data.Data;
-import org.jevis.jedatacollector.data.DataSource;
 import org.jevis.jedatacollector.data.DataPoint;
 import org.jevis.commons.JEVisTypes;
 import org.jevis.commons.parsing.DataCollectorParser;
 import org.jevis.commons.parsing.ParsingFactory;
 import org.jevis.jedatacollector.connection.ConnectionFactory;
-import org.jevis.jedatacollector.connection.ConnectionHelper;
+import org.jevis.jedatacollector.data.DataPointDir;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
@@ -167,51 +165,65 @@ public class Launcher {
 //            //workaround for inherit bug, normally only with jevic class parser and connection
 //            JEVisClass ftpConnection = _client.getJEVisClass(JEVisTypes.Connection.FTP.Name);
 //            JEVisClass sftpConnection = _client.getJEVisClass(JEVisTypes.Connection.sFTP.Name);
-            JEVisClass datapoints = _client.getJEVisClass(JEVisTypes.DataPointDirectory.NAME);
+            JEVisClass datapointDirClass = _client.getJEVisClass(JEVisTypes.DataPointDirectory.NAME);
+            JEVisClass datapointDirCompressClass = _client.getJEVisClass(JEVisTypes.DataPointDirectory.DataPointDirectoryCompressed.NAME);
             for (JEVisObject dataSource : dataSources) {
                 try {
+
+                    DataCollectorConnection connection = ConnectionFactory.getConnection(dataSource);
+                    connection.initialize(dataSource);
+                    Boolean enabled = connection.isEnabled();
+                    if (!enabled) {
+                        Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Equipment is disabled : (" + dataSource.getID() + "," + dataSource.getName() + ")");
+                        continue;
+                    }
                     Logger.getLogger(this.getClass().getName()).log(Level.INFO, "------------------------------------------------");
                     Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Current Equipment (ID,Name): (" + dataSource.getID() + "," + dataSource.getName() + ")");
                     //get parser //hier kommt der Connection/Parsing class loader rein? connection direkt übergeben //unten muss es neu erstellt werden
-                    List<JEVisObject> datapointsDir = dataSource.getChildren(datapoints, true);
-                    if (datapointsDir.size() != 1) {
-                        continue;
-                    }
-                    List<DataPoint> datapointsJEVis = getDatapoints(datapointsDir.get(0));
+                    List<JEVisObject> jevisDataPointDirInit = dataSource.getChildren(datapointDirCompressClass, false);
+                    jevisDataPointDirInit.addAll(dataSource.getChildren(datapointDirClass, false));
+                    List<DataPointDir> datapointsDir = initializeDatapointDir(jevisDataPointDirInit);
 
-                    //need improvment
-                    boolean needMultiConnections = false;
-                    String previousPath = null;
-                    for (DataPoint dp : datapointsJEVis) {
-                        if (dp.getFilePath().equals(previousPath)) {
-                            needMultiConnections = true;
-                            break;
+                    for (DataPointDir dir : datapointsDir) {
+                        List<DataPoint> datapoints = getDatapoints(dir.getJevisObject());
+                        for (DataPoint dp: datapoints){
+                            dp.addDirectory(dir);
                         }
-                        previousPath = dp.getFilePath();
-                    }
 
+                        //need improvement
+                        boolean needMultiConnections = false;
+                        String previousPath = null;
+                        for (DataPoint dp : datapoints) {
+                            if (dp.getFilePath().equals(previousPath)) {
+                                needMultiConnections = true;
+                                break;
+                            }
+                            previousPath = dp.getFilePath();
+                        }
 
-                    DataCollectorParser parser = ParsingFactory.getParsing(dataSource);
-                    parser.initialize(dataSource);
-                    DataCollectorConnection connection = ConnectionFactory.getConnection(dataSource);
-                    connection.initialize(dataSource);
-                    if (needMultiConnections) {
-                        for (DataPoint dp : datapointsJEVis) {
-                            DataCollectorParser newParser = ParsingFactory.getParsing(dataSource);
-                            newParser.initialize(dataSource);
-                            DataCollectorConnection newConnection = ConnectionFactory.getConnection(dataSource);
-                            newConnection.initialize(dataSource);
-                            List<DataPoint> tmpList = new ArrayList<DataPoint>();
-                            tmpList.add(dp);
-                            Request request = RequestGenerator.createJEVisRequest(parser, connection, datapointsJEVis);
+                        DataCollectorParser parser = ParsingFactory.getParsing(dataSource);
+                        parser.initialize(dataSource);
+
+                        if (needMultiConnections) {
+                            for (DataPoint dp : datapoints) {
+                                DataCollectorParser newParser = ParsingFactory.getParsing(dataSource);
+                                newParser.initialize(dataSource);
+                                DataCollectorConnection newConnection = ConnectionFactory.getConnection(dataSource);
+                                newConnection.initialize(dataSource);
+                                List<DataPoint> tmpList = new ArrayList<DataPoint>();
+                                tmpList.add(dp);
+                                Request request = RequestGenerator.createJEVisRequest(parser, connection, datapoints);
+                                requests.add(request);
+                            }
+                        } else {
+                            Request request = RequestGenerator.createJEVisRequest(parser, connection, datapoints);
                             requests.add(request);
                         }
-                    } else {
-                        Request request = RequestGenerator.createJEVisRequest(parser, connection, datapointsJEVis);
-                        requests.add(request);
+
+                        Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Create Multi File JEVisJob");
                     }
 
-                    Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Create Multi File JEVisJob");
+
 //                    Data data = new Data(parser, connection, datapointsJEVis);
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -307,33 +319,68 @@ public class Launcher {
         return requests;
     }
 
-    private List<Request> requestedJobs() {
-        List<Request> requests = new ArrayList<Request>();
-        JEVisCommandLine cmd = JEVisCommandLine.getInstance();
-        boolean cliJob = cmd.isUsed();
-        if (cliJob) {
-            Logger.getLogger(Launcher.class.getName()).log(Level.INFO, "Start CLI Job");
-            requests = fetchCLIJob();
-        } else {
-            Logger.getLogger(Launcher.class.getName()).log(Level.INFO, "Start Jevis Job");
-//            List<Data> dataList = getAllJEvisData();
-            requests = fetchJEVisDataJobs();
-        }
-        return requests;
+    public void setJevisClient(JEVisDataSource client) {
+        _client = client;
     }
 
-    private void generateUseCases() {
+//    private List<Request> requestedJobs() {
+//        List<Request> requests = new ArrayList<Request>();
+//        JEVisCommandLine cmd = JEVisCommandLine.getInstance();
+//        boolean cliJob = cmd.isUsed();
+//        if (cliJob) {
+//            Logger.getLogger(Launcher.class.getName()).log(Level.INFO, "Start CLI Job");
+//            requests = fetchCLIJob();
+//        } else {
+//            Logger.getLogger(Launcher.class.getName()).log(Level.INFO, "Start Jevis Job");
+////            List<Data> dataList = getAllJEvisData();
+//            requests = fetchJEVisDataJobs();
+//        }
+//        return requests;
+//    }
+//
+//    private void generateUseCases() {
+//        try {
+////            JEVisClass jeVisClass = _client.getJEVisClass(JEVisTypes.DataServer.FTP.NAME);
+////            JEVisObject orga = _client.getObject(476l);
+////            JEVisClass monitoredObject = _client.getJEVisClass("Monitored Object Directory");
+////            orga.buildObject("Monitored Objects", monitoredObject);
+////            orga.commit();
+//            JEVisObject jevisObject = _client.getObject(478l);
+//            JEVisClass jevisClass = _client.getJEVisClass("Data Directory");
+//            jevisObject.buildObject("Data Directory", jevisClass);
+//        } catch (JEVisException ex) {
+//            java.util.logging.Logger.getLogger(Launcher.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        }
+//    }
+    public List<DataPointDir> initializeDatapointDir(List<JEVisObject> children) {
+        List<DataPointDir> datapointDirLeaf = new ArrayList<DataPointDir>();
+        List<DataPointDir> datapointDirParents = new ArrayList<DataPointDir>();
         try {
-//            JEVisClass jeVisClass = _client.getJEVisClass(JEVisTypes.DataServer.FTP.NAME);
-//            JEVisObject orga = _client.getObject(476l);
-//            JEVisClass monitoredObject = _client.getJEVisClass("Monitored Object Directory");
-//            orga.buildObject("Monitored Objects", monitoredObject);
-//            orga.commit();
-            JEVisObject jevisObject = _client.getObject(478l);
-            JEVisClass jevisClass = _client.getJEVisClass("Data Directory");
-            jevisObject.buildObject("Data Directory", jevisClass);
+            datapointDirLeaf = getChildrenDirectories(children, datapointDirParents, datapointDirLeaf);
         } catch (JEVisException ex) {
             java.util.logging.Logger.getLogger(Launcher.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+
+        return datapointDirLeaf;
+    }
+
+    private List<DataPointDir> getChildrenDirectories(List<JEVisObject> children, List<DataPointDir> datapointDirParents, List<DataPointDir> datapointDirLeaf) throws JEVisException {
+        JEVisClass datapointDirClass = _client.getJEVisClass(JEVisTypes.DataPointDirectory.NAME);
+        JEVisClass datapointDirClassCompress = _client.getJEVisClass(JEVisTypes.DataPointDirectory.DataPointDirectoryCompressed.NAME);
+        for (JEVisObject child : children) {
+            DataPointDir datapointDir = new DataPointDir();
+            datapointDir.initialize(child);
+            datapointDir.setPreviousDirs(datapointDirParents);
+            if (child.getChildren(datapointDirClass, false).isEmpty() && child.getChildren(datapointDirClassCompress, false).isEmpty()) {
+                datapointDirLeaf.add(datapointDir);
+            } else {
+                datapointDirParents.add(datapointDir);
+                List<JEVisObject> tmpChildren = child.getChildren(datapointDirClassCompress, false);
+                tmpChildren.addAll(child.getChildren(datapointDirClass, false));
+                getChildrenDirectories(tmpChildren, datapointDirParents, datapointDirLeaf);
+                datapointDirParents.remove(datapointDir);
+            }
+        }
+        return datapointDirLeaf;
     }
 }
