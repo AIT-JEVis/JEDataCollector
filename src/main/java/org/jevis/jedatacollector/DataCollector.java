@@ -87,9 +87,7 @@ public class DataCollector {
     }
 
     public void parse() throws FetchingException {
-//        if (_parsingService == null) {
-        _parsingService = new ParsingService(_request.getParser(), _request.getOutputType(), _request.getData());
-        //        }
+        _parsingService = new ParsingService(_request.getParser());
         DataCollectorParser fileParser = _parsingService.getFileParser();
         for (DataPoint dp : _request.getDataPoints()) {
             fileParser.addDataPointParser(dp.getDatapointId(), dp.getTarget(), dp.getMappingIdentifier(), dp.getValueIdentifier());
@@ -108,18 +106,6 @@ public class DataCollector {
         outputHandler.writeOutput(_request.getParsingRequest(), getResults());
     }
 
-//    public DateTime convertTimeInTransitionRange(DateTimeZone from, DateTime currentDate, DateTime lastDate) {
-//
-//        long timeBetween = currentDate.getMillis() - lastDate.getMillis();
-//        if (timeBetween != 240000) {
-//            System.out.println("###############################NICHT GLEICH!!!!!!!!!");
-//            System.out.println(timeBetween);
-//            System.out.println("c " + currentDate);
-//            System.out.println("l " + lastDate);
-//        }
-//        long timeBetween = 240000;
-//        return lastDate.plusMillis((int) timeBetween);
-//    }
     public List<Result> getResults() {
         return _parsingService.getFileParser().getResults();
     }

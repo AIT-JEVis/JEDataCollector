@@ -21,7 +21,6 @@ import org.jevis.commons.parsing.GeneralValueParser;
 import org.jevis.commons.parsing.SampleParserContainer;
 import org.jevis.commons.parsing.csvParsing.CSVParsing;
 import org.jevis.commons.parsing.csvParsing.DateCSVParser;
-import org.jevis.commons.parsing.csvParsing.MappingFixCSVParser;
 import org.jevis.commons.parsing.csvParsing.ValueCSVParser;
 import org.jevis.jedatacollector.exception.FetchingException;
 import org.jevis.jedatacollector.CLIProperties.ConnectionCLIParser;
@@ -32,6 +31,7 @@ import org.jevis.jedatacollector.data.DataPoint;
 import org.jevis.commons.JEVisTypes;
 import org.jevis.commons.parsing.DataCollectorParser;
 import org.jevis.commons.parsing.ParsingFactory;
+import org.jevis.commons.parsing.csvParsing.CSVDatapointParser;
 import org.jevis.jedatacollector.connection.ConnectionFactory;
 import org.jevis.jedatacollector.data.DataPointDir;
 import org.joda.time.DateTime;
@@ -294,28 +294,28 @@ public class Launcher {
         } else if (cmd.getValue(Helper.OUTPUT_FILE) != null) {
             outputFile = cmd.getValue(Helper.OUTPUT_FILE);
         }
-        GeneralMappingParser datapointParser = new MappingFixCSVParser(false, outputOnlineID);
-        GeneralDateParser dateParser = new DateCSVParser(par.getTimeformat(), par.getTimeIndex(), par.getDateformat(), par.getDateIndex());
-        GeneralValueParser valueParser = new ValueCSVParser(par.getValueIndex(), par.getDecimalSep(), par.getThousandSep());
+//        GeneralMappingParser datapointParser = new CSVDatapointParser(false, outputOnlineID);
+//        GeneralDateParser dateParser = new DateCSVParser(par.getTimeformat(), par.getTimeIndex(), par.getDateformat(), par.getDateIndex());
+//        GeneralValueParser valueParser = new ValueCSVParser(par.getValueIndex(), par.getDecimalSep(), par.getThousandSep());
 
-        SampleParserContainer sampleContainer = new SampleParserContainer(datapointParser, dateParser, valueParser);
-        fileParser.addSampleContainer(sampleContainer);
+//        SampleParserContainer sampleContainer = new SampleParserContainer(datapointParser, dateParser, valueParser);
+//        fileParser.addSampleContainer(sampleContainer);
 
-        String datapointID = "16"; //TODO this should come from a file
-        Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Datapoint id: " + datapointID);
-        DataPoint datapoint = new DataPoint(datapointID, JEVisTypes.Equipment.NAME, outputOnlineID);
-
-        DateTimeZone timeZone = DateTimeZone.getDefault(); //TODO this should come from a file
-
+//        String datapointID = "16"; //TODO this should come from a file
+//        Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Datapoint id: " + datapointID);
+//        DataPoint datapoint = new DataPoint(datapointID, JEVisTypes.Equipment.NAME, outputOnlineID);
+//
+//        DateTimeZone timeZone = DateTimeZone.getDefault(); //TODO this should come from a file
+//
         List<Request> requests = new ArrayList<Request>();
-        Request request = null;
-        if (cmd.getValue(Helper.OUTPUT_ONLINE) != null) {
-        } else if (cmd.getValue(Helper.OUTPUT_FILE) != null) {
-            outputFile = cmd.getValue(Helper.OUTPUT_FILE);
-            request = RequestGenerator.createCLIRequestWithFileOutput(connection, fileParser, datapoint, from, until, timeZone, outputFile);
-        }
-
-        requests.add(request);
+//        Request request = null;
+//        if (cmd.getValue(Helper.OUTPUT_ONLINE) != null) {
+//        } else if (cmd.getValue(Helper.OUTPUT_FILE) != null) {
+//            outputFile = cmd.getValue(Helper.OUTPUT_FILE);
+//            request = RequestGenerator.createCLIRequestWithFileOutput(connection, fileParser, datapoint, from, until, timeZone, outputFile);
+//        }
+//
+//        requests.add(request);
         return requests;
     }
 

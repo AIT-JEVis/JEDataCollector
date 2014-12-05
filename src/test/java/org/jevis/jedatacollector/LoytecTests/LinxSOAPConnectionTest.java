@@ -6,7 +6,9 @@ package org.jevis.jedatacollector.LoytecTests;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.jevis.commons.parsing.DataCollectorParser;
 import org.jevis.commons.parsing.inputHandler.SOAPMessageInputHandler;
+import org.jevis.commons.parsing.xmlParsing.XMLParsing;
 import org.jevis.jedatacollector.DataCollector;
 import org.jevis.jedatacollector.Request;
 import org.jevis.jedatacollector.RequestGenerator;
@@ -46,7 +48,8 @@ public class LinxSOAPConnectionTest {
         String server = "http://admin:JjwwidHg!@212.17.98.149:80";
 
         DataCollectorConnection connection = new SOAPConnection(null, false, "212.17.98.149", 80, 200, 500, "admin", "JjwwidHg!", "UTC");
-
+        DataCollectorParser parser = new XMLParsing(server, template2, Boolean.FALSE);
+        
         String lastReadoutText = "20112014000000";
         DateTimeFormatter forPattern = DateTimeFormat.forPattern("ddMMyyyyHHmmss");
         DateTime lastReadout = forPattern.parseDateTime(lastReadoutText);

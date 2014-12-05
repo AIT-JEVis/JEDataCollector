@@ -34,34 +34,8 @@ public class ParsingService {
 
     public ParsingService(DataCollectorParser parser) {
         _fileParser = parser;
-//        if (_fileParser.getSampleParserContianers().isEmpty()) {
-////            List<JEVisObject> datapoints = new ArrayList<JEVisObject>();
-////            JEVisObject dp = request.getSpecificDatapoint().getJEVisDatapoint();
-////            if (dp != null) {
-////                datapoints.add(dp);
-////            } else {
-////                for (NewDataPoint ndp : request.getData().getDatapoints()) {
-////                    datapoints.add(ndp.getJEVisDatapoint());
-////                }
-////            }
-//            List<JEVisObject> datapoints = new ArrayList<JEVisObject>();
-//            for (DataPoint ndp : request.getDataPoints()) {
-//                datapoints.add(ndp.getJEVisDatapoint());
-//            }
-//            _fileParser.createSampleContainers(_fileParser.getJEVisParser(),datapoints);
-//        }
     }
 
-    public ParsingService(DataCollectorParser parser, String outputType, Data data) {
-        _fileParser = parser;
-        if (data != null && _fileParser.getSampleParserContianers().isEmpty()) {
-            List<JEVisObject> jevisDatapoints = new ArrayList<JEVisObject>();
-            for (DataPoint dp : data.getDatapoints()) {
-                jevisDatapoints.add(dp.getJEVisDatapoint());
-            }
-            _fileParser.createSampleContainers(data.getParsing().getJEVisParser(), jevisDatapoints);
-        }
-    }
 
 //    /**
 //     * Parses the given answer to a list of samples
