@@ -12,7 +12,6 @@ import java.net.SocketException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.mockftpserver.fake.filesystem.FileSystem;
@@ -32,7 +31,7 @@ public class FakeFTPClient extends FTPClient {
 
     @Override
     public boolean retrieveFile(String remote, OutputStream local) throws IOException {
-        String tmpRemote = remote.substring(1,remote.length());
+        String tmpRemote = remote.substring(1, remote.length());
 //        FileEntry entry = (FileEntry) _fileSystem.getEntry(remote);
 //        InputStream createInputStream = entry.createInputStream();
         InputStream createInputStream = new FileInputStream(tmpRemote);
@@ -61,9 +60,19 @@ public class FakeFTPClient extends FTPClient {
         List<String> listFiles = _fileSystem.listNames(pathname);
         FTPFile[] fakeFiles = new FTPFile[listFiles.size()];
         for (int i = 0; i < listFiles.size(); i++) {
-            
+
             fakeFiles[i] = new FakeFTPFile(listFiles.get(i));
         }
         return fakeFiles;
+    }
+
+    @Override
+    public String[] listNames(String pathname) {
+        List<String> listNames = _fileSystem.listNames(pathname);
+        String[] returnNames = new String[listNames.size()];
+        for (int i = 0; i<listNames.size();i++){
+            returnNames[i] = listNames.get(i);
+        }
+        return returnNames;
     }
 }

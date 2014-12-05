@@ -232,7 +232,7 @@ public class SOAPConnection implements DataCollectorConnection {
 //        }
 
 //        String soapRequest = ConnectionHelper.buildSoapRequest(dp.getFilePath(),dp.)
-        Document doc = buildDocument(dp.getFilePath());
+        Document doc = buildDocument(dp.getFileName());
         SOAPMessage buildSOAPMessage = buildSOAPMessage(doc);
         List<InputHandler> inputHandler = new ArrayList<InputHandler>();
         try {

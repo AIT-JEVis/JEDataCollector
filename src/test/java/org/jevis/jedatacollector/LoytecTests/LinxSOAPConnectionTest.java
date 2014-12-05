@@ -4,16 +4,8 @@
  */
 package org.jevis.jedatacollector.LoytecTests;
 
-import java.io.File;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import org.jevis.commons.parsing.inputHandler.SOAPMessageInputHandler;
 import org.jevis.jedatacollector.DataCollector;
 import org.jevis.jedatacollector.Request;

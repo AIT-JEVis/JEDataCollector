@@ -265,17 +265,22 @@ public class ConnectionHelper {
 //        System.out.println("foldersize,"+folderPathes.size());
 
         List<String> fileNames = new ArrayList<String>();
-        String fileName = null;
+//        String fileName = null;
         String fileNameScheme = pathStream[pathStream.length - 1];
         try {
             for (String folder : folderPathes) {
                 //                fc.changeWorkingDirectory(folder);
                 //                System.out.println("currentFolder,"+folder);
-                for (FTPFile file : fc.listFiles(folder)) {
-                    fileName = file.getName();
+//                for (String file : fc.listNames(folder)) {
+//                    System.out.println(file);
+//                }
+                for (String fileName : fc.listNames(folder)) {
+//                    fileName = file.getName();
                     DateTime folderTime = getFileTime(folder + fileName, pathStream);
                     boolean match = matchDateString(fileName, fileNameScheme);
                     boolean isLater = folderTime.isAfter(lastReadout);
+                    System.out.println(lastReadout.toString());
+                    System.out.println(folderTime.toString());
                     if (match && isLater) {
                         System.out.println(fileName);
                         fileNames.add(folder + fileName);

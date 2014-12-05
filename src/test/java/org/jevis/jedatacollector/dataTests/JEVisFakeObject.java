@@ -214,7 +214,7 @@ public class JEVisFakeObject implements JEVisObject{
 
     @Override
     public JEVisAttribute getAttribute(JEVisType type) throws JEVisException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return new JEVisFakeAttribute();
     }
 
     @Override

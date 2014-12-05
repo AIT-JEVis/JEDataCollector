@@ -240,31 +240,10 @@ public class FTPConnection implements DataCollectorConnection {
         //multiple File pathes neccessary?
 //        String filePath = ConnectionHelper.parseConnectionString(dp, from, until, dp.getFilePath(), dp.getDateFormat());
         //this should be outsourced
-        String filePath = "";
-        String currentDir = null;
-        boolean compress = false;
-        for (DataPointDir dir :dp.getDirectory().getParentDirs()){
-            currentDir = dir.getFolderName();
-            if (filePath.equals("")){
-                filePath+=currentDir;
-            }else{
-                if (filePath.endsWith("/") && currentDir.startsWith("/")){
-                    filePath += currentDir.substring(1,currentDir.length());
-                }else if (!filePath.endsWith("/") && !currentDir.startsWith("/")){
-                    filePath += "/"+currentDir;
-                }
-            }
-            if (dir.getCompressed()){
-                compress = true;
-                break;
-            }
-        }
-        
-        if (!compress){
-            filePath += dp.getFilePath();
-        }
-        
-        List<String> fileNames = ConnectionHelper.getFTPMatchedFileNames(_fc, dp,filePath);
+        String filePath = dp.getFilePath();
+
+
+        List<String> fileNames = ConnectionHelper.getFTPMatchedFileNames(_fc, dp, filePath);
 
 //        String currentFilePath = Paths.get(filePath).getParent().toString();
         List<InputHandler> answerList = new ArrayList<InputHandler>();
@@ -283,6 +262,11 @@ public class FTPConnection implements DataCollectorConnection {
 //                System.out.println(toString);
                 InputHandler inputConverter = InputHandlerFactory.getInputConverter(answer);
                 inputConverter.setFilePath(fileName);
+                if (dp.getDirectory().containsCompressedFolder()) {
+                    String pattern = dp.getDirectory().getFolderPathFromComp() + dp.getFileName();
+                    inputConverter.setFilePattern(pattern);
+                    inputConverter.setDateTime(dp.getLastReadout());
+                }
                 answerList.add(inputConverter);
 //                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
 //                String inputLine;
@@ -338,7 +322,7 @@ public class FTPConnection implements DataCollectorConnection {
             }
 
             _timezone = DatabaseHelper.getObjectAsString(ftpObject, timezoneType);
-            
+
             _enabled = DatabaseHelper.getObjectAsBoolean(ftpObject, enableType);
         } catch (JEVisException ex) {
             ex.printStackTrace();
@@ -364,9 +348,9 @@ public class FTPConnection implements DataCollectorConnection {
     public String getName() {
         return String.valueOf(_id);
     }
-    
+
     @Override
-    public Boolean isEnabled(){
+    public Boolean isEnabled() {
         return _enabled;
     }
 }

@@ -30,7 +30,7 @@ public class DataPoint {
     private JEVisObject _jevisDatapoint;
     private Long _datapointID;
     private JEVisObject _onlineData;
-    private String _filePath;
+    private String _fileName;
     private String _mappingIdentifier;
     private String _target;
     private String _valueIdentifier;
@@ -55,7 +55,7 @@ public class DataPoint {
     }
 
     public DataPoint(String filePath, String mappingIdentifier, String target, String valueIdentifier, DateTime lastReadout, Boolean periodicallySampling) {
-        _filePath = filePath;
+        _fileName = filePath;
         _mappingIdentifier = mappingIdentifier;
         _target = target;
         _valueIdentifier = valueIdentifier;
@@ -86,7 +86,7 @@ public class DataPoint {
             JEVisType lastReadoutType = type.getType(JEVisTypes.DataPoint.LAST_READOUT);
             JEVisType periodicallySampling = type.getType(JEVisTypes.DataPoint.PERIODICALLY_SAMPLING);
 
-            _filePath = DatabaseHelper.getObjectAsString(dp, filePathType);
+            _fileName = DatabaseHelper.getObjectAsString(dp, filePathType);
             _mappingIdentifier = DatabaseHelper.getObjectAsString(dp, mappingIdentifierType);
             _target = DatabaseHelper.getObjectAsString(dp, targetType);
             _valueIdentifier = DatabaseHelper.getObjectAsString(dp, valueIdentifierType);
@@ -94,9 +94,9 @@ public class DataPoint {
 
             DateTimeFormatter fmt = DateTimeFormat.forPattern("ddMMyyyyHHmmss");
             String dateString = DatabaseHelper.getObjectAsString(dp, lastReadoutType);
-            if (dateString == null) {
+//            if (dateString == null) {
                 dateString = "01012000000000";
-            }
+//            }
             DateTime tmpDate = fmt.parseDateTime(dateString);
             _lastReadout = tmpDate;
             _currentReadoutString = new DateTime().toString(fmt);
@@ -116,8 +116,8 @@ public class DataPoint {
         return _currentReadoutString;
     }
 
-    public String getFilePath() {
-        return _filePath;
+    public String getFileName() {
+        return _fileName;
     }
 
     public String getMappingIdentifier() {
@@ -166,11 +166,19 @@ public class DataPoint {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public void addDirectory(DataPointDir dir) {
+    public void setDirectory(DataPointDir dir) {
         _directory = dir;
     }
-    
-    public DataPointDir getDirectory(){
+
+    public DataPointDir getDirectory() {
         return _directory;
+    }
+
+    public String getFilePath() {
+        String filePath = _directory.getFolderPath();
+        if (!_directory.containsCompressedFolder()) {
+            filePath += _fileName;
+        }
+        return filePath;
     }
 }

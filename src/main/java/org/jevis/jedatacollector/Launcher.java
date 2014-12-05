@@ -186,19 +186,19 @@ public class Launcher {
 
                     for (DataPointDir dir : datapointsDir) {
                         List<DataPoint> datapoints = getDatapoints(dir.getJevisObject());
-                        for (DataPoint dp: datapoints){
-                            dp.addDirectory(dir);
+                        for (DataPoint dp : datapoints) {
+                            dp.setDirectory(dir);
                         }
 
                         //need improvement
                         boolean needMultiConnections = false;
                         String previousPath = null;
                         for (DataPoint dp : datapoints) {
-                            if (dp.getFilePath().equals(previousPath)) {
+                            if (!dp.getFileName().equals(previousPath)) {
                                 needMultiConnections = true;
                                 break;
                             }
-                            previousPath = dp.getFilePath();
+                            previousPath = dp.getFileName();
                         }
 
                         DataCollectorParser parser = ParsingFactory.getParsing(dataSource);
@@ -212,7 +212,7 @@ public class Launcher {
                                 newConnection.initialize(dataSource);
                                 List<DataPoint> tmpList = new ArrayList<DataPoint>();
                                 tmpList.add(dp);
-                                Request request = RequestGenerator.createJEVisRequest(parser, connection, datapoints);
+                                Request request = RequestGenerator.createJEVisRequest(parser, connection, tmpList);
                                 requests.add(request);
                             }
                         } else {
@@ -360,7 +360,6 @@ public class Launcher {
         } catch (JEVisException ex) {
             java.util.logging.Logger.getLogger(Launcher.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-
         return datapointDirLeaf;
     }
 

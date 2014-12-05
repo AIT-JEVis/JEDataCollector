@@ -9,6 +9,7 @@ import java.util.List;
 import junit.framework.Assert;
 import org.jevis.commons.parsing.inputHandler.InputHandler;
 import org.jevis.jedatacollector.data.DataPoint;
+import org.jevis.jedatacollector.data.DataPointDir;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -31,9 +32,9 @@ public class Test_FTP_sample_Request {
         String lastReadoutText = "01112014000000";
         DateTimeFormatter forPattern = DateTimeFormat.forPattern("ddMMyyyyHHmmss");
         DateTime lastReadout = forPattern.parseDateTime(lastReadoutText);
-        DataPoint datapoint = new DataPoint("/Daten/Jahresdaten_${D:yyyy}/Monatsdaten_${D:MM}/Tagesdaten_${D:dd_HH:mm:ss}.csv", null, null, "1", lastReadout, true);
-
-
+        DataPointDir dir = new DataPointDir("/Daten/Jahresdaten_${D:yyyy}/Monatsdaten_${D:MM}/", false, null, null, null);
+        DataPoint datapoint = new DataPoint("Tagesdaten_${D:dd_HH:mm:ss}.csv", null, null, "1", lastReadout, true);
+        datapoint.setDirectory(dir);
         //unix and windowsfile system possible
         FileSystem fileSystem = setupFilesystem();
 

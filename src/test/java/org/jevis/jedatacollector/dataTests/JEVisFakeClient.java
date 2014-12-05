@@ -45,7 +45,7 @@ public class JEVisFakeClient implements JEVisDataSource {
 
     @Override
     public JEVisClass getJEVisClass(String name) throws JEVisException {
-        return null;
+        return new JEVisFakeClass();
     }
 
     @Override
