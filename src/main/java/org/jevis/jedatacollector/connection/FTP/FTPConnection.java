@@ -243,12 +243,13 @@ public class FTPConnection implements DataCollectorConnection {
         String filePath = dp.getFilePath();
 
 
+        org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.INFO, "sendSampleRequest");
         List<String> fileNames = ConnectionHelper.getFTPMatchedFileNames(_fc, dp, filePath);
-
 //        String currentFilePath = Paths.get(filePath).getParent().toString();
         List<InputHandler> answerList = new ArrayList<InputHandler>();
         for (String fileName : fileNames) {
-//            System.out.println("file " + fileName);
+            org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.INFO, "FileInputName: " + fileName);
+
             try {
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
 //                String query = Paths.get(fileName);

@@ -17,6 +17,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
+import org.jevis.jedatacollector.Launcher;
 import org.jevis.jedatacollector.data.DataPoint;
 import org.joda.time.Chronology;
 import org.joda.time.DateTime;
@@ -74,6 +75,14 @@ public class ConnectionHelper {
         return compactDateString;
     }
 
+    private static Boolean containsTokens(String path) {
+        if (path.contains("${")) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     private static String getCompactDateFormatString(String name, String[] pathStream) {
         String[] realTokens = StringUtils.split(name, "/");
         String compactDateString = null;
@@ -112,6 +121,13 @@ public class ConnectionHelper {
 
     private static boolean fitsDateTime(String fileName, String fileNameScheme, DateTime lastReadout) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private static String removeFoler(String fileName, String folder) {
+        if (fileName.startsWith(folder)) {
+            return fileName.substring(folder.length(), fileName.length());
+        }
+        return fileName;
     }
     public int _year;
     public int _month;
@@ -271,18 +287,30 @@ public class ConnectionHelper {
             for (String folder : folderPathes) {
                 //                fc.changeWorkingDirectory(folder);
                 //                System.out.println("currentFolder,"+folder);
-//                for (String file : fc.listNames(folder)) {
-//                    System.out.println(file);
-//                }
+                for (FTPFile file : fc.listFiles(folder)) {
+                    System.out.println(file.getName());
+                }
                 for (String fileName : fc.listNames(folder)) {
+                    org.apache.log4j.Logger.getLogger(Launcher.class.getName()).log(org.apache.log4j.Level.INFO, "CurrentFileName: " + fileName);
+                    fileName = removeFoler(fileName, folder);
 //                    fileName = file.getName();
-                    DateTime folderTime = getFileTime(folder + fileName, pathStream);
-                    boolean match = matchDateString(fileName, fileNameScheme);
-                    boolean isLater = folderTime.isAfter(lastReadout);
-                    System.out.println(lastReadout.toString());
-                    System.out.println(folderTime.toString());
-                    if (match && isLater) {
-                        System.out.println(fileName);
+                    boolean match = false;
+                    System.out.println(fileName);
+                    if (ConnectionHelper.containsTokens(fileNameScheme)) {
+                        boolean matchDate = matchDateString(fileName, fileNameScheme);
+                        DateTime folderTime = getFileTime(folder + fileName, pathStream);
+                        boolean isLater = folderTime.isAfter(lastReadout);
+                        System.out.println(lastReadout.toString());
+                        System.out.println(folderTime.toString());
+                        if (matchDate && isLater) {
+                            match = true;
+                        }
+                    } else {
+                        Pattern p = Pattern.compile(fileNameScheme);
+                        Matcher m = p.matcher(fileName);
+                        match = m.matches();
+                    }
+                    if (match) {
                         fileNames.add(folder + fileName);
                     }
                 }
