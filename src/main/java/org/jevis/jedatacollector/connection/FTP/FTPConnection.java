@@ -7,10 +7,10 @@ package org.jevis.jedatacollector.connection.FTP;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPSClient;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.jevis.api.JEVisAttribute;
 import org.jevis.api.JEVisClass;
 import org.jevis.api.JEVisException;
@@ -21,10 +21,10 @@ import org.jevis.jedatacollector.connection.ConnectionHelper;
 import org.jevis.jedatacollector.connection.DataCollectorConnection;
 import org.jevis.jedatacollector.data.DataPoint;
 import org.jevis.commons.JEVisTypes;
+import org.jevis.commons.cli.JEVisCommandLine;
 import org.jevis.commons.parsing.inputHandler.InputHandler;
 import org.jevis.commons.parsing.inputHandler.InputHandlerFactory;
 import org.jevis.jedatacollector.Launcher;
-import org.jevis.jedatacollector.data.DataPointDir;
 import org.jevis.jedatacollector.exception.FetchingException;
 import org.jevis.jedatacollector.exception.FetchingExceptionType;
 import org.joda.time.DateTime;
@@ -54,6 +54,7 @@ public class FTPConnection implements DataCollectorConnection {
     private String _startCollectingData;
     private String _timezone;
     private Boolean _enabled;
+    private String _name;
 
     public FTPConnection() {
         super();
@@ -118,6 +119,7 @@ public class FTPConnection implements DataCollectorConnection {
             _fc.connect(_serverURL, _port);
 
             if (_fc.login(_username, _password) == false) {
+                org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.ERROR, "No Login possible");
                 throw new FetchingException(_id, FetchingExceptionType.CONNECTION_ERROR);
             }
 
@@ -125,7 +127,10 @@ public class FTPConnection implements DataCollectorConnection {
             _fc.enterLocalPassiveMode();
 
         } catch (IOException ex) {
-            ex.printStackTrace();
+            org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.ERROR, "No connection possible");
+            Logger.getLogger(FTPConnection.class).setLevel(Level.ALL);
+            printConnectionData();
+            Logger.getLogger(FTPConnection.class).setLevel(JEVisCommandLine.getInstance().getDebugLevel());
             throw new FetchingException(_id, FetchingExceptionType.CONNECTION_ERROR);
         }
 
@@ -243,43 +248,42 @@ public class FTPConnection implements DataCollectorConnection {
         String filePath = dp.getFilePath();
 
 
-        org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.INFO, "sendSampleRequest");
+        org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.ALL, "SendSampleRequest");
         List<String> fileNames = ConnectionHelper.getFTPMatchedFileNames(_fc, dp, filePath);
 //        String currentFilePath = Paths.get(filePath).getParent().toString();
+
         List<InputHandler> answerList = new ArrayList<InputHandler>();
         for (String fileName : fileNames) {
-            org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.INFO, "FileInputName: " + fileName);
+            org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.ALL, "FileInputName: " + fileName);
 
             try {
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
 //                String query = Paths.get(fileName);
-                org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.INFO, "FTPQuery " + fileName);
+                org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.ALL, "FTPQuery " + fileName);
                 boolean retrieveFile = _fc.retrieveFile(fileName, out);
-                String testString = new String(out.toByteArray());
-                org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.INFO, "Request status: " + retrieveFile);
+                org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.ALL, "Request status: " + retrieveFile);
                 InputStream inputStream = new ByteArrayInputStream(out.toByteArray());
                 answer = new BufferedInputStream(inputStream);
-//                String toString = IOUtils.toString((BufferedInputStream) answer, "UTF-8");
-//                System.out.println(toString);
                 InputHandler inputConverter = InputHandlerFactory.getInputConverter(answer);
                 inputConverter.setFilePath(fileName);
                 if (dp.getDirectory().containsCompressedFolder()) {
+                    
                     String pattern = dp.getDirectory().getFolderPathFromComp() + dp.getFileName();
                     inputConverter.setFilePattern(pattern);
                     inputConverter.setDateTime(dp.getLastReadout());
                 }
                 answerList.add(inputConverter);
-//                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-//                String inputLine;
-//
-//                while ((inputLine = bufferedReader.readLine()) != null) {
-//                    ret.add(inputLine);
-//                }
+
+
             } catch (IOException ex) {
+                org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.ERROR, ex.getMessage());
                 throw new FetchingException(_id, FetchingExceptionType.CONNECTION_TIMEOUT);
             }
         }
 
+        if (answerList.isEmpty()) {
+            org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.ERROR, "Cant get any data from the device");
+        }
 
         return answerList;
     }
@@ -298,6 +302,7 @@ public class FTPConnection implements DataCollectorConnection {
             JEVisType timezoneType = ftpType.getType(JEVisTypes.DataServer.FTP.TIMEZONE);
             JEVisType enableType = ftpType.getType(JEVisTypes.DataServer.ENABLE);
 
+            _name = ftpObject.getName();
             _id = ftpObject.getID();
             _ssl = DatabaseHelper.getObjectAsBoolean(ftpObject, sslType);
             _serverURL = DatabaseHelper.getObjectAsString(ftpObject, serverType);
@@ -321,13 +326,12 @@ public class FTPConnection implements DataCollectorConnection {
             } else {
                 _password = DatabaseHelper.getObjectAsString(ftpObject, passwordType);
             }
-
             _timezone = DatabaseHelper.getObjectAsString(ftpObject, timezoneType);
-
             _enabled = DatabaseHelper.getObjectAsBoolean(ftpObject, enableType);
+
+            printConnectionData();
         } catch (JEVisException ex) {
-            ex.printStackTrace();
-            Logger.getLogger(FTPConnection.class.getName()).log(Level.SEVERE, null, ex);
+            org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.ERROR, ex.getMessage());
         }
     }
 
@@ -347,11 +351,29 @@ public class FTPConnection implements DataCollectorConnection {
 
     @Override
     public String getName() {
-        return String.valueOf(_id);
+        return _name;
     }
 
     @Override
     public Boolean isEnabled() {
         return _enabled;
+    }
+
+    private void printConnectionData() {
+        org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.ALL, "Data Source ID: " + _id);
+        org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.ALL, "SSL: " + _ssl);
+        org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.ALL, "Server: " + _serverURL);
+        org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.ALL, "Port: " + _port);
+        org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.ALL, "ConnectionTimeout: " + _connectionTimeout);
+        org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.ALL, "ReadTimeout: " + _readTimeout);
+        org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.ALL, "Username: " + _username);
+        org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.ALL, "Password: " + _password);
+        org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.ALL, "Timezone: " + _timezone);
+        org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.ALL, "Enabled: " + _enabled);
+    }
+
+    @Override
+    public Long getID() {
+        return _id;
     }
 }

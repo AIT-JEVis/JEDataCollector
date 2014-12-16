@@ -93,12 +93,19 @@ public class DataPoint {
             _dateFormat = DatabaseHelper.getObjectAsString(dp, dateFormatType);
 
             DateTimeFormatter fmt = DateTimeFormat.forPattern("ddMMyyyyHHmmss");
+            DateTimeFormatter fmtNew = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
             String dateString = DatabaseHelper.getObjectAsString(dp, lastReadoutType);
-//            if (dateString == null) {
-                dateString = "01012000000000";
-//            }
-            DateTime tmpDate = fmt.parseDateTime(dateString);
-            _lastReadout = tmpDate;
+            if (dateString == null) {
+            dateString = "2000-01-01 00:00:00";
+            }
+            DateTime tmpDateNew = null;
+            try {
+                tmpDateNew = fmtNew.parseDateTime(dateString);
+            }
+            catch (Exception ex){
+                tmpDateNew = fmt.parseDateTime(dateString);
+            }
+            _lastReadout = tmpDateNew;
             _currentReadoutString = new DateTime().toString(fmt);
             _periodicallySampling = DatabaseHelper.getObjectAsBoolean(dp, periodicallySampling);
 

@@ -52,35 +52,38 @@ public class DataCollector {
 
     public void run() throws FetchingException {
         if (_request.needConnection()) {
-            Logger.getLogger(DataCollector.class.getName()).log(Level.INFO, "Start Connection");
+            Logger.getLogger(DataCollector.class.getName()).log(Level.ALL, "Start Connection");
             connect();
             getInput();
         }
         System.out.println("Need Parsing:" + _request.needParsing());
         if (_request.needParsing()) {
-            Logger.getLogger(DataCollector.class.getName()).log(Level.INFO, "Start Parsing");
+            Logger.getLogger(DataCollector.class.getName()).log(Level.ALL, "Start Parsing");
             parse();
         }
         if (_request.needImport()) {
-            Logger.getLogger(DataCollector.class.getName()).log(Level.INFO, "Import Data");
+            Logger.getLogger(DataCollector.class.getName()).log(Level.ALL, "Import Data");
             importData();
         }
         if (_request.getParsingRequest() != null && _request.getParsingRequest().getOutputType().equals(OutputHandler.JEVIS_OUTPUT)) {
             for (DataPoint dp : _request.getDataPoints()) {
+                String currentReadout = null;
                 try {
-                    String currentReadout = null;
                     JEVisSample latestSample = Launcher.getClient().getObject(Long.parseLong(dp.getTarget())).getAttribute("Value").getLatestSample();
-                    if (dp.getPeriodicallySampling()) {
+                    if (!dp.getPeriodicallySampling()) {
+
                         currentReadout = dp.getCurrentReadoutString();
                     } else if (latestSample != null) {
-                        currentReadout = latestSample.getTimestamp().toString(DateTimeFormat.forPattern("ddMMyyyyHHmmss"));
+                        currentReadout = latestSample.getTimestamp().toString(DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss"));
                     }
                     JEVisSample buildSample = dp.getJEVisDatapoint().getAttribute(JEVisTypes.DataPoint.LAST_READOUT).buildSample(new DateTime(), currentReadout);
                     List<JEVisSample> sampleList = new ArrayList<JEVisSample>();
                     sampleList.add(buildSample);
                     dp.getJEVisDatapoint().getAttribute(JEVisTypes.DataPoint.LAST_READOUT).addSamples(sampleList);
                 } catch (JEVisException ex) {
-                    java.util.logging.Logger.getLogger(DataCollector.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                    Logger.getLogger(DataCollector.class.getName()).log(Level.WARN, "Problems while calculating the Last Readout Attribute");
+                    Logger.getLogger(DataCollector.class.getName()).log(Level.WARN, "Periodical Sampling: " + dp.getPeriodicallySampling());
+                    Logger.getLogger(DataCollector.class.getName()).log(Level.WARN, "Calculated Readout: " + currentReadout);
                 }
             }
         }
@@ -96,6 +99,7 @@ public class DataCollector {
             _parsingService.parseData(inputHandler);
         }
     }
+
     public List<InputHandler> getInputHandler() {
         return _inputHandler;
     }
@@ -133,6 +137,7 @@ public class DataCollector {
             inputHandler.convertInput();
         }
     }
+
     public DateTime getFrom(DataPoint dp) {
         if (dp != null) {
             try {
@@ -144,7 +149,7 @@ public class DataCollector {
                     //TODO iwas überlegen
                 }
             } catch (JEVisException ex) {
-                Logger.getLogger(DataCollector.class.getName()).log(Level.ERROR, null, ex);
+                Logger.getLogger(DataCollector.class.getName()).log(Level.ERROR, ex.getMessage());
             }
         } else {
             //TODO wie oben das gleiche!

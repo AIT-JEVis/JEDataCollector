@@ -98,7 +98,10 @@ public class DataPointDir {
     }
 
     public String getFolderPathFromComp() {
-        return _folderPathFromComp;
+        if (_folderPathFromComp!=null){
+            return _folderPathFromComp;
+        }
+        return "";
     }
 
     public Boolean containsCompressedFolder() {

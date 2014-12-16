@@ -1,0 +1,514 @@
+[16 Dez 2014 18:13:25][jedatacollector.Launcher]: -------Start JEDataCollector r35-------
+DB connection is OK login user
+[16 Dez 2014 18:13:26][jedatacollector.Launcher]: Connection established
+[16 Dez 2014 18:13:26][jedatacollector.Launcher]: ---------- fetch JEVis Data Jobs ----------
+getObjects: JEVisClassSQL{ name=Data Server,discription=null, inheritance=Data Source, unique=false}
+[16 Dez 2014 18:13:26][jedatacollector.Launcher]: 19 Equipments found
+[16 Dez 2014 18:13:26][jedatacollector.Launcher]: ------------------------------------------------
+[16 Dez 2014 18:13:26][jedatacollector.Launcher]: Current Equipment (ID,Name): (549,Amonix)
+[16 Dez 2014 18:13:27][jedatacollector.Launcher]: Equipment is disabled
+[16 Dez 2014 18:13:27][jedatacollector.Launcher]: ------------------------------------------------
+[16 Dez 2014 18:13:27][jedatacollector.Launcher]: Current Equipment (ID,Name): (548,Circadian Solar)
+[16 Dez 2014 18:13:27][jedatacollector.Launcher]: Equipment is disabled
+[16 Dez 2014 18:13:27][jedatacollector.Launcher]: ------------------------------------------------
+[16 Dez 2014 18:13:27][jedatacollector.Launcher]: Current Equipment (ID,Name): (552,Conergy)
+[16 Dez 2014 18:13:27][jedatacollector.Launcher]: Equipment is disabled
+[16 Dez 2014 18:13:27][jedatacollector.Launcher]: ------------------------------------------------
+[16 Dez 2014 18:13:27][jedatacollector.Launcher]: Current Equipment (ID,Name): (761,Example Server)
+[16 Dez 2014 18:13:27][jedatacollector.Launcher]: Problems with equip with id: 761
+org.jevis.api.JEVisException: Number of Connection Objects != 1 under: 761
+	at org.jevis.jedatacollector.connection.ConnectionFactory.getConnection(ConnectionFactory.java:55)
+	at org.jevis.jedatacollector.Launcher.fetchJEVisDataJobs(Launcher.java:171)
+	at org.jevis.jedatacollector.Launcher.main(Launcher.java:64)
+[16 Dez 2014 18:13:27][jedatacollector.Launcher]: ------------------------------------------------
+[16 Dez 2014 18:13:27][jedatacollector.Launcher]: Current Equipment (ID,Name): (830,FTPServer)
+[16 Dez 2014 18:13:27][jedatacollector.Launcher]: Equipment is disabled
+[16 Dez 2014 18:13:27][jedatacollector.Launcher]: ------------------------------------------------
+[16 Dez 2014 18:13:27][jedatacollector.Launcher]: Current Equipment (ID,Name): (547,First Solar)
+[16 Dez 2014 18:13:27][jedatacollector.Launcher]: ------------------------------------------------
+[16 Dez 2014 18:13:27][jedatacollector.Launcher]: Current Equipment (ID,Name): (553,Kaneka)
+[16 Dez 2014 18:13:28][jedatacollector.Launcher]: Equipment is disabled
+[16 Dez 2014 18:13:28][jedatacollector.Launcher]: ------------------------------------------------
+[16 Dez 2014 18:13:28][jedatacollector.Launcher]: Current Equipment (ID,Name): (815,Kaust Server)
+[16 Dez 2014 18:13:28][jedatacollector.Launcher]: ------------------------------------------------
+[16 Dez 2014 18:13:28][jedatacollector.Launcher]: Current Equipment (ID,Name): (1199,Linx UI 2 (compressed))
+[16 Dez 2014 18:13:28][jedatacollector.Launcher]: ------------------------------------------------
+[16 Dez 2014 18:13:28][jedatacollector.Launcher]: Current Equipment (ID,Name): (1182,Linx UI 3,4 (multi))
+[16 Dez 2014 18:13:29][jedatacollector.Launcher]: ------------------------------------------------
+[16 Dez 2014 18:13:29][jedatacollector.Launcher]: Current Equipment (ID,Name): (1173,Linx UI 5,6 (ftp))
+java.lang.NumberFormatException: For input string: ""
+	at java.lang.NumberFormatException.forInputString(NumberFormatException.java:65)
+	at java.lang.Long.parseLong(Long.java:453)
+	at java.lang.Long.parseLong(Long.java:483)
+	at org.jevis.api.sql.JEVisSampleSQL.getValueAsLong(JEVisSampleSQL.java:179)
+	at org.jevis.commons.DatabaseHelper.getObjectAsInteger(DatabaseHelper.java:66)
+	at org.jevis.jedatacollector.connection.FTP.FTPConnection.initialize(FTPConnection.java:309)
+	at org.jevis.jedatacollector.Launcher.fetchJEVisDataJobs(Launcher.java:172)
+	at org.jevis.jedatacollector.Launcher.main(Launcher.java:64)
+java.lang.NumberFormatException: For input string: ""
+	at java.lang.NumberFormatException.forInputString(NumberFormatException.java:65)
+	at java.lang.Long.parseLong(Long.java:453)
+	at java.lang.Long.parseLong(Long.java:483)
+	at org.jevis.api.sql.JEVisSampleSQL.getValueAsLong(JEVisSampleSQL.java:179)
+	at org.jevis.commons.DatabaseHelper.getObjectAsInteger(DatabaseHelper.java:66)
+	at org.jevis.jedatacollector.connection.FTP.FTPConnection.initialize(FTPConnection.java:309)
+	at org.jevis.jedatacollector.Launcher.fetchJEVisDataJobs(Launcher.java:214)
+	at org.jevis.jedatacollector.Launcher.main(Launcher.java:64)
+java.lang.NumberFormatException: For input string: ""
+	at java.lang.NumberFormatException.forInputString(NumberFormatException.java:65)
+	at java.lang.Long.parseLong(Long.java:453)
+	at java.lang.Long.parseLong(Long.java:483)
+	at org.jevis.api.sql.JEVisSampleSQL.getValueAsLong(JEVisSampleSQL.java:179)
+	at org.jevis.commons.DatabaseHelper.getObjectAsInteger(DatabaseHelper.java:66)
+	at org.jevis.jedatacollector.connection.FTP.FTPConnection.initialize(FTPConnection.java:309)
+	at org.jevis.jedatacollector.Launcher.fetchJEVisDataJobs(Launcher.java:214)
+	at org.jevis.jedatacollector.Launcher.main(Launcher.java:64)
+java.lang.NumberFormatException: For input string: ""
+	at java.lang.NumberFormatException.forInputString(NumberFormatException.java:65)
+	at java.lang.Long.parseLong(Long.java:453)
+	at java.lang.Long.parseLong(Long.java:483)
+	at org.jevis.api.sql.JEVisSampleSQL.getValueAsLong(JEVisSampleSQL.java:179)
+	at org.jevis.commons.DatabaseHelper.getObjectAsInteger(DatabaseHelper.java:66)
+	at org.jevis.jedatacollector.connection.FTP.FTPConnection.initialize(FTPConnection.java:309)
+	at org.jevis.jedatacollector.Launcher.fetchJEVisDataJobs(Launcher.java:214)
+	at org.jevis.jedatacollector.Launcher.main(Launcher.java:64)
+[16 Dez 2014 18:13:29][jedatacollector.Launcher]: ------------------------------------------------
+[16 Dez 2014 18:13:29][jedatacollector.Launcher]: Current Equipment (ID,Name): (1208,Linx UI1 (sftp))
+[16 Dez 2014 18:13:29][jedatacollector.Launcher]: ------------------------------------------------
+[16 Dez 2014 18:13:29][jedatacollector.Launcher]: Current Equipment (ID,Name): (550,Skyfuel)
+[16 Dez 2014 18:13:29][jedatacollector.Launcher]: Equipment is disabled
+[16 Dez 2014 18:13:29][jedatacollector.Launcher]: ------------------------------------------------
+[16 Dez 2014 18:13:29][jedatacollector.Launcher]: Current Equipment (ID,Name): (554,Solar Power 1)
+[16 Dez 2014 18:13:29][jedatacollector.Launcher]: Equipment is disabled
+[16 Dez 2014 18:13:29][jedatacollector.Launcher]: ------------------------------------------------
+[16 Dez 2014 18:13:29][jedatacollector.Launcher]: Current Equipment (ID,Name): (555,Solar Power 2)
+[16 Dez 2014 18:13:29][jedatacollector.Launcher]: Equipment is disabled
+[16 Dez 2014 18:13:29][jedatacollector.Launcher]: ------------------------------------------------
+[16 Dez 2014 18:13:29][jedatacollector.Launcher]: Current Equipment (ID,Name): (551,Solar Power 3)
+[16 Dez 2014 18:13:29][jedatacollector.Launcher]: Equipment is disabled
+[16 Dez 2014 18:13:29][jedatacollector.Launcher]: ------------------------------------------------
+[16 Dez 2014 18:13:29][jedatacollector.Launcher]: Current Equipment (ID,Name): (556,Tel Solar)
+[16 Dez 2014 18:13:30][jedatacollector.Launcher]: Equipment is disabled
+[16 Dez 2014 18:13:30][jedatacollector.Launcher]: ------------------------------------------------
+[16 Dez 2014 18:13:30][jedatacollector.Launcher]: Current Equipment (ID,Name): (29,VIDA350 ACME#1)
+[16 Dez 2014 18:13:30][jedatacollector.Launcher]: Problems with equip with id: 29
+org.jevis.api.JEVisException: Number of Connection Objects != 1 under: 29
+	at org.jevis.jedatacollector.connection.ConnectionFactory.getConnection(ConnectionFactory.java:55)
+	at org.jevis.jedatacollector.Launcher.fetchJEVisDataJobs(Launcher.java:171)
+	at org.jevis.jedatacollector.Launcher.main(Launcher.java:64)
+[16 Dez 2014 18:13:30][jedatacollector.Launcher]: ------------------------------------------------
+[16 Dez 2014 18:13:30][jedatacollector.Launcher]: Current Equipment (ID,Name): (832,dataServer)
+[16 Dez 2014 18:13:30][jedatacollector.Launcher]: Problems with equip with id: 832
+org.jevis.api.JEVisException: Number of Connection Objects != 1 under: 832
+	at org.jevis.jedatacollector.connection.ConnectionFactory.getConnection(ConnectionFactory.java:55)
+	at org.jevis.jedatacollector.Launcher.fetchJEVisDataJobs(Launcher.java:171)
+	at org.jevis.jedatacollector.Launcher.main(Launcher.java:64)
+[16 Dez 2014 18:13:30][jedatacollector.Launcher]: ------------------------------------------------
+[16 Dez 2014 18:13:30][jedatacollector.Launcher]: Number of Requests: 9
+[16 Dez 2014 18:13:30][jedatacollector.Launcher]: ----------------Execute Request-----------------
+[16 Dez 2014 18:13:30][jedatacollector.Launcher]: Data Source (ID,Name): (547,First Solar)
+tmp
+test.csv
+tmp
+cvcd
+geany_socket.69f99b60
+gpg-BtumIm
+gpg-y21gVj
+hsperfdata_fs
+jarfscachefs
+jna
+orbit-fs
+output1418749122762
+pulse-2L9K88eMlGn7
+pulse-PKdhtXMmr18n
+qtsingleapp-homefs-711a-419
+qtsingleapp-homefs-711a-419-lockfile
+skype-3449
+sni-qt_skype_3449-J1v2Px
+ssh-Tn1UHBCoX0pD
+vcs-1418736451041
+[16 Dez 2014 18:13:30][FTP.FTPConnection]: Cant get any data from the device
+Need Parsing:true
+Outputtype: jevis
+[16 Dez 2014 18:13:30][outputHandler.JEVisOutputHandler]: Number of imported Data overall: 0
+error while receiving samples: java.lang.NullPointerException
+java.lang.NullPointerException
+	at org.jevis.api.sql.SampleTable.insertSamplesChunk(SampleTable.java:162)
+	at org.jevis.api.sql.SampleTable.insertSamples(SampleTable.java:75)
+	at org.jevis.api.sql.JEVisAttributeSQL.addSamples(JEVisAttributeSQL.java:159)
+	at org.jevis.jedatacollector.DataCollector.run(DataCollector.java:82)
+	at org.jevis.jedatacollector.Launcher.excecuteRequsts(Launcher.java:103)
+	at org.jevis.jedatacollector.Launcher.main(Launcher.java:70)
+[16 Dez 2014 18:13:30][api.JEVisException]: [4234] Error while inserting Sample 
+[16 Dez 2014 18:13:30][jedatacollector.DataCollector]: Problems while calculating the Last Readout Attribute
+[16 Dez 2014 18:13:30][jedatacollector.DataCollector]: Periodical Sampling: true
+[16 Dez 2014 18:13:30][jedatacollector.DataCollector]: Calculated Readout: null
+[16 Dez 2014 18:13:30][jedatacollector.Launcher]: ------------------------------------------------
+[16 Dez 2014 18:13:30][jedatacollector.Launcher]: ----------------Execute Request-----------------
+[16 Dez 2014 18:13:30][jedatacollector.Launcher]: Data Source (ID,Name): (815,Kaust Server)
+ftps connection
+TEL Data
+${D:yyyyMMddHHmmss}.zip
+TEL Data
+[16 Dez 2014 18:13:31][FTP.FTPConnection]: Cant get any data from the device
+Need Parsing:true
+Outputtype: jevis
+[16 Dez 2014 18:13:31][outputHandler.JEVisOutputHandler]: Number of imported Data overall: 0
+update attribute: 
+com.mysql.jdbc.JDBC4PreparedStatement@50aff428: update attribute set altsymbol='', unit='', maxts=(select max(timestamp) from sample where object=819 and attribute='Last Readout' limit 1),mints=(select min(timestamp) from sample where object=819 and attribute='Last Readout' limit 1),samplecount=(select count(*) from sample where object=819 and attribute='Last Readout' limit 1) where object=819 and name='Last Readout'
+imported 1
+update attribute: 
+com.mysql.jdbc.JDBC4PreparedStatement@61922138: update attribute set altsymbol='', unit='', maxts=(select max(timestamp) from sample where object=819 and attribute='Last Readout' limit 1),mints=(select min(timestamp) from sample where object=819 and attribute='Last Readout' limit 1),samplecount=(select count(*) from sample where object=819 and attribute='Last Readout' limit 1) where object=819 and name='Last Readout'
+[16 Dez 2014 18:13:32][jedatacollector.Launcher]: ------------------------------------------------
+[16 Dez 2014 18:13:32][jedatacollector.Launcher]: ----------------Execute Request-----------------
+[16 Dez 2014 18:13:32][jedatacollector.Launcher]: Data Source (ID,Name): (815,Kaust Server)
+ftps connection
+TEL Data
+${D:yyyyMMddHHmmss}.zip
+TEL Data
+[16 Dez 2014 18:13:33][FTP.FTPConnection]: Cant get any data from the device
+Need Parsing:true
+Outputtype: jevis
+[16 Dez 2014 18:13:33][outputHandler.JEVisOutputHandler]: Number of imported Data overall: 0
+update attribute: 
+com.mysql.jdbc.JDBC4PreparedStatement@3b7cb2ef: update attribute set altsymbol='', unit='', maxts=(select max(timestamp) from sample where object=820 and attribute='Last Readout' limit 1),mints=(select min(timestamp) from sample where object=820 and attribute='Last Readout' limit 1),samplecount=(select count(*) from sample where object=820 and attribute='Last Readout' limit 1) where object=820 and name='Last Readout'
+imported 1
+update attribute: 
+com.mysql.jdbc.JDBC4PreparedStatement@77c7876b: update attribute set altsymbol='', unit='', maxts=(select max(timestamp) from sample where object=820 and attribute='Last Readout' limit 1),mints=(select min(timestamp) from sample where object=820 and attribute='Last Readout' limit 1),samplecount=(select count(*) from sample where object=820 and attribute='Last Readout' limit 1) where object=820 and name='Last Readout'
+[16 Dez 2014 18:13:33][jedatacollector.Launcher]: ------------------------------------------------
+[16 Dez 2014 18:13:33][jedatacollector.Launcher]: ----------------Execute Request-----------------
+[16 Dez 2014 18:13:33][jedatacollector.Launcher]: Data Source (ID,Name): (1199,Linx UI 2 (compressed))
+data
+trend
+Trend_L1_1_UI2_Input_10C3.zip
+data
+data
+trend
+1BB9.xml
+Trend_System_Temp_1BB9.zip
+Trend_System_Temp_1BB9.csv
+11B0.xml
+Trend_L1_1_UI3_AND_UI4_11B0.zip
+Trend_L1_1_UI3_AND_UI4_11B0.csv
+10C5.xml
+Trend_L1_1_UI6_Input_10C5.zip
+Trend_L1_1_UI6_Input_10C5.csv
+10C8.xml
+Trend_L1_1_UI5_Input_10C8.zip
+Trend_L1_1_UI5_Input_10C8.csv
+10E0.xml
+Trend_L1_1_UI4_Input1_10E0.zip
+Trend_L1_1_UI4_Input1_10E0.csv
+10DF.xml
+Trend_L1_1_UI3_Input1_10DF.zip
+Trend_L1_1_UI3_Input1_10DF.csv
+10C3.xml
+Trend_L1_1_UI2_Input_10C3.zip
+Trend_L1_1_UI2_Input_10C3.csv
+10C6.xml
+Trend_L1_1_UI1_Input_10C6.zip
+Trend_L1_1_UI1_Input_10C6.csv
+class,class java.io.BufferedInputStream
+This is a inputstream!!!!!
+Trend_L1_1_UI2_Input_10C3.csv
+Unzipping Trend_L1_1_UI2_Input_10C3.csv
+input,#log_csv_ver,2
+#log_device,LOYTEC,"LINX-121","5.0.1","IP","016101-8000000DF82F"
+#log_info,4291,"Trend_L1_1_UI2_Input"
+#log_create,2014-12-16,18:13:18
+#log_capacity,29,3000
+#log_item,0,0x192A,"L1_1_UI2_Input [Â°C]","UI2"
+#Sequence,Source,Type,Error/Time Change/Log Status,Date/Time,L1_1_UI2_Input [Â°C]
+0,255,0,0,2014-12-16 12:35:34
+1,0,2,,2014-12-16 12:45:00,20.86877
+2,0,2,,2014-12-16 13:00:00,21.02462
+3,255,0,1,2014-12-16 13:04:32
+4,255,0,0,2014-12-16 13:04:39
+5,255,0,1,2014-12-16 13:08:57
+6,255,0,0,2014-12-16 13:09:05
+7,0,2,,2014-12-16 13:15:00,21.02462
+8,0,2,,2014-12-16 13:30:00,21.02462
+9,0,2,,2014-12-16 13:45:00,21.07653
+10,0,2,,2014-12-16 14:00:00,21.1285
+11,0,2,,2014-12-16 14:15:00,21.18044
+12,0,2,,2014-12-16 14:30:00,21.18044
+13,0,2,,2014-12-16 14:45:00,21.18044
+14,0,2,,2014-12-16 15:00:00,21.1285
+15,0,2,,2014-12-16 15:15:00,21.02462
+16,0,2,,2014-12-16 15:30:00,20.97265
+17,255,0,1,2014-12-16 15:41:47
+18,255,0,0,2014-12-16 15:41:55
+19,0,2,,2014-12-16 15:45:00,20.97265
+20,0,2,,2014-12-16 16:00:00,20.92071
+21,0,2,,2014-12-16 16:15:00,20.92071
+22,0,2,,2014-12-16 16:30:00,20.92071
+23,0,2,,2014-12-16 16:45:00,20.86877
+24,0,2,,2014-12-16 17:00:00,20.86877
+25,0,2,,2014-12-16 17:15:00,20.86877
+26,0,2,,2014-12-16 17:30:00,20.86877
+27,0,2,,2014-12-16 17:45:00,20.81683
+28,0,2,,2014-12-16 18:00:00,20.81683
+
+Need Parsing:true
+[16 Dez 2014 18:13:33][csvParsing.CSVParsing]: LastResult (Date,Target,Value): 2014-12-16T18:00:00.000+01:00,1177,20.81683
+Outputtype: jevis
+[16 Dez 2014 18:13:33][outputHandler.JEVisOutputHandler]: Number of imported Data overall: 22
+imported 0
+update attribute: 
+com.mysql.jdbc.JDBC4PreparedStatement@5422e600: update attribute set altsymbol='', unit='', maxts=(select max(timestamp) from sample where object=1177 and attribute='Value' limit 1),mints=(select min(timestamp) from sample where object=1177 and attribute='Value' limit 1),samplecount=(select count(*) from sample where object=1177 and attribute='Value' limit 1) where object=1177 and name='Value'
+update attribute: 
+com.mysql.jdbc.JDBC4PreparedStatement@35188d90: update attribute set altsymbol='', unit='', maxts=(select max(timestamp) from sample where object=1202 and attribute='Last Readout' limit 1),mints=(select min(timestamp) from sample where object=1202 and attribute='Last Readout' limit 1),samplecount=(select count(*) from sample where object=1202 and attribute='Last Readout' limit 1) where object=1202 and name='Last Readout'
+imported 1
+update attribute: 
+com.mysql.jdbc.JDBC4PreparedStatement@5ef6042b: update attribute set altsymbol='', unit='', maxts=(select max(timestamp) from sample where object=1202 and attribute='Last Readout' limit 1),mints=(select min(timestamp) from sample where object=1202 and attribute='Last Readout' limit 1),samplecount=(select count(*) from sample where object=1202 and attribute='Last Readout' limit 1) where object=1202 and name='Last Readout'
+[16 Dez 2014 18:13:33][jedatacollector.Launcher]: ------------------------------------------------
+[16 Dez 2014 18:13:33][jedatacollector.Launcher]: ----------------Execute Request-----------------
+[16 Dez 2014 18:13:33][jedatacollector.Launcher]: Data Source (ID,Name): (1182,Linx UI 3,4 (multi))
+data
+trend
+Trend_L1_1_UI3_AND_UI4_11B0.csv
+data
+data
+trend
+1BB9.xml
+Trend_System_Temp_1BB9.zip
+Trend_System_Temp_1BB9.csv
+11B0.xml
+Trend_L1_1_UI3_AND_UI4_11B0.zip
+Trend_L1_1_UI3_AND_UI4_11B0.csv
+10C5.xml
+Trend_L1_1_UI6_Input_10C5.zip
+Trend_L1_1_UI6_Input_10C5.csv
+10C8.xml
+Trend_L1_1_UI5_Input_10C8.zip
+Trend_L1_1_UI5_Input_10C8.csv
+10E0.xml
+Trend_L1_1_UI4_Input1_10E0.zip
+Trend_L1_1_UI4_Input1_10E0.csv
+10DF.xml
+Trend_L1_1_UI3_Input1_10DF.zip
+Trend_L1_1_UI3_Input1_10DF.csv
+10C3.xml
+Trend_L1_1_UI2_Input_10C3.zip
+Trend_L1_1_UI2_Input_10C3.csv
+10C6.xml
+Trend_L1_1_UI1_Input_10C6.zip
+Trend_L1_1_UI1_Input_10C6.csv
+class,class java.io.BufferedInputStream
+This is a inputstream!!!!!
+Need Parsing:true
+[16 Dez 2014 18:13:33][csvParsing.CSVParsing]: LastResult (Date,Target,Value): 2014-12-16T18:00:00.000+01:00,1179,22.37244
+Outputtype: jevis
+[16 Dez 2014 18:13:33][outputHandler.JEVisOutputHandler]: Number of imported Data overall: 214
+imported 0
+update attribute: 
+com.mysql.jdbc.JDBC4PreparedStatement@3c2ce9cb: update attribute set altsymbol=null, unit='', maxts=(select max(timestamp) from sample where object=1179 and attribute='Value' limit 1),mints=(select min(timestamp) from sample where object=1179 and attribute='Value' limit 1),samplecount=(select count(*) from sample where object=1179 and attribute='Value' limit 1) where object=1179 and name='Value'
+imported 0
+update attribute: 
+com.mysql.jdbc.JDBC4PreparedStatement@1cbb99e4: update attribute set altsymbol='', unit='', maxts=(select max(timestamp) from sample where object=1178 and attribute='Value' limit 1),mints=(select min(timestamp) from sample where object=1178 and attribute='Value' limit 1),samplecount=(select count(*) from sample where object=1178 and attribute='Value' limit 1) where object=1178 and name='Value'
+update attribute: 
+com.mysql.jdbc.JDBC4PreparedStatement@55f9526: update attribute set altsymbol='', unit='', maxts=(select max(timestamp) from sample where object=1191 and attribute='Last Readout' limit 1),mints=(select min(timestamp) from sample where object=1191 and attribute='Last Readout' limit 1),samplecount=(select count(*) from sample where object=1191 and attribute='Last Readout' limit 1) where object=1191 and name='Last Readout'
+imported 1
+update attribute: 
+com.mysql.jdbc.JDBC4PreparedStatement@4638f48b: update attribute set altsymbol='', unit='', maxts=(select max(timestamp) from sample where object=1191 and attribute='Last Readout' limit 1),mints=(select min(timestamp) from sample where object=1191 and attribute='Last Readout' limit 1),samplecount=(select count(*) from sample where object=1191 and attribute='Last Readout' limit 1) where object=1191 and name='Last Readout'
+update attribute: 
+com.mysql.jdbc.JDBC4PreparedStatement@354ac4d3: update attribute set altsymbol='', unit='', maxts=(select max(timestamp) from sample where object=1192 and attribute='Last Readout' limit 1),mints=(select min(timestamp) from sample where object=1192 and attribute='Last Readout' limit 1),samplecount=(select count(*) from sample where object=1192 and attribute='Last Readout' limit 1) where object=1192 and name='Last Readout'
+imported 1
+update attribute: 
+com.mysql.jdbc.JDBC4PreparedStatement@3fc013fa: update attribute set altsymbol='', unit='', maxts=(select max(timestamp) from sample where object=1192 and attribute='Last Readout' limit 1),mints=(select min(timestamp) from sample where object=1192 and attribute='Last Readout' limit 1),samplecount=(select count(*) from sample where object=1192 and attribute='Last Readout' limit 1) where object=1192 and name='Last Readout'
+[16 Dez 2014 18:13:34][jedatacollector.Launcher]: ------------------------------------------------
+[16 Dez 2014 18:13:34][jedatacollector.Launcher]: ----------------Execute Request-----------------
+[16 Dez 2014 18:13:34][jedatacollector.Launcher]: Data Source (ID,Name): (1173,Linx UI 5,6 (ftp))
+data
+trend
+Trend_System_Temp_1BB9.csv
+data
+data
+trend
+1BB9.xml
+Trend_System_Temp_1BB9.zip
+Trend_System_Temp_1BB9.csv
+11B0.xml
+Trend_L1_1_UI3_AND_UI4_11B0.zip
+Trend_L1_1_UI3_AND_UI4_11B0.csv
+10C5.xml
+Trend_L1_1_UI6_Input_10C5.zip
+Trend_L1_1_UI6_Input_10C5.csv
+10C8.xml
+Trend_L1_1_UI5_Input_10C8.zip
+Trend_L1_1_UI5_Input_10C8.csv
+10E0.xml
+Trend_L1_1_UI4_Input1_10E0.zip
+Trend_L1_1_UI4_Input1_10E0.csv
+10DF.xml
+Trend_L1_1_UI3_Input1_10DF.zip
+Trend_L1_1_UI3_Input1_10DF.csv
+10C3.xml
+Trend_L1_1_UI2_Input_10C3.zip
+Trend_L1_1_UI2_Input_10C3.csv
+10C6.xml
+Trend_L1_1_UI1_Input_10C6.zip
+Trend_L1_1_UI1_Input_10C6.csv
+class,class java.io.BufferedInputStream
+This is a inputstream!!!!!
+Need Parsing:true
+[16 Dez 2014 18:13:34][csvParsing.CSVParsing]: LastResult (Date,Target,Value): 2014-12-16T18:11:55.000+01:00,1204,32.5
+Outputtype: jevis
+[16 Dez 2014 18:13:34][outputHandler.JEVisOutputHandler]: Number of imported Data overall: 20
+update attribute: 
+com.mysql.jdbc.JDBC4PreparedStatement@730bc16: update attribute set altsymbol='', unit='', maxts=(select max(timestamp) from sample where object=1204 and attribute='Value' limit 1),mints=(select min(timestamp) from sample where object=1204 and attribute='Value' limit 1),samplecount=(select count(*) from sample where object=1204 and attribute='Value' limit 1) where object=1204 and name='Value'
+imported 1
+update attribute: 
+com.mysql.jdbc.JDBC4PreparedStatement@108c4c0a: update attribute set altsymbol='', unit='', maxts=(select max(timestamp) from sample where object=1204 and attribute='Value' limit 1),mints=(select min(timestamp) from sample where object=1204 and attribute='Value' limit 1),samplecount=(select count(*) from sample where object=1204 and attribute='Value' limit 1) where object=1204 and name='Value'
+update attribute: 
+com.mysql.jdbc.JDBC4PreparedStatement@593dec0e: update attribute set altsymbol='', unit='', maxts=(select max(timestamp) from sample where object=1203 and attribute='Last Readout' limit 1),mints=(select min(timestamp) from sample where object=1203 and attribute='Last Readout' limit 1),samplecount=(select count(*) from sample where object=1203 and attribute='Last Readout' limit 1) where object=1203 and name='Last Readout'
+imported 1
+update attribute: 
+com.mysql.jdbc.JDBC4PreparedStatement@7054b8e7: update attribute set altsymbol='', unit='', maxts=(select max(timestamp) from sample where object=1203 and attribute='Last Readout' limit 1),mints=(select min(timestamp) from sample where object=1203 and attribute='Last Readout' limit 1),samplecount=(select count(*) from sample where object=1203 and attribute='Last Readout' limit 1) where object=1203 and name='Last Readout'
+[16 Dez 2014 18:13:34][jedatacollector.Launcher]: ------------------------------------------------
+[16 Dez 2014 18:13:34][jedatacollector.Launcher]: ----------------Execute Request-----------------
+[16 Dez 2014 18:13:34][jedatacollector.Launcher]: Data Source (ID,Name): (1173,Linx UI 5,6 (ftp))
+data
+trend
+Trend_L1_1_UI5_Input_10C8.csv
+data
+data
+trend
+1BB9.xml
+Trend_System_Temp_1BB9.zip
+Trend_System_Temp_1BB9.csv
+11B0.xml
+Trend_L1_1_UI3_AND_UI4_11B0.zip
+Trend_L1_1_UI3_AND_UI4_11B0.csv
+10C5.xml
+Trend_L1_1_UI6_Input_10C5.zip
+Trend_L1_1_UI6_Input_10C5.csv
+10C8.xml
+Trend_L1_1_UI5_Input_10C8.zip
+Trend_L1_1_UI5_Input_10C8.csv
+10E0.xml
+Trend_L1_1_UI4_Input1_10E0.zip
+Trend_L1_1_UI4_Input1_10E0.csv
+10DF.xml
+Trend_L1_1_UI3_Input1_10DF.zip
+Trend_L1_1_UI3_Input1_10DF.csv
+10C3.xml
+Trend_L1_1_UI2_Input_10C3.zip
+Trend_L1_1_UI2_Input_10C3.csv
+10C6.xml
+Trend_L1_1_UI1_Input_10C6.zip
+Trend_L1_1_UI1_Input_10C6.csv
+class,class java.io.BufferedInputStream
+This is a inputstream!!!!!
+Need Parsing:true
+[16 Dez 2014 18:13:34][csvParsing.CSVParsing]: LastResult (Date,Target,Value): 2014-12-16T18:00:00.000+01:00,1180,22.90818
+Outputtype: jevis
+[16 Dez 2014 18:13:34][outputHandler.JEVisOutputHandler]: Number of imported Data overall: 22
+imported 0
+update attribute: 
+com.mysql.jdbc.JDBC4PreparedStatement@3b7480c5: update attribute set altsymbol='', unit='', maxts=(select max(timestamp) from sample where object=1180 and attribute='Value' limit 1),mints=(select min(timestamp) from sample where object=1180 and attribute='Value' limit 1),samplecount=(select count(*) from sample where object=1180 and attribute='Value' limit 1) where object=1180 and name='Value'
+update attribute: 
+com.mysql.jdbc.JDBC4PreparedStatement@7fb43f0f: update attribute set altsymbol='', unit='', maxts=(select max(timestamp) from sample where object=1187 and attribute='Last Readout' limit 1),mints=(select min(timestamp) from sample where object=1187 and attribute='Last Readout' limit 1),samplecount=(select count(*) from sample where object=1187 and attribute='Last Readout' limit 1) where object=1187 and name='Last Readout'
+imported 1
+update attribute: 
+com.mysql.jdbc.JDBC4PreparedStatement@12983349: update attribute set altsymbol='', unit='', maxts=(select max(timestamp) from sample where object=1187 and attribute='Last Readout' limit 1),mints=(select min(timestamp) from sample where object=1187 and attribute='Last Readout' limit 1),samplecount=(select count(*) from sample where object=1187 and attribute='Last Readout' limit 1) where object=1187 and name='Last Readout'
+[16 Dez 2014 18:13:34][jedatacollector.Launcher]: ------------------------------------------------
+[16 Dez 2014 18:13:34][jedatacollector.Launcher]: ----------------Execute Request-----------------
+[16 Dez 2014 18:13:34][jedatacollector.Launcher]: Data Source (ID,Name): (1173,Linx UI 5,6 (ftp))
+data
+trend
+Trend_L1_1_UI6_Input_10C5.csv
+data
+data
+trend
+1BB9.xml
+Trend_System_Temp_1BB9.zip
+Trend_System_Temp_1BB9.csv
+11B0.xml
+Trend_L1_1_UI3_AND_UI4_11B0.zip
+Trend_L1_1_UI3_AND_UI4_11B0.csv
+10C5.xml
+Trend_L1_1_UI6_Input_10C5.zip
+Trend_L1_1_UI6_Input_10C5.csv
+10C8.xml
+Trend_L1_1_UI5_Input_10C8.zip
+Trend_L1_1_UI5_Input_10C8.csv
+10E0.xml
+Trend_L1_1_UI4_Input1_10E0.zip
+Trend_L1_1_UI4_Input1_10E0.csv
+10DF.xml
+Trend_L1_1_UI3_Input1_10DF.zip
+Trend_L1_1_UI3_Input1_10DF.csv
+10C3.xml
+Trend_L1_1_UI2_Input_10C3.zip
+Trend_L1_1_UI2_Input_10C3.csv
+10C6.xml
+Trend_L1_1_UI1_Input_10C6.zip
+Trend_L1_1_UI1_Input_10C6.csv
+class,class java.io.BufferedInputStream
+This is a inputstream!!!!!
+Need Parsing:true
+[16 Dez 2014 18:13:34][csvParsing.CSVParsing]: LastResult (Date,Target,Value): 2014-12-16T18:00:00.000+01:00,1194,0.0
+Outputtype: jevis
+[16 Dez 2014 18:13:34][outputHandler.JEVisOutputHandler]: Number of imported Data overall: 22
+imported 0
+update attribute: 
+com.mysql.jdbc.JDBC4PreparedStatement@542ab4b1: update attribute set altsymbol='', unit='', maxts=(select max(timestamp) from sample where object=1194 and attribute='Value' limit 1),mints=(select min(timestamp) from sample where object=1194 and attribute='Value' limit 1),samplecount=(select count(*) from sample where object=1194 and attribute='Value' limit 1) where object=1194 and name='Value'
+update attribute: 
+com.mysql.jdbc.JDBC4PreparedStatement@5139574d: update attribute set altsymbol='', unit='', maxts=(select max(timestamp) from sample where object=1193 and attribute='Last Readout' limit 1),mints=(select min(timestamp) from sample where object=1193 and attribute='Last Readout' limit 1),samplecount=(select count(*) from sample where object=1193 and attribute='Last Readout' limit 1) where object=1193 and name='Last Readout'
+imported 1
+update attribute: 
+com.mysql.jdbc.JDBC4PreparedStatement@b92a9e4: update attribute set altsymbol='', unit='', maxts=(select max(timestamp) from sample where object=1193 and attribute='Last Readout' limit 1),mints=(select min(timestamp) from sample where object=1193 and attribute='Last Readout' limit 1),samplecount=(select count(*) from sample where object=1193 and attribute='Last Readout' limit 1) where object=1193 and name='Last Readout'
+[16 Dez 2014 18:13:34][jedatacollector.Launcher]: ------------------------------------------------
+[16 Dez 2014 18:13:34][jedatacollector.Launcher]: ----------------Execute Request-----------------
+[16 Dez 2014 18:13:34][jedatacollector.Launcher]: Data Source (ID,Name): (1208,Linx UI1 (sftp))
+data
+trend
+Trend_L1_1_UI1_Input_10C6.csv
+data
+data
+trend
+drwxr-x---    2 larmapp  ftplogin      520 Dec 16 15:41 .
+drwxrwxrwt   12 root     root          500 Dec 16 15:42 ..
+lrwxrwxrwx    1 larmapp  larmapp        16 Dec 16 15:41 1BB9.xml
+lrwxrwxrwx    1 larmapp  larmapp        15 Dec 16 15:41 Trend_System_Temp_1BB9.zip
+lrwxrwxrwx    1 larmapp  larmapp        15 Dec 16 15:41 Trend_System_Temp_1BB9.csv
+lrwxrwxrwx    1 larmapp  larmapp        16 Dec 16 15:41 11B0.xml
+lrwxrwxrwx    1 larmapp  larmapp        15 Dec 16 15:41 Trend_L1_1_UI3_AND_UI4_11B0.zip
+lrwxrwxrwx    1 larmapp  larmapp        15 Dec 16 15:41 Trend_L1_1_UI3_AND_UI4_11B0.csv
+lrwxrwxrwx    1 larmapp  larmapp        15 Dec 16 15:41 10C5.xml
+lrwxrwxrwx    1 larmapp  larmapp        15 Dec 16 15:41 Trend_L1_1_UI6_Input_10C5.zip
+lrwxrwxrwx    1 larmapp  larmapp        15 Dec 16 15:41 Trend_L1_1_UI6_Input_10C5.csv
+lrwxrwxrwx    1 larmapp  larmapp        15 Dec 16 15:41 10C8.xml
+lrwxrwxrwx    1 larmapp  larmapp        15 Dec 16 15:41 Trend_L1_1_UI5_Input_10C8.zip
+lrwxrwxrwx    1 larmapp  larmapp        15 Dec 16 15:41 Trend_L1_1_UI5_Input_10C8.csv
+lrwxrwxrwx    1 larmapp  larmapp        15 Dec 16 15:41 10E0.xml
+lrwxrwxrwx    1 larmapp  larmapp        15 Dec 16 15:41 Trend_L1_1_UI4_Input1_10E0.zip
+lrwxrwxrwx    1 larmapp  larmapp        15 Dec 16 15:41 Trend_L1_1_UI4_Input1_10E0.csv
+lrwxrwxrwx    1 larmapp  larmapp        15 Dec 16 15:41 10DF.xml
+lrwxrwxrwx    1 larmapp  larmapp        15 Dec 16 15:41 Trend_L1_1_UI3_Input1_10DF.zip
+lrwxrwxrwx    1 larmapp  larmapp        15 Dec 16 15:41 Trend_L1_1_UI3_Input1_10DF.csv
+lrwxrwxrwx    1 larmapp  larmapp        15 Dec 16 15:41 10C3.xml
+lrwxrwxrwx    1 larmapp  larmapp        15 Dec 16 15:41 Trend_L1_1_UI2_Input_10C3.zip
+lrwxrwxrwx    1 larmapp  larmapp        15 Dec 16 15:41 Trend_L1_1_UI2_Input_10C3.csv
+lrwxrwxrwx    1 larmapp  larmapp        15 Dec 16 15:41 10C6.xml
+lrwxrwxrwx    1 larmapp  larmapp        15 Dec 16 15:41 Trend_L1_1_UI1_Input_10C6.zip
+lrwxrwxrwx    1 larmapp  larmapp        15 Dec 16 15:41 Trend_L1_1_UI1_Input_10C6.csv
+[16 Dez 2014 18:13:36][FTP.SFTPConnection]: Cant get any data from the device
+Need Parsing:true
+Outputtype: jevis
+[16 Dez 2014 18:13:36][outputHandler.JEVisOutputHandler]: Number of imported Data overall: 0
+error while receiving samples: java.lang.NullPointerException
+java.lang.NullPointerException
+	at org.jevis.api.sql.SampleTable.insertSamplesChunk(SampleTable.java:162)
+	at org.jevis.api.sql.SampleTable.insertSamples(SampleTable.java:75)
+	at org.jevis.api.sql.JEVisAttributeSQL.addSamples(JEVisAttributeSQL.java:159)
+	at org.jevis.jedatacollector.DataCollector.run(DataCollector.java:82)
+	at org.jevis.jedatacollector.Launcher.excecuteRequsts(Launcher.java:103)
+	at org.jevis.jedatacollector.Launcher.main(Launcher.java:70)
+[16 Dez 2014 18:13:36][api.JEVisException]: [4234] Error while inserting Sample 
+[16 Dez 2014 18:13:36][jedatacollector.DataCollector]: Problems while calculating the Last Readout Attribute
+[16 Dez 2014 18:13:36][jedatacollector.DataCollector]: Periodical Sampling: true
+[16 Dez 2014 18:13:36][jedatacollector.DataCollector]: Calculated Readout: null
+[16 Dez 2014 18:13:36][jedatacollector.Launcher]: ------------------------------------------------
+[16 Dez 2014 18:13:36][jedatacollector.Launcher]: ########## Finish JEDataCollector #########

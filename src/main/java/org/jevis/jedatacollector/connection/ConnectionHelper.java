@@ -4,8 +4,10 @@
  */
 package org.jevis.jedatacollector.connection;
 
+import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.ChannelSftp.LsEntry;
+import com.jcraft.jsch.SftpException;
 import java.io.IOException;
-import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
@@ -17,9 +19,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
-import org.jevis.jedatacollector.Launcher;
 import org.jevis.jedatacollector.data.DataPoint;
-import org.joda.time.Chronology;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -271,7 +271,6 @@ public class ConnectionHelper {
         String[] pathStream = getPathTokens(filePath);
         DateTime lastReadout = dp.getLastReadout();
 
-        Path dir = FileSystems.getDefault().getPath("");
         String startPath = "";
         if (filePath.startsWith("/")) {
             startPath = "/";
@@ -279,19 +278,26 @@ public class ConnectionHelper {
 
         List<String> folderPathes = getMatchingPathes(startPath, pathStream, new ArrayList<String>(), fc, lastReadout, new DateTimeFormatterBuilder());
 //        System.out.println("foldersize,"+folderPathes.size());
-
         List<String> fileNames = new ArrayList<String>();
+
+        if (folderPathes.isEmpty()) {
+            org.apache.log4j.Logger.getLogger(ConnectionHelper.class).log(org.apache.log4j.Level.ERROR, "Cant find suitable folder on the device");
+            return fileNames;
+        }
+
 //        String fileName = null;
         String fileNameScheme = pathStream[pathStream.length - 1];
+        String currentfolder = null;
         try {
             for (String folder : folderPathes) {
                 //                fc.changeWorkingDirectory(folder);
                 //                System.out.println("currentFolder,"+folder);
-                for (FTPFile file : fc.listFiles(folder)) {
-                    System.out.println(file.getName());
-                }
+                currentfolder = folder;
+//                for (FTPFile file : fc.listFiles(folder)) {
+//                    System.out.println(file.getName());
+//                }
                 for (String fileName : fc.listNames(folder)) {
-                    org.apache.log4j.Logger.getLogger(Launcher.class.getName()).log(org.apache.log4j.Level.INFO, "CurrentFileName: " + fileName);
+//                    org.apache.log4j.Logger.getLogger(Launcher.class.getName()).log(org.apache.log4j.Level.ALL, "CurrentFileName: " + fileName);
                     fileName = removeFoler(fileName, folder);
 //                    fileName = file.getName();
                     boolean match = false;
@@ -300,8 +306,6 @@ public class ConnectionHelper {
                         boolean matchDate = matchDateString(fileName, fileNameScheme);
                         DateTime folderTime = getFileTime(folder + fileName, pathStream);
                         boolean isLater = folderTime.isAfter(lastReadout);
-                        System.out.println(lastReadout.toString());
-                        System.out.println(folderTime.toString());
                         if (matchDate && isLater) {
                             match = true;
                         }
@@ -316,7 +320,87 @@ public class ConnectionHelper {
                 }
             }
         } catch (IOException ex) {
-            Logger.getLogger(ConnectionHelper.class.getName()).log(Level.SEVERE, null, ex);
+            org.apache.log4j.Logger.getLogger(ConnectionHelper.class).log(org.apache.log4j.Level.ERROR, ex.getMessage());
+        } catch (Exception ex) {
+            org.apache.log4j.Logger.getLogger(ConnectionHelper.class).log(org.apache.log4j.Level.ERROR, "Error while searching a matching file");
+            org.apache.log4j.Logger.getLogger(ConnectionHelper.class).log(org.apache.log4j.Level.ERROR, "Folder: " + currentfolder);
+            org.apache.log4j.Logger.getLogger(ConnectionHelper.class).log(org.apache.log4j.Level.ERROR, "FileName: " + fileNameScheme);
+            org.apache.log4j.Logger.getLogger(ConnectionHelper.class).log(org.apache.log4j.Level.ERROR, ex.getMessage());
+        }
+        if (folderPathes.isEmpty()) {
+            org.apache.log4j.Logger.getLogger(ConnectionHelper.class).log(org.apache.log4j.Level.ERROR, "Cant find suitable files on the device");
+        }
+//        System.out.println("filenamesize"+fileNames.size());
+        return fileNames;
+    }
+
+    public static List<String> getSFTPMatchedFileNames(ChannelSftp _channel, DataPoint dp, String filePath) {
+        filePath = filePath.replace("\\", "/");
+        String[] pathStream = getPathTokens(filePath);
+        DateTime lastReadout = dp.getLastReadout();
+
+        String startPath = "";
+        if (filePath.startsWith("/")) {
+            startPath = "/";
+        }
+
+        List<String> folderPathes = getSFTPMatchingPathes(startPath, pathStream, new ArrayList<String>(), _channel, lastReadout, new DateTimeFormatterBuilder());
+//        System.out.println("foldersize,"+folderPathes.size());
+        List<String> fileNames = new ArrayList<String>();
+        if (folderPathes.isEmpty()) {
+            org.apache.log4j.Logger.getLogger(ConnectionHelper.class).log(org.apache.log4j.Level.ERROR, "Cant find suitable folder on the device");
+            return fileNames;
+        }
+
+
+        if (folderPathes.isEmpty()) {
+            org.apache.log4j.Logger.getLogger(ConnectionHelper.class).log(org.apache.log4j.Level.ERROR, "Cant find suitable folder on the device");
+            return fileNames;
+        }
+
+//        String fileName = null;
+        String fileNameScheme = pathStream[pathStream.length - 1];
+        String currentfolder = null;
+        try {
+            for (String folder : folderPathes) {
+                //                fc.changeWorkingDirectory(folder);
+                //                System.out.println("currentFolder,"+folder);
+                currentfolder = folder;
+                //                for (FTPFile file : fc.listFiles(folder)) {
+                //                    System.out.println(file.getName());
+                //                }
+//                Vector ls = _channel.ls(folder);
+                for (Object fileName : _channel.ls(folder)) {
+                    LsEntry currentFile = (LsEntry) fileName;
+                    String currentFileName = currentFile.getFilename();
+                    currentFileName = removeFoler(currentFileName, folder);
+                    boolean match = false;
+                    System.out.println(currentFileName);
+                    if (ConnectionHelper.containsTokens(fileNameScheme)) {
+                        boolean matchDate = matchDateString(currentFileName, fileNameScheme);
+                        DateTime folderTime = getFileTime(folder + currentFileName, pathStream);
+                        boolean isLater = folderTime.isAfter(lastReadout);
+                        if (matchDate && isLater) {
+                            match = true;
+                        }
+                    } else {
+                        Pattern p = Pattern.compile(fileNameScheme);
+                        Matcher m = p.matcher(currentFileName);
+                        match = m.matches();
+                    }
+                    if (match) {
+                        fileNames.add(folder + currentFileName);
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            org.apache.log4j.Logger.getLogger(ConnectionHelper.class).log(org.apache.log4j.Level.ERROR, "Error while searching a matching file");
+            org.apache.log4j.Logger.getLogger(ConnectionHelper.class).log(org.apache.log4j.Level.ERROR, "Folder: " + currentfolder);
+            org.apache.log4j.Logger.getLogger(ConnectionHelper.class).log(org.apache.log4j.Level.ERROR, "FileName: " + fileNameScheme);
+            org.apache.log4j.Logger.getLogger(ConnectionHelper.class).log(org.apache.log4j.Level.ERROR, ex.getMessage());
+        }
+        if (folderPathes.isEmpty()) {
+            org.apache.log4j.Logger.getLogger(ConnectionHelper.class).log(org.apache.log4j.Level.ERROR, "Cant find suitable files on the device");
         }
 //        System.out.println("filenamesize"+fileNames.size());
         return fileNames;
@@ -402,7 +486,7 @@ public class ConnectionHelper {
 
             }
         } catch (IOException ex) {
-            Logger.getLogger(ConnectionHelper.class.getName()).log(Level.SEVERE, null, ex);
+            org.apache.log4j.Logger.getLogger(ConnectionHelper.class).log(org.apache.log4j.Level.ERROR, ex.getMessage());
         }
         return fileNames;
     }
@@ -415,31 +499,30 @@ public class ConnectionHelper {
         }
     }
 
-    private static DateTimeFormatter getDateFormatter(String string) {
-        if (containsDateToken(string)) {
-            String substringBetween = StringUtils.substringBetween(string, "${D:", "}");
-            int firstIndexOf = string.indexOf("${D:");
-            int lastIndexOf = string.indexOf("}");
-            String firstString = string.substring(0, firstIndexOf);
-            String lastString = string.substring(lastIndexOf, string.length() - 1);
-            DateTimeFormatter dtf = DateTimeFormat.forPattern(firstString + substringBetween + lastString);
-            return dtf;
-        } else {
-            DateTimeFormatter dtf = DateTimeFormat.forPattern("Dae" + "/");
-            return dtf;
-        }
-
-    }
-
-    private static boolean containsDate(String name, DateTimeFormatter dtf) {
-        DateTime parseDateTime = dtf.parseDateTime(name);
-        if (parseDateTime != null) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
+//    private static DateTimeFormatter getDateFormatter(String string) {
+//        if (containsDateToken(string)) {
+//            String substringBetween = StringUtils.substringBetween(string, "${D:", "}");
+//            int firstIndexOf = string.indexOf("${D:");
+//            int lastIndexOf = string.indexOf("}");
+//            String firstString = string.substring(0, firstIndexOf);
+//            String lastString = string.substring(lastIndexOf, string.length() - 1);
+//            DateTimeFormatter dtf = DateTimeFormat.forPattern(firstString + substringBetween + lastString);
+//            return dtf;
+//        } else {
+//            DateTimeFormatter dtf = DateTimeFormat.forPattern("Dae" + "/");
+//            return dtf;
+//        }
+//
+//    }
+//
+//    private static boolean containsDate(String name, DateTimeFormatter dtf) {
+//        DateTime parseDateTime = dtf.parseDateTime(name);
+//        if (parseDateTime != null) {
+//            return true;
+//        } else {
+//            return false;
+//        }
+//    }
     private static DateTime getFolderTime(String name, String[] pathStream) {
         String compactDateString = getCompactDateString(name, pathStream);
         String compactDataFormatString = getCompactDateFormatString(name, pathStream);
@@ -499,23 +582,59 @@ public class ConnectionHelper {
                     if (!matchDateString(folder.getName(), nextToken)) {
                         continue;
                     }
-                    System.out.println("listdir," + folder.getName());
+//                    System.out.println("listdir," + folder.getName());
 //                    if (containsDate(folder.getName(), ftmTemp)) {
                     DateTime folderTime = getFolderTime(path + folder.getName() + "/", pathStream);
-                    System.out.println("foldertime," + folderTime);
+//                    System.out.println("foldertime," + folderTime);
                     if (folderTime.isAfter(lastReadout)) {
                         nextFolder = folder.getName();
-                        System.out.println("dateFolder," + nextFolder);
+//                        System.out.println("dateFolder," + nextFolder);
                         getMatchingPathes(path + nextFolder + "/", pathStream, arrayList, fc, lastReadout, dtfbuilder);
                     }
 //                    }
                 }
             } else {
                 nextFolder = nextToken;
-                System.out.println("normalFolder," + nextFolder);
+//                System.out.println("normalFolder," + nextFolder);
                 getMatchingPathes(path + nextFolder + "/", pathStream, arrayList, fc, lastReadout, dtfbuilder);
             }
         } catch (IOException ex) {
+            org.apache.log4j.Logger.getLogger(ConnectionHelper.class).log(org.apache.log4j.Level.ERROR, ex.getMessage());
+        }
+        return arrayList;
+    }
+
+    private static List<String> getSFTPMatchingPathes(String path, String[] pathStream, ArrayList<String> arrayList, ChannelSftp fc, DateTime lastReadout, DateTimeFormatterBuilder dtfbuilder) {
+        int nextTokenPos = getPathTokens(path).length;
+        if (nextTokenPos == pathStream.length - 1) {
+            arrayList.add(path);
+            return arrayList;
+        }
+
+        String nextToken = pathStream[nextTokenPos];
+        String nextFolder = null;
+
+        try {
+            if (containsDateToken(nextToken)) {
+                Vector listDirectories = fc.ls(path);
+                for (Object folder : listDirectories) {
+                    LsEntry currentFolder = (LsEntry) folder;
+
+                    if (!matchDateString(currentFolder.getFilename(), nextToken)) {
+                        continue;
+                    }
+                    DateTime folderTime = getFolderTime(path + currentFolder.getFilename() + "/", pathStream);
+                    if (folderTime.isAfter(lastReadout)) {
+                        nextFolder = currentFolder.getFilename();
+                        getSFTPMatchingPathes(path + nextFolder + "/", pathStream, arrayList, fc, lastReadout, dtfbuilder);
+                    }
+//                    }
+                }
+            } else {
+                nextFolder = nextToken;
+                getSFTPMatchingPathes(path + nextFolder + "/", pathStream, arrayList, fc, lastReadout, dtfbuilder);
+            }
+        } catch (SftpException ex) {
             Logger.getLogger(ConnectionHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         return arrayList;

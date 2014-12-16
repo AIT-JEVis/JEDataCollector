@@ -47,7 +47,7 @@ public class Test_FTP_CSV {
         DateTimeFormatter forPattern = DateTimeFormat.forPattern("ddMMyyyyHHmmss");
         DateTime lastReadout = forPattern.parseDateTime(lastReadoutText);
         DataPointDir dir = new DataPointDir("/Daten/Jahresdaten_${D:yyyy}/Monatsdaten_${D:MM}/", false, null, null, null);
-        DataPoint datapoint = new DataPoint("Tagesdaten_${D:dd_HH:mm:ss}.csv", null, null, "1", lastReadout, true);
+        DataPoint datapoint = new DataPoint("Tagesdaten_${D:dd_HH:mm:ss}.csv", null, null, "2", lastReadout, true);
         datapoint.setDirectory(dir);
         //unix and windowsfile system possible
         FileSystem fileSystem = setupFilesystem();

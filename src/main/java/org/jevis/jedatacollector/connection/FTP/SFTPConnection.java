@@ -10,6 +10,7 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -30,10 +31,12 @@ import org.jevis.jedatacollector.connection.ConnectionHelper;
 import org.jevis.jedatacollector.connection.DataCollectorConnection;
 import org.jevis.jedatacollector.data.DataPoint;
 import org.jevis.commons.JEVisTypes;
+import org.jevis.commons.cli.JEVisCommandLine;
 import org.jevis.commons.parsing.inputHandler.InputHandler;
 import org.jevis.commons.parsing.inputHandler.InputHandlerFactory;
 import org.jevis.jedatacollector.Launcher;
 import org.jevis.jedatacollector.exception.FetchingException;
+import org.jevis.jedatacollector.exception.FetchingExceptionType;
 import org.joda.time.DateTime;
 
 /**
@@ -57,8 +60,10 @@ public class SFTPConnection implements DataCollectorConnection {
     private String _password;
     private Integer _port = 22;
     private String _username;
-    private FTPClient _fc;
     private String _parsedPath;
+    private String _timezone;
+    private Boolean _enabled;
+    private String _name;
 
     public SFTPConnection(String dateFormat, String filePath, String fileNameScheme, String url, String user, String password, Integer timeoutConnection, Integer timeoutRead) {
         _dateFormat = dateFormat;
@@ -109,14 +114,17 @@ public class SFTPConnection implements DataCollectorConnection {
             _channel.connect();
             connected = true;
         } catch (JSchException ex) {
-            Logger.getLogger(SFTPConnection.class.getName()).log(Level.SEVERE, null, ex);
+            org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.ERROR, "No connection possible");
+            org.apache.log4j.Logger.getLogger(FTPConnection.class).setLevel(org.apache.log4j.Level.ALL);
+            printConnectionData();
+            org.apache.log4j.Logger.getLogger(FTPConnection.class).setLevel(JEVisCommandLine.getInstance().getDebugLevel());
+            throw new FetchingException(_id, FetchingExceptionType.CONNECTION_ERROR);
         }
         return connected;
 
     }
 
-    @Override
-    public List<InputHandler> sendSampleRequest(DataPoint dp, DateTime from, DateTime until) throws FetchingException {
+    public List<InputHandler> sendSampleRequestOld(DataPoint dp, DateTime from, DateTime until) throws FetchingException {
         Object answer = null;
         String fileName = ConnectionHelper.parseConnectionString(dp, from, until, _fileNameScheme, _dateFormat);
 //        String query = _filePath + fileName;
@@ -133,7 +141,7 @@ public class SFTPConnection implements DataCollectorConnection {
 //            System.out.printf("Found %d files in dir %s%n", files.size(), _filePath);
             InputStream get = sftp.get(fileName);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            
+
             byte[] buffer = new byte[1024];
             int len;
             try {
@@ -164,38 +172,86 @@ public class SFTPConnection implements DataCollectorConnection {
         return answerList;
     }
 
-//    @Override
-//    public boolean returnsLimitedSampleCount() {
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//    }
     @Override
-    public void initialize(JEVisObject node) throws FetchingException {
+    public List<InputHandler> sendSampleRequest(DataPoint dp, DateTime from, DateTime until) throws FetchingException {
+        Object answer = null;
+        //multiple File pathes neccessary?
+//        String filePath = ConnectionHelper.parseConnectionString(dp, from, until, dp.getFilePath(), dp.getDateFormat());
+        //this should be outsourced
+        String filePath = dp.getFilePath();
+
+        ChannelSftp sftp = (ChannelSftp) _channel;
+        org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.ALL, "SendSampleRequest");
+        List<String> fileNames = ConnectionHelper.getSFTPMatchedFileNames(sftp, dp, filePath);
+//        String currentFilePath = Paths.get(filePath).getParent().toString();
+
+        List<InputHandler> answerList = new ArrayList<InputHandler>();
+        for (String fileName : fileNames) {
+            org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.ALL, "FileInputName: " + fileName);
+
+            try {
+//                ByteArrayOutputStream out = new ByteArrayOutputStream();
+//                String query = Paths.get(fileName);
+                InputStream get = sftp.get(fileName);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+                byte[] buffer = new byte[1024];
+                int len;
+                try {
+                    while ((len = get.read(buffer)) > -1) {
+                        baos.write(buffer, 0, len);
+                    }
+                    baos.flush();
+                } catch (IOException ex) {
+                    Logger.getLogger(SFTPConnection.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+                answer = new ByteArrayInputStream(baos.toByteArray());
+                InputHandler inputConverter = InputHandlerFactory.getInputConverter(answer);
+                inputConverter.setFilePath(fileName);
+                if (dp.getDirectory().containsCompressedFolder()) {
+
+                    String pattern = dp.getDirectory().getFolderPathFromComp() + dp.getFileName();
+                    inputConverter.setFilePattern(pattern);
+                    inputConverter.setDateTime(dp.getLastReadout());
+                }
+                answerList.add(inputConverter);
+
+
+            } catch (SftpException ex) {
+                org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.ERROR, ex.getMessage());
+            }
+        }
+
+        if (answerList.isEmpty()) {
+            org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.ERROR, "Cant get any data from the device");
+        }
+
+        return answerList;
+    }
+
+    @Override
+    public void initialize(JEVisObject sftpObject) throws FetchingException {
         try {
-            JEVisClass sftpType = Launcher.getClient().getJEVisClass(JEVisTypes.Connection.sFTP.Name);
-            JEVisObject sftpObject = node.getChildren(sftpType, true).get(0);
-            JEVisType dateFormat = sftpType.getType(JEVisTypes.Connection.sFTP.DateFormat);
-            JEVisType filePath = sftpType.getType(JEVisTypes.Connection.sFTP.FilePath);
-            JEVisType fileNameScheme = sftpType.getType(JEVisTypes.Connection.sFTP.FileNameScheme);
-            JEVisType server = sftpType.getType(JEVisTypes.Connection.sFTP.Server);
-            JEVisType port = sftpType.getType(JEVisTypes.Connection.sFTP.Port);
-            JEVisType connectionTimeout = sftpType.getType(JEVisTypes.Connection.sFTP.ConnectionTimeout);
-            JEVisType readTimeout = sftpType.getType(JEVisTypes.Connection.sFTP.ReadTimeout);
+            JEVisClass sftpType = Launcher.getClient().getJEVisClass(JEVisTypes.DataServer.sFTP.NAME);
+            JEVisType server = sftpType.getType(JEVisTypes.DataServer.sFTP.HOST);
+            JEVisType port = sftpType.getType(JEVisTypes.DataServer.sFTP.PORT);
+            JEVisType connectionTimeout = sftpType.getType(JEVisTypes.DataServer.sFTP.CONNECTION_TIMEOUT);
+            JEVisType readTimeout = sftpType.getType(JEVisTypes.DataServer.sFTP.READ_TIMEOUT);
             //            JEVisType maxRequest = type.getType("Maxrequestdays");
-            JEVisType user = sftpType.getType(JEVisTypes.Connection.sFTP.User);
-            JEVisType password = sftpType.getType(JEVisTypes.Connection.sFTP.Password);
+            JEVisType user = sftpType.getType(JEVisTypes.DataServer.sFTP.USER);
+            JEVisType password = sftpType.getType(JEVisTypes.DataServer.sFTP.PASSWORD);
+            JEVisType timezoneType = sftpType.getType(JEVisTypes.DataServer.sFTP.TIMEZONE);
+            JEVisType enableType = sftpType.getType(JEVisTypes.DataServer.ENABLE);
 
             _id = sftpObject.getID();
-            if (sftpObject.getAttribute(dateFormat).hasSample()) {
-                _dateFormat = sftpObject.getAttribute(dateFormat).getLatestSample().getValueAsString();
-            }
-            _filePath = sftpObject.getAttribute(filePath).getLatestSample().getValueAsString();
-            _fileNameScheme = sftpObject.getAttribute(fileNameScheme).getLatestSample().getValueAsString();
+            _name = sftpObject.getName();
             _serverURL = sftpObject.getAttribute(server).getLatestSample().getValueAsString();
             JEVisAttribute portAttr = sftpObject.getAttribute(port);
             if (!portAttr.hasSample()) {
                 _port = 22;
             } else {
-                _port =  DatabaseHelper.getObjectAsInteger(sftpObject, port);
+                _port = DatabaseHelper.getObjectAsInteger(sftpObject, port);
             }
 
             _connectionTimeout = DatabaseHelper.getObjectAsInteger(sftpObject, connectionTimeout);
@@ -207,7 +263,7 @@ public class SFTPConnection implements DataCollectorConnection {
             if (!userAttr.hasSample()) {
                 _username = "";
             } else {
-                _username =  DatabaseHelper.getObjectAsString(sftpObject, user);
+                _username = DatabaseHelper.getObjectAsString(sftpObject, user);
             }
             JEVisAttribute passAttr = sftpObject.getAttribute(password);
             if (!passAttr.hasSample()) {
@@ -215,19 +271,9 @@ public class SFTPConnection implements DataCollectorConnection {
             } else {
                 _password = DatabaseHelper.getObjectAsString(sftpObject, password);
             }
-            //        _id = cn.getID();
-            //        _dateFormat = cn.<String>getPropertyValue("Date Format");
-            //        _triesRead = cn.<Long>getPropertyValue("Read Tries");
-            //        _timeoutRead = cn.<Long>getPropertyValue("Read Timeout (in sec.)");
-            //        _triesConnection = cn.<Long>getPropertyValue("Connection Tries");
-            //        _timeoutConnection = cn.<Long>getPropertyValue("Connection Timeout (in sec.)");
-            //        _filePath = cn.<String>getPropertyValue("File Path");
-            //        _fileNameScheme = cn.<String>getPropertyValue("File Name Scheme");
-            //        _password = cn.<String>getPropertyValue("Password");
-            //        _port = cn.<Long>getPropertyValue("Port");
-            //        _username = cn.<String>getPropertyValue("Username");
-            //        _URL = cn.<String>getPropertyValue("Server URL");
-            //        _seperator = cn.<String>getPropertyValue("File Detail Seperator");
+
+            _timezone = DatabaseHelper.getObjectAsString(sftpObject, timezoneType);
+            _enabled = DatabaseHelper.getObjectAsBoolean(sftpObject, enableType);
         } catch (JEVisException ex) {
             Logger.getLogger(FTPConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -244,16 +290,33 @@ public class SFTPConnection implements DataCollectorConnection {
 
     @Override
     public String getTimezone() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return _timezone;
     }
 
     @Override
     public String getName() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return _name;
     }
 
     @Override
     public Boolean isEnabled() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return _enabled;
+    }
+
+    @Override
+    public Long getID() {
+        return _id;
+    }
+
+    private void printConnectionData() {
+        org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.ALL, "Data Source ID: " + _id);
+        org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.ALL, "Server: " + _serverURL);
+        org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.ALL, "Port: " + _port);
+        org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.ALL, "ConnectionTimeout: " + _connectionTimeout);
+        org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.ALL, "ReadTimeout: " + _readTimeout);
+        org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.ALL, "Username: " + _username);
+        org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.ALL, "Password: " + _password);
+        org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.ALL, "Timezone: " + _timezone);
+        org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.ALL, "Enabled: " + _enabled);
     }
 }

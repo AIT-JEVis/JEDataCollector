@@ -13,8 +13,6 @@ import org.jevis.api.JEVisObject;
 import org.jevis.jedatacollector.connection.FTP.FTPConnection;
 import org.jevis.jedatacollector.connection.FTP.SFTPConnection;
 import org.jevis.jedatacollector.connection.HTTP.HTTPConnection;
-import org.jevis.jedatacollector.connection.SOAP.SOAPConnection;
-import org.jevis.jedatacollector.connection.SQL.SQLConnection;
 import org.jevis.commons.JEVisTypes;
 import org.jevis.jedatacollector.CLIProperties.ConnectionCLIParser;
 

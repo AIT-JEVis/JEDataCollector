@@ -58,6 +58,8 @@ public interface DataCollectorConnection {
     
     public String getName();
     
+    public Long getID();
+    
     public Boolean isEnabled();
     
 //    public String getConnectionType();
