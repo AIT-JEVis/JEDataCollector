@@ -4,8 +4,15 @@
  */
 package org.jevis.jedatacollector.LoytecTests;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import org.jevis.commons.parsing.DataCollectorParser;
 import org.jevis.commons.parsing.inputHandler.SOAPMessageInputHandler;
 import org.jevis.commons.parsing.xmlParsing.XMLParsing;
@@ -33,7 +40,7 @@ public class LinxSOAPConnectionTest {
                 + "    <SOAP-ENV:Header/>\n"
                 + "    <SOAP-ENV:Body>\n"
                 + "        <LogRead xmlns=\"http://www.loytec.com/wsdl/XMLDL/1.0/\" NumItems=\"500\" ReturnCompleteSet=\"false\" StartDateTime=\"2014-10-15T22:15:00\">\n"
-                + "            <ReqBase clientItemHandle=\"360003409\" logHandle=\"00/var/lib//dpal/trend-15ED.bin\"/>\n"
+                + "            <ReqBase clientItemHandle=\"360003409\" logHandle=\"00/var/lib//dpal/trend-1BB9.bin\"/>\n"
                 + "        </LogRead>\n"
                 + "    </SOAP-ENV:Body>\n"
                 + "</SOAP-ENV:Envelope>";
@@ -47,7 +54,7 @@ public class LinxSOAPConnectionTest {
                 + "</SOAP-ENV:Envelope>";
         String server = "http://admin:JjwwidHg!@212.17.98.149:80";
 
-        DataCollectorConnection connection = new SOAPConnection(null, false, "212.17.98.149", 80, 200, 500, "admin", "JjwwidHg!", "UTC");
+        DataCollectorConnection connection = new SOAPConnection(null, false, "192.168.2.254", 80, 200, 500, "admin", "envidatec4u", "Europe/Berlin");
         DataCollectorParser parser = new XMLParsing(server, template2, Boolean.FALSE);
         
         String lastReadoutText = "20112014000000";
@@ -62,9 +69,9 @@ public class LinxSOAPConnectionTest {
         DataCollector collector = new DataCollector(request);
         collector.run();
         Document doc = ((SOAPMessageInputHandler) collector.getInputHandler().get(0)).getDocuments().get(0);
-//        Transformer transformer = TransformerFactory.newInstance().newTransformer();
-//        Result output = new StreamResult(new File("linx.xml"));
-//        Source input = new DOMSource(doc);
-//        transformer.transform(input, output);
+        Transformer transformer = TransformerFactory.newInstance().newTransformer();
+        Result output = new StreamResult(new File("linx.xml"));
+        Source input = new DOMSource(doc);
+        transformer.transform(input, output);
     }
 }

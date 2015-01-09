@@ -94,6 +94,7 @@ public class DataCollector {
         DataCollectorParser fileParser = _parsingService.getFileParser();
         for (DataPoint dp : _request.getDataPoints()) {
             fileParser.addDataPointParser(dp.getDatapointId(), dp.getTarget(), dp.getMappingIdentifier(), dp.getValueIdentifier());
+//            fileParser.addDataPoints(_request.getDataPoints());
         }
         for (InputHandler inputHandler : _inputHandler) {
             _parsingService.parseData(inputHandler);

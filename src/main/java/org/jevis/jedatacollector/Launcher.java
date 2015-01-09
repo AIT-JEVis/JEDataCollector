@@ -69,7 +69,7 @@ public class Launcher {
 
         launcher.excecuteRequsts(requestJobs);
         Logger.getLogger(Launcher.class.getName()).log(Level.INFO, "########## Finish JEDataCollector #########");
-
+        System.out.println("Fertig");
     }
 
     private static List<DataPoint> getDatapoints(JEVisObject dpDir) {

@@ -78,7 +78,7 @@ public class DataPoint {
 //            JEVisType onlineIDType = type.getType(JEVisTypes.DataPoint.ONLINE_ID);
 //            JEVisType valueSpecType = type.getType(JEVisTypes.DataPoint.VALUE_SPEC);
 
-            JEVisType filePathType = type.getType(JEVisTypes.DataPoint.FILE_PATH);
+            JEVisType filePathType = type.getType(JEVisTypes.DataPoint.SOURCE);
             JEVisType mappingIdentifierType = type.getType(JEVisTypes.DataPoint.MAPPING_IDENTIFIER);
             JEVisType targetType = type.getType(JEVisTypes.DataPoint.TARGET);
             JEVisType valueIdentifierType = type.getType(JEVisTypes.DataPoint.VALUE_IDENTIFIER);

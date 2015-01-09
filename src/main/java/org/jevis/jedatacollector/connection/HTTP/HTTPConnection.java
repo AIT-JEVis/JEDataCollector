@@ -238,7 +238,7 @@ public class HTTPConnection implements DataCollectorConnection {
     @Override
     public void initialize(JEVisObject node) throws FetchingException {
         try {
-            JEVisClass httpType = Launcher.getClient().getJEVisClass(JEVisTypes.Connection.HTTP.Name);
+            JEVisClass httpType = Launcher.getClient().getJEVisClass(JEVisTypes.Connection.HTTP.NAME);
             JEVisObject httpObject = node.getChildren(httpType, true).get(0);
             JEVisType dateFormat = httpType.getType(JEVisTypes.Connection.HTTP.DateFormat);
             JEVisType filePath = httpType.getType(JEVisTypes.Connection.HTTP.FilePath);

@@ -120,6 +120,7 @@ public class SFTPConnection implements DataCollectorConnection {
             org.apache.log4j.Logger.getLogger(FTPConnection.class).setLevel(JEVisCommandLine.getInstance().getDebugLevel());
             throw new FetchingException(_id, FetchingExceptionType.CONNECTION_ERROR);
         }
+
         return connected;
 
     }
@@ -223,6 +224,9 @@ public class SFTPConnection implements DataCollectorConnection {
             }
         }
 
+        _channel.disconnect();
+        _session.disconnect();
+        
         if (answerList.isEmpty()) {
             org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.ERROR, "Cant get any data from the device");
         }

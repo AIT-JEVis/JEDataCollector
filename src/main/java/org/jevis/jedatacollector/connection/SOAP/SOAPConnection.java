@@ -71,6 +71,8 @@ public class SOAPConnection implements DataCollectorConnection {
     private Boolean _ssl = false;
     private String _timezone;
     private String _uri;
+    private Boolean _enabled;
+    private String _name;
 
     public SOAPConnection() {
     }
@@ -97,7 +99,7 @@ public class SOAPConnection implements DataCollectorConnection {
     }
 
     @Override
-    public void initialize(JEVisObject node) throws FetchingException {
+    public void initialize(JEVisObject soapObject) throws FetchingException {
 //        try {
 //            //        _id = cn.getID();
 //            //        _xmlTemplate = cn.<String>getPropertyValue("XML Template");
@@ -144,38 +146,44 @@ public class SOAPConnection implements DataCollectorConnection {
 //        }
 
         try {
-            JEVisClass httpType = Launcher.getClient().getJEVisClass(JEVisTypes.Connection.HTTP.Name);
-            JEVisObject httpObject = node.getChildren(httpType, true).get(0);
-            JEVisType dateFormat = httpType.getType(JEVisTypes.Connection.HTTP.DateFormat);
-            JEVisType server = httpType.getType(JEVisTypes.Connection.HTTP.Server);
-            JEVisType port = httpType.getType(JEVisTypes.Connection.HTTP.Port);
-            JEVisType sslType = httpType.getType(JEVisTypes.Connection.HTTP.SSL);
-            JEVisType connectionTimeout = httpType.getType(JEVisTypes.Connection.HTTP.ConnectionTimeout);
-            JEVisType readTimeout = httpType.getType(JEVisTypes.Connection.HTTP.ReadTimeout);
-            JEVisType user = httpType.getType(JEVisTypes.Connection.HTTP.User);
-            JEVisType password = httpType.getType(JEVisTypes.Connection.HTTP.Password);
+            JEVisClass soapType = Launcher.getClient().getJEVisClass(JEVisTypes.DataServer.SOAP.NAME);
+//            JEVisObject soapObject = node.getChildren(soapType, true).get(0);
+//            JEVisType dateFormat = soapType.getType(JEVisTypes.Connection.SOAP.DateFormat);
+            JEVisType server = soapType.getType(JEVisTypes.DataServer.SOAP.HOST);
+            JEVisType port = soapType.getType(JEVisTypes.DataServer.SOAP.PORT);
+            JEVisType sslType = soapType.getType(JEVisTypes.DataServer.SOAP.SSL);
+            JEVisType connectionTimeout = soapType.getType(JEVisTypes.DataServer.SOAP.CONNECTION_TIMEOUT);
+            JEVisType readTimeout = soapType.getType(JEVisTypes.DataServer.SOAP.READ_TIMEOUT);
+            JEVisType user = soapType.getType(JEVisTypes.DataServer.SOAP.USER);
+            JEVisType password = soapType.getType(JEVisTypes.DataServer.SOAP.PASSWORD);
+            JEVisType timezoneType = soapType.getType(JEVisTypes.DataServer.SOAP.TIMEZONE);
+            JEVisType enableType = soapType.getType(JEVisTypes.DataServer.ENABLE);
 
-            _id = httpObject.getID();
-            _dateFormat = DatabaseHelper.getObjectAsString(httpObject, dateFormat);
-            _server = DatabaseHelper.getObjectAsString(httpObject, server);
-            _port = DatabaseHelper.getObjectAsInteger(httpObject, port);
-            _connectionTimeout = DatabaseHelper.getObjectAsInteger(httpObject, connectionTimeout);
-            _readTimeout = DatabaseHelper.getObjectAsInteger(httpObject, readTimeout);
-            _ssl = DatabaseHelper.getObjectAsBoolean(httpObject, sslType);
-            JEVisAttribute userAttr = httpObject.getAttribute(user);
+            _id = soapObject.getID();
+            _name = soapObject.getName();
+//            _dateFormat = DatabaseHelper.getObjectAsString(soapObject, dateFormat);
+            _server = DatabaseHelper.getObjectAsString(soapObject, server);
+            _port = DatabaseHelper.getObjectAsInteger(soapObject, port);
+            _connectionTimeout = DatabaseHelper.getObjectAsInteger(soapObject, connectionTimeout);
+            _readTimeout = DatabaseHelper.getObjectAsInteger(soapObject, readTimeout);
+            _ssl = DatabaseHelper.getObjectAsBoolean(soapObject, sslType);
+            JEVisAttribute userAttr = soapObject.getAttribute(user);
             if (!userAttr.hasSample()) {
                 _userName = "";
             } else {
                 _userName = (String) userAttr.getLatestSample().getValue();
             }
-            JEVisAttribute passAttr = httpObject.getAttribute(password);
+            JEVisAttribute passAttr = soapObject.getAttribute(password);
             if (!passAttr.hasSample()) {
                 _password = "";
             } else {
                 _password = (String) passAttr.getLatestSample().getValue();
             }
+
+            _timezone = DatabaseHelper.getObjectAsString(soapObject, timezoneType);
+            _enabled = DatabaseHelper.getObjectAsBoolean(soapObject, enableType);
         } catch (JEVisException ex) {
-            org.apache.log4j.Logger.getLogger(HTTPConnection.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
+            org.apache.log4j.Logger.getLogger(SOAPConnection.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
         }
     }
 
@@ -185,18 +193,18 @@ public class SOAPConnection implements DataCollectorConnection {
             _conn = SOAPConnectionFactory.newInstance().createConnection();
             _uri = "http://";
             if (_userName != null) {
-                 _uri += _userName;
-                 if (_password != null){
-                     _uri += ":" + _password + "@";
-                 }else{
-                     _uri += "@";
-                 }
+                _uri += _userName;
+                if (_password != null) {
+                    _uri += ":" + _password + "@";
+                } else {
+                    _uri += "@";
+                }
             }
             _uri += _server;
-            if(_port!=null){
-                _uri += ":" + _port+"/DL";
-            }else{
-                _uri += ":80/DL";
+            if (_port != null) {
+                _uri += ":" + _port + "/DL/";
+            } else {
+                _uri += ":80/DL/";
             }
             System.out.println(_uri);
             _serverURL = new URL(_uri);
@@ -350,16 +358,16 @@ public class SOAPConnection implements DataCollectorConnection {
 
     @Override
     public String getName() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return _name;
     }
 
     @Override
     public Boolean isEnabled() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return _enabled;
     }
 
     @Override
     public Long getID() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return _id;
     }
 }

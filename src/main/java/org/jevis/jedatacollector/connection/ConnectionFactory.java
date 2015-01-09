@@ -15,6 +15,7 @@ import org.jevis.jedatacollector.connection.FTP.SFTPConnection;
 import org.jevis.jedatacollector.connection.HTTP.HTTPConnection;
 import org.jevis.commons.JEVisTypes;
 import org.jevis.jedatacollector.CLIProperties.ConnectionCLIParser;
+import org.jevis.jedatacollector.connection.SOAP.SOAPConnection;
 
 /**
  *
@@ -28,34 +29,43 @@ public class ConnectionFactory {
         //workaround for inherit bug, normally only with jevic class parser and connection
         JEVisClass ftpClass = jevisObject.getDataSource().getJEVisClass(JEVisTypes.DataServer.FTP.NAME);
         JEVisClass sftpClass = jevisObject.getDataSource().getJEVisClass(JEVisTypes.DataServer.sFTP.NAME);
+        JEVisClass dataServerClass = jevisObject.getDataSource().getJEVisClass(JEVisTypes.DataServer.NAME);
 
         JEVisObject connectionObject = null;
+        //if the jevisObject is a data server object?
+        boolean isJevisClass = false;
+        for (JEVisClass jevisClass : dataServerClass.getHeirs()) {
+            if (jevisClass.equals(jevisClass)) {
+                isJevisClass = true;
+            }
+        }
 
-        if (jevisObject.getJEVisClass().getName().equals(httpClass.getName()) || jevisObject.getJEVisClass().getName().equals(sftpClass.getName()) || jevisObject.getJEVisClass().getName().equals(ftpClass.getName())) {
+        if (isJevisClass) {
             connectionObject = jevisObject;
         } else {
-            List<JEVisObject> connectionObjects = jevisObject.getChildren(httpClass, true);
+            List<JEVisObject> connectionObjects = jevisObject.getChildren(ftpClass, true);
             if (connectionObjects.size() == 1) {
                 connectionObject = connectionObjects.get(0);
                 org.apache.log4j.Logger.getLogger(ConnectionFactory.class.getName()).log(org.apache.log4j.Level.INFO, "http Connection");
                 //same workaround as above
-            } else {
-                connectionObjects = jevisObject.getChildren(ftpClass, true);
-                if (connectionObjects.size() == 1) {
-                    connectionObject = connectionObjects.get(0);
-                    org.apache.log4j.Logger.getLogger(ConnectionFactory.class.getName()).log(org.apache.log4j.Level.INFO, "ftp Connection");
-                    //same workaround as above
-                } else {
-                    connectionObjects = jevisObject.getChildren(sftpClass, true);
-                    if (connectionObjects.size() == 1) {
-                        connectionObject = connectionObjects.get(0);
-                        org.apache.log4j.Logger.getLogger(ConnectionFactory.class.getName()).log(org.apache.log4j.Level.INFO, "sftp Connection");
-                        //same workaround as above
-                    } else {
-                        throw new JEVisException("Number of Connection Objects != 1 under: " + jevisObject.getID(), 1);
-                    }
-                }
             }
+//            else {
+//                connectionObjects = jevisObject.getChildren(ftpClass, true);
+//                if (connectionObjects.size() == 1) {
+//                    connectionObject = connectionObjects.get(0);
+//                    org.apache.log4j.Logger.getLogger(ConnectionFactory.class.getName()).log(org.apache.log4j.Level.INFO, "ftp Connection");
+//                    //same workaround as above
+//                } else {
+//                    connectionObjects = jevisObject.getChildren(sftpClass, true);
+//                    if (connectionObjects.size() == 1) {
+//                        connectionObject = connectionObjects.get(0);
+//                        org.apache.log4j.Logger.getLogger(ConnectionFactory.class.getName()).log(org.apache.log4j.Level.INFO, "sftp Connection");
+//                        //same workaround as above
+//                    } else {
+//                        throw new JEVisException("Number of Connection Objects != 1 under: " + jevisObject.getID(), 1);
+//                    }
+//                }
+//            }
         }
 
         DataCollectorConnection connection = null;
@@ -69,8 +79,8 @@ public class ConnectionFactory {
 
         if (identifier.equals(JEVisTypes.DataServer.HTTP.NAME)) {
             connection = new HTTPConnection();
-//        } else if (identifier.equals(JEVisTypes.DataServer.SOAP.NAME)) {
-//            connection = new SOAPConnection();
+        } else if (identifier.equals(JEVisTypes.DataServer.SOAP.NAME)) {
+            connection = new SOAPConnection();
 //        } else if (identifier.equals(JEVisTypes.DataServer.SQL.NAME)) {
 //            connection = new SQLConnection();
         } else if (identifier.equals(JEVisTypes.DataServer.FTP.NAME)) {
