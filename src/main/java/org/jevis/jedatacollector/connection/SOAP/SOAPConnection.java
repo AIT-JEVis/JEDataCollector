@@ -228,8 +228,12 @@ public class SOAPConnection implements DataCollectorConnection {
         List<SOAPMessage> soapResponses = new LinkedList<SOAPMessage>();
 
         String templateQuery = dp.getFileName();
-        String realQuery = ConnectionHelper.replaceDate(templateQuery, from);
-                
+        boolean containsToken = ConnectionHelper.containsToken(templateQuery);
+        String realQuery = null;
+        if (containsToken) {
+            realQuery = ConnectionHelper.replaceDate(templateQuery, from);
+        }
+
         Document doc = buildDocument(realQuery);
         SOAPMessage buildSOAPMessage = buildSOAPMessage(doc);
         List<InputHandler> inputHandler = new ArrayList<InputHandler>();
