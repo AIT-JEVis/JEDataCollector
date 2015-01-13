@@ -194,7 +194,7 @@ public class Launcher {
                             if (previousPath==null){
                                 previousPath = dp.getFileName();
                             }
-                            if (!dp.getFileName().equals(previousPath)) {
+                            if (dp.getFileName()!=null && !dp.getFileName().equals(previousPath)) {
                                 needMultiConnections = true;
                                 break;
                             }

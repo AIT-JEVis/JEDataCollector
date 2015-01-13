@@ -63,6 +63,9 @@ public class HTTPConnection implements DataCollectorConnection {
     private String _userName;
     private String _password;
     private Boolean _ssl = false;
+    private String _timezone;
+    private Boolean _enabled;
+    private String _name;
 
     public HTTPConnection() {
         super();
@@ -93,9 +96,9 @@ public class HTTPConnection implements DataCollectorConnection {
             _port = 80;
         }
 
-        if (_filePath.startsWith("/") && _serverURL.endsWith("/")) {
-            _serverURL = _serverURL.substring(0, _serverURL.length() - 1);
-        }
+//        if (_filePath.startsWith("/") && _serverURL.endsWith("/")) {
+//            _serverURL = _serverURL.substring(0, _serverURL.length() - 1);
+//        }
 
 //        if (_serverURL.contains("://"))
 //        {
@@ -103,9 +106,9 @@ public class HTTPConnection implements DataCollectorConnection {
 //        }
 
         if (port != 0) {
-            _wholePath = _serverURL + ":" + port + _filePath;
+            _wholePath = _serverURL + ":" + port;
         } else {
-            _wholePath = _serverURL + _filePath;
+            _wholePath = _serverURL;
         }
 
         return true;
@@ -236,23 +239,26 @@ public class HTTPConnection implements DataCollectorConnection {
 //        return res;
 //    }
     @Override
-    public void initialize(JEVisObject node) throws FetchingException {
+    public void initialize(JEVisObject httpObject) throws FetchingException {
         try {
-            JEVisClass httpType = Launcher.getClient().getJEVisClass(JEVisTypes.Connection.HTTP.NAME);
-            JEVisObject httpObject = node.getChildren(httpType, true).get(0);
-            JEVisType dateFormat = httpType.getType(JEVisTypes.Connection.HTTP.DateFormat);
-            JEVisType filePath = httpType.getType(JEVisTypes.Connection.HTTP.FilePath);
-            JEVisType server = httpType.getType(JEVisTypes.Connection.HTTP.Server);
-            JEVisType port = httpType.getType(JEVisTypes.Connection.HTTP.Port);
-            JEVisType sslType = httpType.getType(JEVisTypes.Connection.HTTP.SSL);
-            JEVisType connectionTimeout = httpType.getType(JEVisTypes.Connection.HTTP.ConnectionTimeout);
-            JEVisType readTimeout = httpType.getType(JEVisTypes.Connection.HTTP.ReadTimeout);
-            JEVisType user = httpType.getType(JEVisTypes.Connection.HTTP.User);
-            JEVisType password = httpType.getType(JEVisTypes.Connection.HTTP.Password);
+            JEVisClass httpType = Launcher.getClient().getJEVisClass(JEVisTypes.DataServer.HTTP.NAME);
+//            JEVisObject httpObject = node.getChildren(httpType, true).get(0);
+//            JEVisType dateFormat = httpType.getType(JEVisTypes.DataServer.HTTP.);
+//            JEVisType filePath = httpType.getType(JEVisTypes.DataServer.HTTP.FilePath);
+            JEVisType server = httpType.getType(JEVisTypes.DataServer.HTTP.HOST);
+            JEVisType port = httpType.getType(JEVisTypes.DataServer.HTTP.PORT);
+            JEVisType sslType = httpType.getType(JEVisTypes.DataServer.HTTP.SSL);
+            JEVisType connectionTimeout = httpType.getType(JEVisTypes.DataServer.HTTP.CONNECTION_TIMEOUT);
+            JEVisType readTimeout = httpType.getType(JEVisTypes.DataServer.HTTP.READ_TIMEOUT);
+            JEVisType user = httpType.getType(JEVisTypes.DataServer.HTTP.USER);
+            JEVisType password = httpType.getType(JEVisTypes.DataServer.HTTP.PASSWORD);
+            JEVisType timezoneType = httpType.getType(JEVisTypes.DataServer.HTTP.TIMEZONE);
+            JEVisType enableType = httpType.getType(JEVisTypes.DataServer.HTTP.ENABLE);
 
             _id = httpObject.getID();
-            _dateFormat = DatabaseHelper.getObjectAsString(httpObject, dateFormat);
-            _filePath = DatabaseHelper.getObjectAsString(httpObject, filePath);
+            _name = httpObject.getName();
+//            _dateFormat = DatabaseHelper.getObjectAsString(httpObject, dateFormat);
+//            _filePath = DatabaseHelper.getObjectAsString(httpObject, filePath);
             _serverURL = DatabaseHelper.getObjectAsString(httpObject, server);
             _port = DatabaseHelper.getObjectAsInteger(httpObject, port);
             _connectionTimeout = DatabaseHelper.getObjectAsInteger(httpObject, connectionTimeout);
@@ -270,6 +276,9 @@ public class HTTPConnection implements DataCollectorConnection {
             } else {
                 _password = (String) passAttr.getLatestSample().getValue();
             }
+            
+            _timezone = DatabaseHelper.getObjectAsString(httpObject, timezoneType);
+            _enabled = DatabaseHelper.getObjectAsBoolean(httpObject, enableType);
         } catch (JEVisException ex) {
             Logger.getLogger(HTTPConnection.class.getName()).log(Level.ERROR, null, ex);
         }
@@ -287,9 +296,12 @@ public class HTTPConnection implements DataCollectorConnection {
 
                 l = new LinkedList<String>();
                 URLConnection request;
+                String filePath = dp.getFilePath();
+//                String dateFormat = dp.getDateFormat();
 
-                String path = ConnectionHelper.parseConnectionString(dp, from, until, _filePath, _dateFormat);
-
+//                String path = ConnectionHelper.parseConnectionString(dp, from, until, filePath, dateFormat);
+                String path = ConnectionHelper.replaceDateFromUntil(dp, from, until, filePath);
+                
                 if (path.startsWith("/")) {
                     path = path.substring(1, path.length());
                 }
@@ -312,13 +324,13 @@ public class HTTPConnection implements DataCollectorConnection {
                 org.apache.log4j.Logger.getLogger(HTTPConnection.class.getName()).log(org.apache.log4j.Level.INFO, "Connection URL: " + _serverURL);
 
 //                    if (_connectionTimeout == null) {
-                _connectionTimeout = 600 * 1000;
+                _connectionTimeout = _connectionTimeout * 1000;
 //                    }
                 //                System.out.println("Connect timeout: " + _connectionTimeout.intValue() / 1000 + "s");
                 request.setConnectTimeout(_connectionTimeout.intValue());
 
 //                    if (_readTimeout == null) {
-                _readTimeout = 600 * 1000;
+                _readTimeout = _readTimeout * 1000;
 //                    }
                 //                System.out.println("read timeout: " + _readTimeout.intValue() / 1000 + "s");
                 request.setReadTimeout(_readTimeout.intValue());
@@ -471,22 +483,22 @@ public class HTTPConnection implements DataCollectorConnection {
 
     @Override
     public String getTimezone() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return _timezone;
     }
 
     @Override
     public String getName() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return _name;
     }
 
     @Override
     public Boolean isEnabled() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return _enabled;
     }
 
     @Override
     public Long getID() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return _id;
     }
 
 }

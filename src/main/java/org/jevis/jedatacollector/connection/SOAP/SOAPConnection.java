@@ -231,7 +231,7 @@ public class SOAPConnection implements DataCollectorConnection {
         boolean containsToken = ConnectionHelper.containsToken(templateQuery);
         String realQuery = null;
         if (containsToken) {
-            realQuery = ConnectionHelper.replaceDate(templateQuery, from);
+            realQuery = ConnectionHelper.replaceDateFrom(templateQuery, from);
         }
 
         Document doc = buildDocument(realQuery);

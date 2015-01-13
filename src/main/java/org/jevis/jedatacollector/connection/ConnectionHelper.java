@@ -102,7 +102,7 @@ public class ConnectionHelper {
         return compactDateString;
     }
 
-    public static DateTimeFormatter getSingleDateFormat(String stringWithDate) {
+    public static DateTimeFormatter getFromDateFormat(String stringWithDate) {
         int startindex = stringWithDate.indexOf("${DF:");
         int endindex = stringWithDate.indexOf("}");
         String date = stringWithDate.substring(startindex + 5, endindex);
@@ -110,14 +110,44 @@ public class ConnectionHelper {
         return dtf;
     }
 
-    public static String replaceDate(String template, DateTime date) {
-        DateTimeFormatter dtf = getSingleDateFormat(template);
+    public static DateTimeFormatter getUntilDateFormat(String stringWithDate) {
+        int startindex = stringWithDate.indexOf("${DU:");
+        int endindex = stringWithDate.indexOf("}");
+        String date = stringWithDate.substring(startindex + 5, endindex);
+        DateTimeFormatter dtf = DateTimeFormat.forPattern(date);
+        return dtf;
+    }
+
+    public static String replaceDateFrom(String template, DateTime date) {
+        DateTimeFormatter dtf = getFromDateFormat(template);
         int startindex = template.indexOf("${DF:");
-        int endindex = template.indexOf("}")+1;
+        int endindex = template.indexOf("}") + 1;
         String first = template.substring(0, startindex);
         String last = template.substring(endindex, template.length());
-        return first+date.toString(dtf)+last;
+        return first + date.toString(dtf) + last;
+    }
 
+    public static String replaceDateUntil(String template, DateTime date) {
+        DateTimeFormatter dtf = getUntilDateFormat(template);
+        int startindex = template.indexOf("${DU:");
+        int endindex = template.indexOf("}") + 1;
+        String first = template.substring(0, startindex);
+        String last = template.substring(endindex, template.length());
+        return first + date.toString(dtf) + last;
+    }
+
+    public static String replaceDateFromUntil(DataPoint dp, DateTime from, DateTime until, String filePath) {
+        int fromstartindex = filePath.indexOf("${DF:");
+        int untilstartindex = filePath.indexOf("${DU:");
+        String replacedString = null;
+        if (fromstartindex < untilstartindex) {
+            replacedString = replaceDateFrom(filePath, from);
+            replacedString = replaceDateUntil(replacedString, until);
+        } else {
+            replacedString = replaceDateUntil(filePath, until);
+            replacedString = replaceDateFrom(replacedString, from);
+        }
+        return replacedString;
     }
 
     private static boolean matchDateString(String currentFolder, String nextToken) {
