@@ -102,24 +102,6 @@ public class ConnectionHelper {
         return compactDateString;
     }
 
-    public static DateTimeFormatter getSingleDateFormat(String stringWithDate) {
-        int startindex = stringWithDate.indexOf("${DF:");
-        int endindex = stringWithDate.indexOf("}");
-        String date = stringWithDate.substring(startindex + 5, endindex);
-        DateTimeFormatter dtf = DateTimeFormat.forPattern(date);
-        return dtf;
-    }
-
-    public static String replaceDate(String template, DateTime date) {
-        DateTimeFormatter dtf = getSingleDateFormat(template);
-        int startindex = template.indexOf("${DF:");
-        int endindex = template.indexOf("}")+1;
-        String first = template.substring(0, startindex);
-        String last = template.substring(endindex, template.length());
-        return first+date.toString(dtf)+last;
-
-    }
-
     private static boolean matchDateString(String currentFolder, String nextToken) {
         String[] substringsBetween = StringUtils.substringsBetween(nextToken, "${D:", "}");
         for (int i = 0; i < substringsBetween.length; i++) {

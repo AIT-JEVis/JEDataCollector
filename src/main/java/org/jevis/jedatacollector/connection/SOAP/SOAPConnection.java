@@ -6,7 +6,6 @@ package org.jevis.jedatacollector.connection.SOAP;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -30,7 +29,7 @@ import org.jevis.jedatacollector.connection.DataCollectorConnection;
 import org.jevis.commons.parsing.inputHandler.InputHandler;
 import org.jevis.commons.parsing.inputHandler.InputHandlerFactory;
 import org.jevis.jedatacollector.Launcher;
-import org.jevis.jedatacollector.connection.HTTP.HTTPConnection;
+import org.jevis.jedatacollector.connection.ConnectionHelper;
 import org.jevis.jedatacollector.exception.FetchingException;
 import org.jevis.jedatacollector.exception.FetchingExceptionType;
 import org.joda.time.DateTime;
@@ -228,19 +227,10 @@ public class SOAPConnection implements DataCollectorConnection {
 
         List<SOAPMessage> soapResponses = new LinkedList<SOAPMessage>();
 
-//        if (_maximumDayRequest != null && _maximumDayRequest > 0) {
-//            TimeSetVector tsv = new TimeSetVector(ts);
-//            tsv.splitIntoChunks(_maximumDayRequest.intValue(), 0, 0);
-
-//            for (TimeSet tsPart : tsv) {
-//            soapRequests.add(getSOAPMessage(new String(_xmlTemplate), from, until, _sampleCount, dp.getChannelID(), dp.getDataLoggerName(), fmt));
-//            }
-//        } else {
-//            soapRequests.add(getSOAPMessage(new String(_xmlTemplate), from, until, _sampleCount, dp.getChannelID(), dp.getDataLoggerName(), fmt));
-//        }
-
-//        String soapRequest = ConnectionHelper.buildSoapRequest(dp.getFilePath(),dp.)
-        Document doc = buildDocument(dp.getFileName());
+        String templateQuery = dp.getFileName();
+        String realQuery = ConnectionHelper.replaceDate(templateQuery, from);
+                
+        Document doc = buildDocument(realQuery);
         SOAPMessage buildSOAPMessage = buildSOAPMessage(doc);
         List<InputHandler> inputHandler = new ArrayList<InputHandler>();
         try {

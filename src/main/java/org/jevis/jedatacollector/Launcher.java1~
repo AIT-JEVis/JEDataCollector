@@ -115,7 +115,6 @@ public class Launcher {
                     }
 
                 } else {
-                    t.printStackTrace();
                     Logger.getLogger(Launcher.class.getName()).log(Level.ERROR, null, t);
                 }
             }
