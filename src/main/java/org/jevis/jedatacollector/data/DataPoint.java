@@ -96,13 +96,12 @@ public class DataPoint {
             DateTimeFormatter fmtNew = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
             String dateString = DatabaseHelper.getObjectAsString(dp, lastReadoutType);
             if (dateString == null) {
-            dateString = "2000-01-01 00:00:00";
+                dateString = "2000-01-01 00:00:00";
             }
             DateTime tmpDateNew = null;
             try {
                 tmpDateNew = fmtNew.parseDateTime(dateString);
-            }
-            catch (Exception ex){
+            } catch (Exception ex) {
                 tmpDateNew = fmt.parseDateTime(dateString);
             }
             _lastReadout = tmpDateNew;
@@ -183,8 +182,14 @@ public class DataPoint {
 
     public String getFilePath() {
         String filePath = _directory.getFolderPath();
-        if (!_directory.containsCompressedFolder()) {
-            filePath += _fileName;
+        if (!_directory.containsCompressedFolder() && _fileName != null) {
+            if (!filePath.endsWith("/") && !_fileName.startsWith("/")) {
+                filePath += "/" + _fileName;
+            } else if (filePath.endsWith("/") && _fileName.startsWith("/")) {
+                filePath += _fileName.substring(1,_fileName.length());
+            } else {
+                filePath += _fileName;
+            }
         }
         return filePath;
     }

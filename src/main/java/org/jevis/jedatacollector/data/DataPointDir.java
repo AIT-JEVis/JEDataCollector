@@ -154,13 +154,13 @@ public class DataPointDir {
         }
         if (_folderPath == null && !_containsCompressedFolder) {
             _folderPath = folderPath;
-            if (!_folderPath.endsWith("/")){
-                _folderPath += "/";
-            }
+//            if (!_folderPath.endsWith("/")){
+//                _folderPath += "/";
+//            }
         }
-        if (folderPathFromComp != null && !folderPathFromComp.endsWith("/")) {
-            folderPathFromComp += "/";
-        }
+//        if (folderPathFromComp != null && !folderPathFromComp.endsWith("/")) {
+//            folderPathFromComp += "/";
+//        }
         if (folderPathFromComp != null && folderPathFromComp.startsWith("/")) {
             folderPathFromComp = folderPathFromComp.substring(1, folderPathFromComp.length());
         }

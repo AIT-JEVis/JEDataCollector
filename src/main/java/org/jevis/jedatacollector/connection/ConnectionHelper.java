@@ -75,7 +75,7 @@ public class ConnectionHelper {
         return compactDateString;
     }
 
-    private static Boolean containsTokens(String path) {
+    public static Boolean containsTokens(String path) {
         if (path.contains("${")) {
             return true;
         } else {

@@ -28,7 +28,7 @@ public class ParsingService {
     }
 
     public static boolean checkDatapoint(SampleParserContainer parser) {
-        return parser.getDpParser().isMappingSuccessfull();
+        return parser.getDpParser().isMappingFailing();
     }
     private DataCollectorParser _fileParser;
 
