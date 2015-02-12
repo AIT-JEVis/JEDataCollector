@@ -4,6 +4,7 @@
  */
 package org.jevis.jedatacollector;
 
+import org.jevis.jedatacollector.service.Request;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Level;

@@ -129,11 +129,6 @@ public class OPCConnection implements DataCollectorConnection
 //    }
 
     @Override
-    public String getWholeFilePath() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public String getTimezone() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }

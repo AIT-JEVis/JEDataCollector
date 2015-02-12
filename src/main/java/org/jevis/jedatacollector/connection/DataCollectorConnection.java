@@ -52,8 +52,6 @@ public interface DataCollectorConnection {
 
     void initialize(JEVisObject object) throws FetchingException;
     
-    public String getWholeFilePath();
-    
     public String getTimezone();
     
     public String getName();

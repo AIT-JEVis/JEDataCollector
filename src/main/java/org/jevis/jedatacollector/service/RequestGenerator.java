@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.jevis.jedatacollector;
+package org.jevis.jedatacollector.service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +12,8 @@ import org.jevis.commons.parsing.ParsingRequest;
 import org.jevis.commons.parsing.ParsingRequestGenerator;
 import org.jevis.commons.parsing.inputHandler.InputHandler;
 import org.jevis.commons.parsing.outputHandler.OutputHandler;
+import org.jevis.jedatacollector.DefaultRequest;
+import org.jevis.jedatacollector.Launcher;
 import org.jevis.jedatacollector.connection.DataCollectorConnection;
 import org.jevis.jedatacollector.data.Data;
 import org.jevis.jedatacollector.data.DataSource;

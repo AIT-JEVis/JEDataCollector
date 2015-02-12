@@ -335,15 +335,6 @@ public class FTPConnection implements DataCollectorConnection {
         }
     }
 
-//    @Override
-//    public String getConnectionType() {
-//        return JEVisTypes.Connection.FTP.Name;
-//    }
-    @Override
-    public String getWholeFilePath() {
-        return _filePath + _fileNameScheme;
-    }
-
     @Override
     public String getTimezone() {
         return _timezone;

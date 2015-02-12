@@ -145,16 +145,6 @@ public class SQLConnection implements DataCollectorConnection {
         }
     }
 
-//    @Override
-//    public String getConnectionType() {
-//        return JEVisTypes.Connection.SQL.Name;
-//    }
-
-    @Override
-    public String getWholeFilePath() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
     @Override
     public String getTimezone() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.

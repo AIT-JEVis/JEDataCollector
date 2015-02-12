@@ -463,24 +463,6 @@ public class HTTPConnection implements DataCollectorConnection {
         return paths;
     }
 
-//    @Override
-//    public String getConnectionType() {
-//        return JEVisTypes.Connection.HTTP.Name;
-//    }
-//
-//    public String parseString(DataPoint dp, DateTime from, DateTime until) {
-//        String parsedString = _filePath;
-////        parsedString = ConnectionHelper.replaceTime(_filePath);
-//        parsedString = ConnectionHelper.replaceDatapoint(parsedString, dp);
-//        parsedString = ConnectionHelper.parseDateFrom(parsedString, dp, _dateFormat, from);
-//        parsedString = ConnectionHelper.parseDateTo(parsedString, dp, _dateFormat, until);
-//        return parsedString;
-//    }
-    @Override
-    public String getWholeFilePath() {
-        return _filePath;
-    }
-
     @Override
     public String getTimezone() {
         return _timezone;

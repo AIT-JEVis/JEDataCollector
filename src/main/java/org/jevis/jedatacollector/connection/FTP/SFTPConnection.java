@@ -283,15 +283,6 @@ public class SFTPConnection implements DataCollectorConnection {
         }
     }
 
-//    @Override
-//    public String getConnectionType() {
-//        return JEVisTypes.Connection.sFTP.Name;
-//    }
-    @Override
-    public String getWholeFilePath() {
-        return _filePath + _fileNameScheme;
-    }
-
     @Override
     public String getTimezone() {
         return _timezone;

@@ -9,6 +9,7 @@ import java.util.List;
 import org.jevis.api.JEVisObject;
 import org.jevis.jedatacollector.Launcher;
 import org.jevis.jedatacollector.data.DataPointDir;
+import org.jevis.jedatacollector.service.JevisJobHandler;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -48,7 +49,8 @@ public class DataPointDirTest {
         ((JEVisFakeObject) child3).addChild(leaf6);
 
         children.add(root);
-        List<DataPointDir> initializeDatapointDir = launch.initializeDatapointDir(children);
+        JevisJobHandler jobHandler = new JevisJobHandler();
+        List<DataPointDir> initializeDatapointDir = jobHandler.initializeDatapointDir(children);
         List<String> pathes = new ArrayList<String>();
         for (DataPointDir dir : initializeDatapointDir) {
             List<DataPointDir> parentDirs = dir.getParentDirs();
