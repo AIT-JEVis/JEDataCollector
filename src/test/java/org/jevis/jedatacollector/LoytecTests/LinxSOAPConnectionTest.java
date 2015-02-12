@@ -52,15 +52,25 @@ public class LinxSOAPConnectionTest {
                 + "        </LogRead>\n"
                 + "    </SOAP-ENV:Body>\n"
                 + "</SOAP-ENV:Envelope>";
-        String server = "http://admin:JjwwidHg!@212.17.98.149:80";
+        String template3 = "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">\n"
+                + "    <SOAP-ENV:Header/>\n"
+                + "    <SOAP-ENV:Body>\n"
+                + "        <LogRead xmlns=\"http://www.loytec.com/wsdl/XMLDL/1.0/\" NumItems=\"500\" ReturnCompleteSet=\"false\" StartDateTime=\"2014-10-15T22:15:00\">\n"
+                + "            <ReqBase logHandle=\"00/var/lib//dpal/trend-15E3.bin\"/>\n"
+                + "        </LogRead>\n"
+                + "    </SOAP-ENV:Body>\n"
+                + "</SOAP-ENV:Envelope>";
+//        String server = "http://admin:JjwwidHg!@212.17.98.149:80";
+        String server = "http://admin:envidatec4u@195.186.2.254:80";
 
         DataCollectorConnection connection = new SOAPConnection(null, false, "192.168.2.254", 80, 200, 500, "admin", "envidatec4u", "Europe/Berlin");
+        DataCollectorConnection connection1 = new SOAPConnection(null, false, "212.17.98.149", 80, 200, 500, "admin", "JjwwidHg!", "Europe/Berlin");
         DataCollectorParser parser = new XMLParsing(server, template2, Boolean.FALSE);
-        
+
         String lastReadoutText = "20112014000000";
         DateTimeFormatter forPattern = DateTimeFormat.forPattern("ddMMyyyyHHmmss");
         DateTime lastReadout = forPattern.parseDateTime(lastReadoutText);
-        DataPoint datapoint = new DataPoint(template, null, null, null, lastReadout, true);
+        DataPoint datapoint = new DataPoint(template3, null, null, null, lastReadout, true);
         List<DataPoint> datapoints = new ArrayList<DataPoint>();
         datapoints.add(datapoint);
 

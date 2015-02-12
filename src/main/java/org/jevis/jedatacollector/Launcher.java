@@ -89,6 +89,7 @@ public class Launcher {
     private void excecuteRequsts(List<Request> requestJobs) {
         Logger.getLogger(
                 this.getClass().getName()).log(Level.INFO, "Number of Requests: " + requestJobs.size());
+        //each request should be executed in a thread
         for (Request request : requestJobs) {
             Logger.getLogger(this.getClass().getName()).log(Level.INFO, "----------------Execute Request-----------------");
             if (request.getDataSource() != null) {

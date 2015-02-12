@@ -11,6 +11,7 @@ import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisInfo;
 import org.jevis.api.JEVisObject;
 import org.jevis.api.JEVisRelationship;
+import org.jevis.api.JEVisUnit;
 
 /**
  *
@@ -85,6 +86,11 @@ public class JEVisFakeClient implements JEVisDataSource {
 
     @Override
     public boolean isConnectionAlive() throws JEVisException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public List<JEVisUnit> getUnits() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
