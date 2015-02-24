@@ -60,10 +60,10 @@ public class LinxSOAPConnectionTest {
                 + "        </LogRead>\n"
                 + "    </SOAP-ENV:Body>\n"
                 + "</SOAP-ENV:Envelope>";
-//        String server = "http://admin:JjwwidHg!@212.17.98.149:80";
-        String server = "http://admin:envidatec4u@195.186.2.254:80";
+        String server = "http://admin:JjwwidHg!@212.17.98.149:80";
+//        String server = "http://admin:envidatec4u@195.186.2.254:80";
 
-        DataCollectorConnection connection = new SOAPConnection(null, false, "192.168.2.254", 80, 200, 500, "admin", "envidatec4u", "Europe/Berlin");
+//        DataCollectorConnection connection = new SOAPConnection(null, false, "192.168.2.254", 80, 200, 500, "admin", "envidatec4u", "Europe/Berlin");
         DataCollectorConnection connection1 = new SOAPConnection(null, false, "212.17.98.149", 80, 200, 500, "admin", "JjwwidHg!", "Europe/Berlin");
         DataCollectorParser parser = new XMLParsing(server, template2, Boolean.FALSE);
 
@@ -74,7 +74,7 @@ public class LinxSOAPConnectionTest {
         List<DataPoint> datapoints = new ArrayList<DataPoint>();
         datapoints.add(datapoint);
 
-        Request request = RequestGenerator.createConnectionRequest(connection, datapoints);
+        Request request = RequestGenerator.createConnectionRequest(connection1, datapoints);
 
         DataCollector collector = new DataCollector(request);
         collector.run();

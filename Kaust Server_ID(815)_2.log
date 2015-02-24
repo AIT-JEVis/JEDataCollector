@@ -1,0 +1,5 @@
+[24 Feb 2015 15:24:22][jedatacollector.Launcher]: ----------------Execute Request-----------------
+[24 Feb 2015 15:24:22][jedatacollector.Launcher]: Data Source (ID,Name): (815,Kaust Server)
+[24 Feb 2015 15:24:22][jedatacollector.Launcher]: ------------------------------------------------
+[24 Feb 2015 15:24:27][FTP.FTPConnection]: Cant get any data from the device
+[24 Feb 2015 15:24:27][outputHandler.JEVisOutputHandler]: Number of imported Data overall: 0

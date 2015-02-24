@@ -94,7 +94,7 @@ public class SFTPConnection implements DataCollectorConnection {
     }
 
     @Override
-    public boolean connect() throws FetchingException {
+    public boolean connect(){
         boolean connected = false;
         try {
             String hostname = _serverURL;
@@ -118,7 +118,7 @@ public class SFTPConnection implements DataCollectorConnection {
             org.apache.log4j.Logger.getLogger(FTPConnection.class).setLevel(org.apache.log4j.Level.ALL);
             printConnectionData();
             org.apache.log4j.Logger.getLogger(FTPConnection.class).setLevel(JEVisCommandLine.getInstance().getDebugLevel());
-            throw new FetchingException(_id, FetchingExceptionType.CONNECTION_ERROR);
+//            throw new FetchingException(_id, FetchingExceptionType.CONNECTION_ERROR);
         }
 
         return connected;
@@ -174,7 +174,7 @@ public class SFTPConnection implements DataCollectorConnection {
     }
 
     @Override
-    public List<InputHandler> sendSampleRequest(DataPoint dp, DateTime from, DateTime until) throws FetchingException {
+    public List<InputHandler> sendSampleRequest(DataPoint dp, DateTime from, DateTime until) {
         Object answer = null;
         //multiple File pathes neccessary?
 //        String filePath = ConnectionHelper.parseConnectionString(dp, from, until, dp.getFilePath(), dp.getDateFormat());
@@ -313,5 +313,15 @@ public class SFTPConnection implements DataCollectorConnection {
         org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.ALL, "Password: " + _password);
         org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.ALL, "Timezone: " + _timezone);
         org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.ALL, "Enabled: " + _enabled);
+    }
+
+    @Override
+    public String getHost() {
+        return _serverURL;
+    }
+
+    @Override
+    public Integer getPort() {
+        return _port;
     }
 }

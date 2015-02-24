@@ -1,62 +1,86 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.jevis.jedatacollector;
 
-import org.jevis.api.JEVisException;
-import org.jevis.api.JEVisObject;
-import org.jevis.api.sql.JEVisDataSourceSQL;
+
+/**
+ * Copyright (C) 2015 Envidatec GmbH <info@envidatec.com>
+ *
+ * This file is part of Tester.
+ *
+ * Tester is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation in version 3.
+ *
+ * Tester is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * Tester. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Tester is part of the OpenJEVis project, further project information are
+ * published at <http://www.OpenJEVis.org/>.
+ */
+import java.util.logging.Level;
+import org.apache.log4j.FileAppender;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
+import org.slf4j.MDC;
 
 /**
  *
- * @author bf
+ * @author Florian Simon <florian.simon@envidatec.com>
  */
-class Test {
+public class Test {
 
-    public Test() {
-//        Logger.getLogger(this.getClass()).log(Level.INFO, "INFO TEST");
-//        Logger.getLogger(this.getClass()).log(Level.WARN, "WARN TEST");
-//        Logger.getLogger(this.getClass()).log(Level.ALL, "ALL TEST");
-    }
+    public static int _val = 1;
 
     public static void main(String[] args) {
-        try {
-            JEVisDataSourceSQL client = new JEVisDataSourceSQL("192.168.2.55", "3306", "jevis", "jevis", "jevistest", "Sys Admin", "jevis");
-            client.connect("Sys Admin", "jevis");
-            //            JEVisClass jeVisClass = client.getJEVisClass(JEVisTypes.Equipment.NAME);
-            //            JEVisClass parser = client.getJEVisClass(JEVisTypes.Parser.CSVParser.NAME);
-            //            JEVisClass connection = client.getJEVisClass("HTTPCon");
-            //            connection.setName(JEVisTypes.Connection.HTTP.Name);
-            JEVisObject object = client.getObject(390l);
-            object.getAttribute("Raw Data").deleteAllSample();
-            object = client.getObject(391l);
-            object.getAttribute("Raw Data").deleteAllSample();
-            object = client.getObject(392l);
-            object.getAttribute("Raw Data").deleteAllSample();
-            object = client.getObject(393l);
-            object.getAttribute("Raw Data").deleteAllSample();
-            object = client.getObject(394l);
-            object.getAttribute("Raw Data").deleteAllSample();
-            object = client.getObject(395l);
-            object.getAttribute("Raw Data").deleteAllSample();
-            object = client.getObject(396l);
-            object.getAttribute("Raw Data").deleteAllSample();
-            object = client.getObject(397l);
-            object.getAttribute("Raw Data").deleteAllSample();
-            object = client.getObject(398l);
-            object.getAttribute("Raw Data").deleteAllSample();
-            object = client.getObject(399l);
-            object.getAttribute("Raw Data").deleteAllSample();
 
-        } catch (JEVisException ex) {
-            java.util.logging.Logger.getLogger(Test.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        final Logger logger = Logger.getRootLogger();
+
+//  tag all child threads with this process-id so we can separate out log output
+        for (int i = 0; i < 5; i++) {
+            String processID = "" + i;
+
+            if (logger.getAppender(processID) == null) {
+
+                try {
+                    String pattern = "%d{yy/MM/dd HH:mm:ss} %p %c{2}: %m%n";
+                    String logfile = processID + ".log";
+
+                    FileAppender fileAppender = new FileAppender(
+                            new PatternLayout(pattern), logfile, true);
+                    fileAppender.setName(processID);
+                    fileAppender.addFilter(new ThreadFilter(processID));
+
+                    // add a filter so we can ignore any logs from other threads
+//                    fileAppender.addFilter(new ProcessIDFilter(processID));
+                    logger.addAppender(fileAppender);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            MDC.put("process-id", processID);
+            Thread test = new Thread() {
+                @Override
+                public void run() {
+                    int currentVal = (int) (Math.random()*100d);
+                    while (true) {
+                        try {
+                            sleep(200);
+                        } catch (InterruptedException ex) {
+                            java.util.logging.Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+                        }
+                        logger.info(currentVal + " -- " + Math.random());
+                    }
+                }
+            };
+            test.start();
+            MDC.remove(processID);
+            logger.info("About to end the job");
+
         }
-//        System.out.println(Boolean.parseBoolean("0"));
-//    String token = "/data/trend/Trend_L1_1_${DATAPOINT}.csv";
-//        System.out.println(ConnectionHelper.containsToken(token));
-//        System.out.println(ConnectionHelper.replaceDatapoint(token,new DataPoint("hallo", "logger", 35l)));
-    }
-    
 
+    }
 }

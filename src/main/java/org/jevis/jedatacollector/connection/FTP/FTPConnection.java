@@ -99,7 +99,7 @@ public class FTPConnection implements DataCollectorConnection {
     }
 
     @Override
-    public boolean connect() throws FetchingException {
+    public boolean connect() {
         try {
             if (_ssl) {
                 System.out.println("ftps connection");
@@ -120,7 +120,7 @@ public class FTPConnection implements DataCollectorConnection {
 
             if (_fc.login(_username, _password) == false) {
                 org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.ERROR, "No Login possible");
-                throw new FetchingException(_id, FetchingExceptionType.CONNECTION_ERROR);
+//                throw new FetchingException(_id, FetchingExceptionType.CONNECTION_ERROR);
             }
 
             _fc.setUseEPSVwithIPv4(false);
@@ -131,7 +131,7 @@ public class FTPConnection implements DataCollectorConnection {
             Logger.getLogger(FTPConnection.class).setLevel(Level.ALL);
             printConnectionData();
             Logger.getLogger(FTPConnection.class).setLevel(JEVisCommandLine.getInstance().getDebugLevel());
-            throw new FetchingException(_id, FetchingExceptionType.CONNECTION_ERROR);
+//            throw new FetchingException(_id, FetchingExceptionType.CONNECTION_ERROR);
         }
 
         return true;
@@ -240,7 +240,7 @@ public class FTPConnection implements DataCollectorConnection {
 //        return false;
 //    }
     @Override
-    public List<InputHandler> sendSampleRequest(DataPoint dp, DateTime from, DateTime until) throws FetchingException {
+    public List<InputHandler> sendSampleRequest(DataPoint dp, DateTime from, DateTime until){
         Object answer = null;
         //multiple File pathes neccessary?
 //        String filePath = ConnectionHelper.parseConnectionString(dp, from, until, dp.getFilePath(), dp.getDateFormat());
@@ -277,7 +277,7 @@ public class FTPConnection implements DataCollectorConnection {
 
             } catch (IOException ex) {
                 org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.ERROR, ex.getMessage());
-                throw new FetchingException(_id, FetchingExceptionType.CONNECTION_TIMEOUT);
+//                throw new FetchingException(_id, FetchingExceptionType.CONNECTION_TIMEOUT);
             }
         }
 
@@ -366,5 +366,15 @@ public class FTPConnection implements DataCollectorConnection {
     @Override
     public Long getID() {
         return _id;
+    }
+
+    @Override
+    public String getHost() {
+        return _serverURL;
+    }
+
+    @Override
+    public Integer getPort() {
+        return _port;
     }
 }

@@ -1,0 +1,5 @@
+[24 Feb 2015 15:25:58][jedatacollector.Launcher]: ----------------Execute Request-----------------
+[24 Feb 2015 15:25:58][jedatacollector.Launcher]: Data Source (ID,Name): (1182,Linx UI 3,4 (multi))
+[24 Feb 2015 15:25:58][jedatacollector.Launcher]: ------------------------------------------------
+[24 Feb 2015 15:26:03][csvParsing.CSVParsing]: LastResult (Date,Target,Value): 2015-02-24T15:15:00.000+01:00,1179,21.85212
+[24 Feb 2015 15:26:03][outputHandler.JEVisOutputHandler]: Number of imported Data overall: 2000

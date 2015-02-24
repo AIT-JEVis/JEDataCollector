@@ -89,7 +89,7 @@ public class HTTPConnection implements DataCollectorConnection {
     }
 
     @Override
-    public boolean connect() throws FetchingException {
+    public boolean connect() {
         int port = 0;
 
         if (_port == null) {
@@ -276,7 +276,7 @@ public class HTTPConnection implements DataCollectorConnection {
             } else {
                 _password = (String) passAttr.getLatestSample().getValue();
             }
-            
+
             _timezone = DatabaseHelper.getObjectAsString(httpObject, timezoneType);
             _enabled = DatabaseHelper.getObjectAsBoolean(httpObject, enableType);
         } catch (JEVisException ex) {
@@ -285,7 +285,7 @@ public class HTTPConnection implements DataCollectorConnection {
     }
 
     @Override
-    public List<InputHandler> sendSampleRequest(DataPoint dp, DateTime from, DateTime until) throws FetchingException {
+    public List<InputHandler> sendSampleRequest(DataPoint dp, DateTime from, DateTime until) {
 //        List<Object> res = new LinkedList<Object>();
         URL requestUrl;
         Object answer = null;
@@ -301,7 +301,7 @@ public class HTTPConnection implements DataCollectorConnection {
 
 //                String path = ConnectionHelper.parseConnectionString(dp, from, until, filePath, dateFormat);
                 String path = ConnectionHelper.replaceDateFromUntil(dp, from, until, filePath);
-                
+
                 if (path.startsWith("/")) {
                     path = path.substring(1, path.length());
                 }
@@ -371,9 +371,10 @@ public class HTTPConnection implements DataCollectorConnection {
 //                    res.add(l);
 //                }
             } catch (MalformedURLException ex) {
-                throw new FetchingException(_id, FetchingExceptionType.URL_ERROR);
+//                throw new FetchingException(_id, FetchingExceptionType.URL_ERROR);
+                org.apache.log4j.Logger.getLogger(HTTPConnection.class.getName()).log(org.apache.log4j.Level.ERROR, ex.getMessage());
             } catch (Exception ex) {
-                ex.printStackTrace();
+                org.apache.log4j.Logger.getLogger(HTTPConnection.class.getName()).log(org.apache.log4j.Level.ERROR, ex.getMessage());
             }
         } else {
             DefaultHttpClient _httpClient;
@@ -425,12 +426,11 @@ public class HTTPConnection implements DataCollectorConnection {
 
                 answer = oXmlString;
             } catch (ClientProtocolException ex) {
-                throw new FetchingException(_id, FetchingExceptionType.CONNECTION_ERROR);
+//                throw new FetchingException(_id, FetchingExceptionType.CONNECTION_ERROR);
                 //Logger.getLogger(HTTPAuthetificationConnection.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
-                throw new FetchingException(_id, FetchingExceptionType.CONNECTION_ERROR);
+//                throw new FetchingException(_id, FetchingExceptionType.CONNECTION_ERROR);
                 //Logger.getLogger(HTTPAuthetificationConnection.class.getName()).log(Level.SEVERE, null, ex);
-
             }
         }
         List<InputHandler> answerList = new ArrayList<InputHandler>();
@@ -483,4 +483,13 @@ public class HTTPConnection implements DataCollectorConnection {
         return _id;
     }
 
+    @Override
+    public String getHost() {
+        return _serverURL;
+    }
+
+    @Override
+    public Integer getPort() {
+        return _port;
+    }
 }

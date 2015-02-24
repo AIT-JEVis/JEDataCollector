@@ -1,0 +1,4 @@
+[24 Feb 2015 15:27:28][jedatacollector.Launcher]: ----------------Execute Request-----------------
+[24 Feb 2015 15:27:28][jedatacollector.Launcher]: Data Source (ID,Name): (1267,VIDA Server Reck Meters (http))
+[24 Feb 2015 15:27:28][jedatacollector.Launcher]: ------------------------------------------------
+[24 Feb 2015 15:27:28][HTTP.HTTPConnection]: Connection URL: http://10.247.82.48

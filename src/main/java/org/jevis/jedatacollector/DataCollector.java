@@ -7,8 +7,11 @@ package org.jevis.jedatacollector;
 import org.jevis.jedatacollector.service.Request;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.apache.log4j.MDC;
+import org.apache.log4j.PatternLayout;
 import org.jevis.api.JEVisAttribute;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
@@ -20,24 +23,24 @@ import org.jevis.commons.parsing.inputHandler.InputHandler;
 import org.jevis.commons.parsing.outputHandler.OutputHandler;
 import org.jevis.commons.parsing.outputHandler.OutputHandlerFactory;
 import org.jevis.jedatacollector.data.DataPoint;
-import org.jevis.jedatacollector.exception.FetchingException;
 import org.jevis.jedatacollector.service.ConnectionService;
 import org.jevis.jedatacollector.service.ParsingService;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
 /**
  *
  * @author broder
  */
-public class DataCollector {
+public class DataCollector implements Runnable {
 
     private ParsingService _parsingService;
     private ConnectionService _connectionService;
     private List<InputHandler> _inputHandler;
     private Request _request;
     private DateTime _lastDateInUTC;
+    private Logger logger = Logger.getRootLogger();
+    private FileAppender appender = null;
 
     public DataCollector() {
     }
@@ -51,7 +54,8 @@ public class DataCollector {
     }
     //TODO validate EACH Step.. for example "Exist all information for the conenction, parsing...?
 
-    public void run() throws FetchingException {
+    @Override
+    public void run() {
         if (_request.needConnection()) {
             Logger.getLogger(DataCollector.class.getName()).log(Level.ALL, "Start Connection");
             connect();
@@ -88,9 +92,14 @@ public class DataCollector {
                 }
             }
         }
+        try {
+            Thread.sleep(50000);
+        } catch (InterruptedException ex) {
+            java.util.logging.Logger.getLogger(Launcher.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
     }
 
-    public void parse() throws FetchingException {
+    public void parse() {
         _parsingService = new ParsingService(_request.getParser());
         DataCollectorParser fileParser = _parsingService.getFileParser();
         for (DataPoint dp : _request.getDataPoints()) {
@@ -116,12 +125,12 @@ public class DataCollector {
         return _parsingService.getFileParser().getResults();
     }
 
-    private void connect() throws FetchingException {
+    private void connect() {
 //        _connectionService = new ConnectionService();
         _request.getDataSource().connect();
     }
 
-    private void getInput() throws FetchingException {
+    private void getInput() {
 
         for (DataPoint dp : _request.getDataPoints()) {
             DateTime from = _request.getFrom();
@@ -170,4 +179,18 @@ public class DataCollector {
 //        _inputHandler = InputHandlerFactory.getInputConverter(rawResult);
 //        _inputHandler.convertInput(); //this should happn in the converter
 //    }
+
+    private void initNewAppender(String NameForAppender, String Name4LogFile) {
+//        logger = Logger.getLogger(NameForAppender); //NOT DEFAULT BY "logger = Logger.getLogger(TestJob.class);"
+
+        appender = new FileAppender();
+        appender.setLayout(new PatternLayout("%d{yyyy-MM-dd/HH:mm:ss.SSS/zzz} %-5p %c{1}:%L - %m%n"));
+        appender.setFile(Name4LogFile);
+        appender.setAppend(true);
+        appender.setImmediateFlush(true);
+        appender.activateOptions();
+        appender.setName(NameForAppender);
+        logger.setAdditivity(false);    //<--do not use default root logger
+        logger.addAppender(appender);
+    }
 }

@@ -187,7 +187,7 @@ public class SOAPConnection implements DataCollectorConnection {
     }
 
     @Override
-    public boolean connect() throws FetchingException {
+    public boolean connect() {
         try {
             _conn = SOAPConnectionFactory.newInstance().createConnection();
             _uri = "http://";
@@ -209,7 +209,7 @@ public class SOAPConnection implements DataCollectorConnection {
             _serverURL = new URL(_uri);
 
         } catch (MalformedURLException ex) {
-            throw new FetchingException(_id, FetchingExceptionType.URL_ERROR);
+//            throw new FetchingException(_id, FetchingExceptionType.URL_ERROR);
         } catch (SOAPException ex) {
             Logger.getLogger(SOAPConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -218,7 +218,7 @@ public class SOAPConnection implements DataCollectorConnection {
     }
 
     @Override
-    public List<InputHandler> sendSampleRequest(DataPoint dp, DateTime from, DateTime until) throws FetchingException {
+    public List<InputHandler> sendSampleRequest(DataPoint dp, DateTime from, DateTime until) {
 //        SimpleDateFormat sdf = null;
         DateTimeFormatter fmt = null;
         if (_dateFormat != null && !_dateFormat.equals("")) {
@@ -228,11 +228,11 @@ public class SOAPConnection implements DataCollectorConnection {
         List<SOAPMessage> soapResponses = new LinkedList<SOAPMessage>();
 
         String templateQuery = dp.getFileName();
-        boolean containsToken = ConnectionHelper. containsTokens(templateQuery);
+        boolean containsToken = ConnectionHelper.containsTokens(templateQuery);
         String realQuery = null;
         if (containsToken) {
             realQuery = ConnectionHelper.replaceDateFrom(templateQuery, from);
-        }else{
+        } else {
             realQuery = templateQuery;
         }
 
@@ -360,5 +360,15 @@ public class SOAPConnection implements DataCollectorConnection {
     @Override
     public Long getID() {
         return _id;
+    }
+
+    @Override
+    public String getHost() {
+        return _server;
+    }
+
+    @Override
+    public Integer getPort() {
+        return _port;
     }
 }

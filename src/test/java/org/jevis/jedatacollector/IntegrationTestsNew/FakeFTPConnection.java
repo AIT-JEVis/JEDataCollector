@@ -23,7 +23,7 @@ public class FakeFTPConnection extends FTPConnection{
     }
     
     @Override
-    public boolean connect() throws FetchingException {
+    public boolean connect() {
         System.out.println("Connect to ftp fake connection");
         try {
             ((FakeFTPClient)_fc).connect("testConnection", 1);

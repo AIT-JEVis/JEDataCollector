@@ -17,18 +17,15 @@ import org.joda.time.DateTime;
  *
  * @author max
  */
-public class OPCConnection implements DataCollectorConnection
-{
+public class OPCConnection implements DataCollectorConnection {
 
     @Override
-    public boolean connect() throws FetchingException
-    {
+    public boolean connect() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public List<InputHandler> sendSampleRequest(DataPoint dp, DateTime from, DateTime until) throws FetchingException
-    {
+    public List<InputHandler> sendSampleRequest(DataPoint dp, DateTime from, DateTime until) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -37,13 +34,11 @@ public class OPCConnection implements DataCollectorConnection
 //    {
 //        throw new UnsupportedOperationException("Not supported yet.");
 //    }
-
     @Override
-    public void initialize(JEVisObject node) throws FetchingException
-    {
+    public void initialize(JEVisObject node) throws FetchingException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-    
+
 //    private SOAPConnectionFactory _soapConnectionFactory;
 //    private javax.xml.soap.SOAPConnection _connection;
 //    private URL _server;
@@ -122,12 +117,10 @@ public class OPCConnection implements DataCollectorConnection
 //            dumpTree(subBranch, level + 1);
 //        }
 //    }
-    
 //      @Override
 //    public String getConnectionType() {
 //        return null;
 //    }
-
     @Override
     public String getTimezone() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -145,6 +138,16 @@ public class OPCConnection implements DataCollectorConnection
 
     @Override
     public Long getID() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getHost() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Integer getPort() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

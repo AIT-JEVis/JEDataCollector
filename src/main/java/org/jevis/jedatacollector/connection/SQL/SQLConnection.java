@@ -51,7 +51,7 @@ public class SQLConnection implements DataCollectorConnection {
     }
 
     @Override
-    public boolean connect() throws FetchingException {
+    public boolean connect() {
         try {
             Class.forName(_dbDriver).newInstance();
 
@@ -73,7 +73,7 @@ public class SQLConnection implements DataCollectorConnection {
     }
 
     @Override
-    public List<InputHandler> sendSampleRequest(DataPoint dp, DateTime from, DateTime until) throws FetchingException {
+    public List<InputHandler> sendSampleRequest(DataPoint dp, DateTime from, DateTime until) {
         List<Object> returnList = new LinkedList<Object>();
 
         try {
@@ -102,7 +102,6 @@ public class SQLConnection implements DataCollectorConnection {
 //    public boolean returnsLimitedSampleCount() {
 //        return false;
 //    }
-
     @Override
     public void initialize(JEVisObject node) throws FetchingException {
         try {
@@ -165,4 +164,13 @@ public class SQLConnection implements DataCollectorConnection {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    @Override
+    public String getHost() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Integer getPort() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

@@ -25,7 +25,7 @@ public interface DataCollectorConnection {
      * @throws URLException thrown of URL is incorrect
      * @throws ConnectionTimeOutException thrown if time out occured
      */
-    boolean connect() throws FetchingException;
+    boolean connect();
 
     /**
      * Sends a sample request to the specified device.
@@ -36,7 +36,7 @@ public interface DataCollectorConnection {
      * @return Returns an object which's type is determined by the connection
      * type
      */
-    List<InputHandler> sendSampleRequest(DataPoint dp, DateTime from, DateTime until) throws FetchingException;
+    List<InputHandler> sendSampleRequest(DataPoint dp, DateTime from, DateTime until);
 
     /**
      * Indicates, whether a device returns all the values it was asked for or
@@ -51,14 +51,18 @@ public interface DataCollectorConnection {
 //    boolean returnsLimitedSampleCount();
 
     void initialize(JEVisObject object) throws FetchingException;
-    
+
     public String getTimezone();
-    
+
     public String getName();
-    
+
     public Long getID();
-    
+
     public Boolean isEnabled();
+    
+    public String getHost();
+    
+    public Integer getPort();
     
 //    public String getConnectionType();
 
