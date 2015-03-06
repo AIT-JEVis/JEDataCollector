@@ -1,0 +1,31 @@
+[04 Mrz 2015 14:19:22][FTP.FTPConnection]: No connection possible
+[04 Mrz 2015 14:19:22][FTP.FTPConnection]: Data Source ID: 1199
+[04 Mrz 2015 14:19:22][FTP.FTPConnection]: SSL: false
+[04 Mrz 2015 14:19:22][FTP.FTPConnection]: Server: 192.168.2.254
+[04 Mrz 2015 14:19:22][FTP.FTPConnection]: Port: 21  
+[04 Mrz 2015 14:19:22][FTP.FTPConnection]: ConnectionTimeout: 30
+[04 Mrz 2015 14:19:22][FTP.FTPConnection]: ReadTimeout: 300
+[04 Mrz 2015 14:19:22][FTP.FTPConnection]: Username: admin
+[04 Mrz 2015 14:19:22][FTP.FTPConnection]: Password: envidatec4u
+[04 Mrz 2015 14:19:22][FTP.FTPConnection]: Timezone: Europe/Berlin
+[04 Mrz 2015 14:19:22][FTP.FTPConnection]: Enabled: true
+[04 Mrz 2015 14:19:22][connection.ConnectionHelper]: Error while searching a matching file
+[04 Mrz 2015 14:19:22][connection.ConnectionHelper]: Folder: /data/trend/
+[04 Mrz 2015 14:19:22][connection.ConnectionHelper]: FileName: Trend_L1_1_UI2_Input_10C3.zip
+[04 Mrz 2015 14:19:22][connection.ConnectionHelper]:           
+[04 Mrz 2015 14:19:22][FTP.FTPConnection]: Cant get any data from the device
+[04 Mrz 2015 14:46:59][jedatacollector.DataCollector]:           
+[04 Mrz 2015 14:48:39][jedatacollector.DataCollector]:           
+[04 Mrz 2015 14:49:55][jedatacollector.DataCollector]:           
+[04 Mrz 2015 14:56:24][FTP.FTPConnection]: No connection possible
+[04 Mrz 2015 14:56:26][FTP.FTPConnection]: Data Source ID: 1199
+[04 Mrz 2015 14:56:26][FTP.FTPConnection]: SSL: false
+[04 Mrz 2015 14:56:26][FTP.FTPConnection]: Server: 192.168.2.254
+[04 Mrz 2015 14:56:26][FTP.FTPConnection]: Port: 21  
+[04 Mrz 2015 14:56:26][FTP.FTPConnection]: ConnectionTimeout: 30
+[04 Mrz 2015 14:56:26][FTP.FTPConnection]: ReadTimeout: 300
+[04 Mrz 2015 14:56:26][FTP.FTPConnection]: Username: admin
+[04 Mrz 2015 14:56:26][FTP.FTPConnection]: Password: envidatec4u
+[04 Mrz 2015 14:56:26][FTP.FTPConnection]: Timezone: Europe/Berlin
+[04 Mrz 2015 14:56:26][FTP.FTPConnection]: Enabled: true
+[04 Mrz 2015 15:01:33][jedatacollector.DataCollector]: MALFORMED 

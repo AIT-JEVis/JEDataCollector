@@ -9,7 +9,7 @@ import java.util.List;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.jevis.commons.cli.JEVisCommandLine;
-import org.jevis.commons.parsing.GenericParser;
+import org.jevis.commons.parsing.DataCollectorParser;
 import org.jevis.commons.parsing.csvParsing.CSVParsing;
 import org.jevis.jedatacollector.CLIProperties.ConnectionCLIParser;
 import org.jevis.jedatacollector.CLIProperties.ParsingCLIParser;
@@ -64,7 +64,7 @@ public class SingleModeJobHandler {
 
 
         DataCollectorConnection connection = ConnectionFactory.getConnection(con);
-        GenericParser fileParser = new CSVParsing(par.getQuote(), par.getDelim(), par.getHeaderlines());
+        DataCollectorParser fileParser = new CSVParsing(par.getQuote(), par.getDelim(), par.getHeaderlines());
 
         Long outputOnlineID = null;
         String outputFile = null;

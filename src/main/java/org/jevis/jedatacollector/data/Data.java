@@ -10,7 +10,6 @@ import java.util.logging.Logger;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
 import org.jevis.commons.parsing.DataCollectorParser;
-import org.jevis.commons.parsing.GenericParser;
 import org.jevis.commons.parsing.ParsingFactory;
 import org.jevis.jedatacollector.connection.DataCollectorConnection;
 import org.jevis.jedatacollector.connection.ConnectionFactory;

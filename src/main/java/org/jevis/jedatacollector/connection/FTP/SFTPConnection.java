@@ -45,7 +45,7 @@ import org.joda.time.DateTime;
  */
 public class SFTPConnection implements DataCollectorConnection {
 
-    private Channel _channel;
+    private ChannelSftp _channel;
     private Session _session;
     private long _id;
     private Long _triesRead;
@@ -94,7 +94,7 @@ public class SFTPConnection implements DataCollectorConnection {
     }
 
     @Override
-    public boolean connect(){
+    public boolean connect() {
         boolean connected = false;
         try {
             String hostname = _serverURL;
@@ -110,7 +110,7 @@ public class SFTPConnection implements DataCollectorConnection {
             _session.setConfig(config);
             _session.setPassword(password);
             _session.connect();
-            _channel = _session.openChannel("sftp");
+            _channel = (ChannelSftp) _session.openChannel("sftp");
             _channel.connect();
             connected = true;
         } catch (JSchException ex) {
@@ -119,6 +119,8 @@ public class SFTPConnection implements DataCollectorConnection {
             printConnectionData();
             org.apache.log4j.Logger.getLogger(FTPConnection.class).setLevel(JEVisCommandLine.getInstance().getDebugLevel());
 //            throw new FetchingException(_id, FetchingExceptionType.CONNECTION_ERROR);
+            _channel.disconnect();
+            _session.disconnect();
         }
 
         return connected;
@@ -134,13 +136,13 @@ public class SFTPConnection implements DataCollectorConnection {
         try {
 //            String directory = "the directory";
 //            String filename = "the filename";
-            ChannelSftp sftp = (ChannelSftp) _channel;
-            Vector files = sftp.ls("*");
+//            ChannelSftp sftp = (ChannelSftp) _channel;
+            Vector files = _channel.ls("*");
             System.out.printf("Found %d files in dir %s%n", files.size(), _filePath);
-            sftp.cd(_filePath);
+            _channel.cd(_filePath);
 //            Vector files = sftp.ls("*");
 //            System.out.printf("Found %d files in dir %s%n", files.size(), _filePath);
-            InputStream get = sftp.get(fileName);
+            InputStream get = _channel.get(fileName);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
             byte[] buffer = new byte[1024];
@@ -163,11 +165,12 @@ public class SFTPConnection implements DataCollectorConnection {
 //                ret.add(inputLine);
 //            }
 
-            _channel.disconnect();
-            _session.disconnect();
+
         } catch (SftpException ex) {
+             _channel.disconnect();
+            _session.disconnect();
             Logger.getLogger(SFTPConnection.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        } 
         List<InputHandler> answerList = new ArrayList<InputHandler>();
         answerList.add(InputHandlerFactory.getInputConverter(answer));
         return answerList;
@@ -181,9 +184,9 @@ public class SFTPConnection implements DataCollectorConnection {
         //this should be outsourced
         String filePath = dp.getFilePath();
 
-        ChannelSftp sftp = (ChannelSftp) _channel;
+//        ChannelSftp sftp = (ChannelSftp) _channel;
         org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.ALL, "SendSampleRequest");
-        List<String> fileNames = ConnectionHelper.getSFTPMatchedFileNames(sftp, dp, filePath);
+        List<String> fileNames = ConnectionHelper.getSFTPMatchedFileNames(_channel, dp, filePath);
 //        String currentFilePath = Paths.get(filePath).getParent().toString();
 
         List<InputHandler> answerList = new ArrayList<InputHandler>();
@@ -193,7 +196,7 @@ public class SFTPConnection implements DataCollectorConnection {
             try {
 //                ByteArrayOutputStream out = new ByteArrayOutputStream();
 //                String query = Paths.get(fileName);
-                InputStream get = sftp.get(fileName);
+                InputStream get = _channel.get(fileName);
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
                 byte[] buffer = new byte[1024];
@@ -221,12 +224,14 @@ public class SFTPConnection implements DataCollectorConnection {
 
             } catch (SftpException ex) {
                 org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.ERROR, ex.getMessage());
+                _channel.disconnect();
+                _session.disconnect();
             }
         }
 
         _channel.disconnect();
         _session.disconnect();
-        
+
         if (answerList.isEmpty()) {
             org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.ERROR, "Cant get any data from the device");
         }

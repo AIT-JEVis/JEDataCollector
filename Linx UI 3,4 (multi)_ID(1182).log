@@ -1,0 +1,35 @@
+[25 Feb 2015 17:46:27][jedatacollector.Launcher]: ----------------Execute Request-----------------
+[25 Feb 2015 17:46:27][jedatacollector.Launcher]: Data Source (ID,Name): (1182,Linx UI 3,4 (multi))
+[25 Feb 2015 17:46:27][jedatacollector.Launcher]: Datapoint ID: 1191
+[25 Feb 2015 17:46:27][jedatacollector.Launcher]: Datapoint ID: 1192
+[25 Feb 2015 17:46:27][jedatacollector.Launcher]: ------------------------------------------------
+[25 Feb 2015 17:46:27][jedatacollector.DataCollector]: Start Connection
+[25 Feb 2015 17:46:27][FTP.FTPConnection]: SendSampleRequest
+[25 Feb 2015 17:46:28][FTP.FTPConnection]: FileInputName: /data/trend/Trend_L1_1_UI3_AND_UI4_11B0.csv
+[25 Feb 2015 17:46:28][FTP.FTPConnection]: FTPQuery /data/trend/Trend_L1_1_UI3_AND_UI4_11B0.csv
+[25 Feb 2015 17:46:32][FTP.FTPConnection]: Request status: true
+[25 Feb 2015 17:46:32][jedatacollector.DataCollector]: Start Parsing
+[25 Feb 2015 17:46:32][csvParsing.CSVParsing]: Start CSV parsing
+[25 Feb 2015 17:46:32][csvParsing.CSVParsing]: Count of lines1008
+[25 Feb 2015 17:46:32][csvParsing.CSVParsing]: File Path: /data/trend/Trend_L1_1_UI3_AND_UI4_11B0.csv
+[25 Feb 2015 17:46:32][csvParsing.CSVParsing]: LastResult (Date,Target,Value): 2015-02-25T17:45:00.000+01:00,1179,22.89295
+[25 Feb 2015 17:46:32][jedatacollector.DataCollector]: Import Data
+[25 Feb 2015 17:46:32][outputHandler.JEVisOutputHandler]: Number of imported Data overall: 2000
+[25 Feb 2015 17:46:33][outputHandler.JEVisOutputHandler]: 1000Samples imported into ID: 1179
+[25 Feb 2015 17:46:33][outputHandler.JEVisOutputHandler]: 1000Samples imported into ID: 1178
+[04 Mrz 2015 14:19:32][FTP.FTPConnection]: No connection possible
+[04 Mrz 2015 14:19:32][FTP.FTPConnection]: Data Source ID: 1182
+[04 Mrz 2015 14:19:32][FTP.FTPConnection]: SSL: false
+[04 Mrz 2015 14:19:32][FTP.FTPConnection]: Server: 192.168.2.254
+[04 Mrz 2015 14:19:32][FTP.FTPConnection]: Port: 21  
+[04 Mrz 2015 14:19:32][FTP.FTPConnection]: ConnectionTimeout: 30
+[04 Mrz 2015 14:19:32][FTP.FTPConnection]: ReadTimeout: 300
+[04 Mrz 2015 14:19:32][FTP.FTPConnection]: Username: admin
+[04 Mrz 2015 14:19:32][FTP.FTPConnection]: Password: envidatec4u
+[04 Mrz 2015 14:19:32][FTP.FTPConnection]: Timezone: Europe/Berlin
+[04 Mrz 2015 14:19:32][FTP.FTPConnection]: Enabled: true
+[04 Mrz 2015 14:19:32][connection.ConnectionHelper]: Error while searching a matching file
+[04 Mrz 2015 14:19:32][connection.ConnectionHelper]: Folder: /data/trend/
+[04 Mrz 2015 14:19:32][connection.ConnectionHelper]: FileName: Trend_L1_1_UI3_AND_UI4_11B0.csv
+[04 Mrz 2015 14:19:32][connection.ConnectionHelper]:           
+[04 Mrz 2015 14:19:32][FTP.FTPConnection]: Cant get any data from the device

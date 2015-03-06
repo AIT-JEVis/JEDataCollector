@@ -7,6 +7,7 @@ package org.jevis.jedatacollector.connection.FTP;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPSClient;
 import org.apache.log4j.Level;
@@ -26,7 +27,6 @@ import org.jevis.commons.parsing.inputHandler.InputHandler;
 import org.jevis.commons.parsing.inputHandler.InputHandlerFactory;
 import org.jevis.jedatacollector.Launcher;
 import org.jevis.jedatacollector.exception.FetchingException;
-import org.jevis.jedatacollector.exception.FetchingExceptionType;
 import org.joda.time.DateTime;
 
 /**
@@ -117,6 +117,7 @@ public class FTPConnection implements DataCollectorConnection {
             }
 
             _fc.connect(_serverURL, _port);
+//            _fc.setFileType(FTP.BINARY_FILE_TYPE, FTP.BINARY_FILE_TYPE);
 
             if (_fc.login(_username, _password) == false) {
                 org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.ERROR, "No Login possible");
@@ -127,6 +128,7 @@ public class FTPConnection implements DataCollectorConnection {
             _fc.enterLocalPassiveMode();
 
         } catch (IOException ex) {
+            ex.printStackTrace();
             org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.ERROR, "No connection possible");
             Logger.getLogger(FTPConnection.class).setLevel(Level.ALL);
             printConnectionData();
@@ -240,7 +242,7 @@ public class FTPConnection implements DataCollectorConnection {
 //        return false;
 //    }
     @Override
-    public List<InputHandler> sendSampleRequest(DataPoint dp, DateTime from, DateTime until){
+    public List<InputHandler> sendSampleRequest(DataPoint dp, DateTime from, DateTime until) {
         Object answer = null;
         //multiple File pathes neccessary?
 //        String filePath = ConnectionHelper.parseConnectionString(dp, from, until, dp.getFilePath(), dp.getDateFormat());
@@ -267,7 +269,7 @@ public class FTPConnection implements DataCollectorConnection {
                 InputHandler inputConverter = InputHandlerFactory.getInputConverter(answer);
                 inputConverter.setFilePath(fileName);
                 if (dp.getDirectory().containsCompressedFolder()) {
-                    
+
                     String pattern = dp.getDirectory().getFolderPathFromComp() + dp.getFileName();
                     inputConverter.setFilePattern(pattern);
                     inputConverter.setDateTime(dp.getLastReadout());

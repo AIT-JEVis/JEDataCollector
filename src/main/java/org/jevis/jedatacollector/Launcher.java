@@ -43,7 +43,7 @@ public class Launcher {
         Appender appender = Logger.getRootLogger().getAppender("FILE");
         appender.addFilter(new ThreadFilter("-1"));
         MDC.put(Launcher.KEY, "-1");
-        Logger.getLogger(Launcher.class.getName()).log(Level.INFO, "-------Start JEDataCollector r36-------");
+        Logger.getLogger(Launcher.class.getName()).log(Level.INFO, "-------Start JEDataCollector r37-------");
         Helper.initializeCommandLine(args);
         Helper.initializeLogger(JEVisCommandLine.getInstance().getDebugLevel());
 
@@ -66,7 +66,7 @@ public class Launcher {
         //hier müssen verschiedene Modi an und abgestellt werden können
 //        boolean cliJob = false;
 
-        launcher.excecuteRequstsWithThreads(requestJobs);
+        launcher.excecuteRequstsWithThreadsExtend(requestJobs);
         MDC.put(Launcher.KEY, "-1");
         Logger.getLogger(Launcher.class.getName()).log(Level.INFO, "########## Finish JEDataCollector #########");
         System.out.println("Fertig");
@@ -189,13 +189,18 @@ public class Launcher {
         while (threadReqHandler.hasRequest()) {
 //            int activeCount = Thread.activeCount();
             int activeCount = threadReqHandler.getNumberActiveRequests();
-            if (activeCount <= maxNumberThreads) {
+            if (activeCount < maxNumberThreads && threadReqHandler.hasValidRequest()) {
                 Request currentReq = threadReqHandler.getNextRequest();
                 DataCollectorConnection dataSource = currentReq.getDataSource();
                 initNewAppender("" + threadID, dataSource.getName() + "_ID(" + dataSource.getID() + ").log");
 //                    initNewAppender("" + threadID, "/home/jedc/bin/Thread_" + threadID + ".log");
 //                    Logger.getLogger("Thread_" + currentReq.getDataSource().getID()).log(Level.INFO, "----------------Execute Request-----------------");
                 MDC.put(Launcher.KEY, "" + threadID);
+                System.out.println("CurrentReq " + dataSource.getName() + "_ID(" + dataSource.getID());
+                System.out.println("ThreadID " + threadID);
+                System.out.println("active " + activeCount);
+                System.out.println("maxNum " + maxNumberThreads);
+                System.out.println("ReqSize " + threadReqHandler.getRequestSize());
                 Logger.getLogger(this.getClass().getName()).log(Level.INFO, "----------------Execute Request-----------------");
                 if (currentReq.getDataSource() != null) {
 //                        Logger.getLogger("Thread_" + currentReq.getDataSource().getID()).log(Level.INFO, "Data Source (ID,Name): (" + currentReq.getDataSource().getID() + "," + currentReq.getDataSource().getName() + ")");
@@ -213,18 +218,22 @@ public class Launcher {
 
                 } catch (Exception ex) {
                     Logger.getLogger(Launcher.class.getName()).log(Level.ERROR, ex.getMessage());
-                } finally {
-                    Logger.getLogger(this.getClass().getName()).log(Level.INFO, "------------------------------------------------");
-
-                    threadID++;
-                    threadReqHandler.removeActiveRequest(currentReq);
-                    MDC.remove(Launcher.KEY);
-                    requestJobs.remove(0);
                 }
+//                finally {
 
+                threadID++;
+                MDC.remove(Launcher.KEY);
+//                    requestJobs.remove(0);
+//                }
             } else {
+                System.out.println("thread sleep");
+                for (Request req : threadReqHandler.getActiveRequests()) {
+                    System.out.println(req.getDataSource().getID());
+                    System.out.println(req.getDataSource().getName());
+                    System.out.println(req.getDataPoints().get(0).getDatapointId());
+                }
                 try {
-                    Thread.sleep(5000);
+                    Thread.sleep(10000);
                 } catch (InterruptedException ie) {
                     System.out.println(ie);
                 }
@@ -243,7 +252,7 @@ public class Launcher {
         } catch (JEVisException ex) {
             java.util.logging.Logger.getLogger(Launcher.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        return 5l;
+        return 2l;
     }
 
     private boolean establishConnection() {
@@ -257,6 +266,7 @@ public class Launcher {
 //            _client = new JEVisDataSourceSQL("192.168.2.55", "3306", "jevis", "jevis", "jevistest", "Sys Admin", "jevis");
 //            _client.connect("Sys Admin", "jevis");
             _client = new JEVisDataSourceSQL(con.getDb(), con.getPort(), con.getSchema(), con.getUser(), con.getPw());
+//            _client = new JEVisDataSourceSQL("coffee-project.eu", "13306", "jevis", "jevis", "jevistest", "Sys Admin", "jevis");
             _client.connect(con.getJevisUser(), con.getJevisPW());
         } catch (JEVisException ex) {
             Logger.getLogger(Launcher.class.getName()).log(Level.ERROR, ex.getMessage());

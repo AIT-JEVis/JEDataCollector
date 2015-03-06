@@ -1,0 +1,99 @@
+[04 Mrz 2015 14:04:40][FTP.FTPConnection]: No connection possible
+[04 Mrz 2015 14:04:40][FTP.FTPConnection]: Data Source ID: 547
+[04 Mrz 2015 14:04:40][FTP.FTPConnection]: SSL: false
+[04 Mrz 2015 14:04:40][FTP.FTPConnection]: Server: 192.168.1.90
+[04 Mrz 2015 14:04:40][FTP.FTPConnection]: Port: 21  
+[04 Mrz 2015 14:04:40][FTP.FTPConnection]: ConnectionTimeout: 200
+[04 Mrz 2015 14:04:40][FTP.FTPConnection]: ReadTimeout: 4000
+[04 Mrz 2015 14:04:40][FTP.FTPConnection]: Username: ftptest
+[04 Mrz 2015 14:04:40][FTP.FTPConnection]: Password: jevis
+[04 Mrz 2015 14:04:40][FTP.FTPConnection]: Timezone: UTC
+[04 Mrz 2015 14:04:40][FTP.FTPConnection]: Enabled: true
+[04 Mrz 2015 14:04:40][connection.ConnectionHelper]: Connection is not open
+[04 Mrz 2015 14:04:40][FTP.FTPConnection]: Cant get any data from the device
+[04 Mrz 2015 14:04:41][api.JEVisException]: [4234] Error while inserting Sample 
+[04 Mrz 2015 14:04:41][jedatacollector.DataCollector]: Problems while calculating the Last Readout Attribute
+[04 Mrz 2015 14:04:41][jedatacollector.DataCollector]: Periodical Sampling: true
+[04 Mrz 2015 14:04:41][jedatacollector.DataCollector]: Calculated Readout: null
+[04 Mrz 2015 14:09:41][FTP.FTPConnection]: No connection possible
+[04 Mrz 2015 14:09:41][FTP.FTPConnection]: Data Source ID: 547
+[04 Mrz 2015 14:09:41][FTP.FTPConnection]: SSL: false
+[04 Mrz 2015 14:09:41][FTP.FTPConnection]: Server: 192.168.1.90
+[04 Mrz 2015 14:09:41][FTP.FTPConnection]: Port: 21  
+[04 Mrz 2015 14:09:41][FTP.FTPConnection]: ConnectionTimeout: 200
+[04 Mrz 2015 14:09:41][FTP.FTPConnection]: ReadTimeout: 4000
+[04 Mrz 2015 14:09:41][FTP.FTPConnection]: Username: ftptest
+[04 Mrz 2015 14:09:41][FTP.FTPConnection]: Password: jevis
+[04 Mrz 2015 14:09:41][FTP.FTPConnection]: Timezone: UTC
+[04 Mrz 2015 14:09:41][FTP.FTPConnection]: Enabled: true
+[04 Mrz 2015 14:09:41][connection.ConnectionHelper]: Connection is not open
+[04 Mrz 2015 14:09:41][FTP.FTPConnection]: Cant get any data from the device
+[04 Mrz 2015 14:09:42][api.JEVisException]: [4234] Error while inserting Sample 
+[04 Mrz 2015 14:09:42][jedatacollector.DataCollector]: Problems while calculating the Last Readout Attribute
+[04 Mrz 2015 14:09:42][jedatacollector.DataCollector]: Periodical Sampling: true
+[04 Mrz 2015 14:09:42][jedatacollector.DataCollector]: Calculated Readout: null
+[04 Mrz 2015 14:18:52][FTP.FTPConnection]: No connection possible
+[04 Mrz 2015 14:18:52][FTP.FTPConnection]: Data Source ID: 547
+[04 Mrz 2015 14:18:52][FTP.FTPConnection]: SSL: false
+[04 Mrz 2015 14:18:52][FTP.FTPConnection]: Server: 192.168.1.90
+[04 Mrz 2015 14:18:52][FTP.FTPConnection]: Port: 21  
+[04 Mrz 2015 14:18:52][FTP.FTPConnection]: ConnectionTimeout: 200
+[04 Mrz 2015 14:18:52][FTP.FTPConnection]: ReadTimeout: 4000
+[04 Mrz 2015 14:18:52][FTP.FTPConnection]: Username: ftptest
+[04 Mrz 2015 14:18:52][FTP.FTPConnection]: Password: jevis
+[04 Mrz 2015 14:18:52][FTP.FTPConnection]: Timezone: UTC
+[04 Mrz 2015 14:18:52][FTP.FTPConnection]: Enabled: true
+[04 Mrz 2015 14:18:52][connection.ConnectionHelper]: Error while searching a matching file
+[04 Mrz 2015 14:18:52][connection.ConnectionHelper]: Folder: /tmp/
+[04 Mrz 2015 14:18:52][connection.ConnectionHelper]: FileName: test.csv
+[04 Mrz 2015 14:18:52][connection.ConnectionHelper]:           
+[04 Mrz 2015 14:18:52][FTP.FTPConnection]: Cant get any data from the device
+[04 Mrz 2015 14:18:53][api.JEVisException]: [4234] Error while inserting Sample 
+[04 Mrz 2015 14:18:53][jedatacollector.DataCollector]: Problems while calculating the Last Readout Attribute
+[04 Mrz 2015 14:18:53][jedatacollector.DataCollector]: Periodical Sampling: true
+[04 Mrz 2015 14:18:53][jedatacollector.DataCollector]: Calculated Readout: null
+[04 Mrz 2015 14:29:16][FTP.FTPConnection]: No connection possible
+[04 Mrz 2015 14:29:19][FTP.FTPConnection]: Data Source ID: 547
+[04 Mrz 2015 14:29:19][FTP.FTPConnection]: SSL: false
+[04 Mrz 2015 14:29:19][FTP.FTPConnection]: Server: 192.168.1.90
+[04 Mrz 2015 14:29:19][FTP.FTPConnection]: Port: 21  
+[04 Mrz 2015 14:29:19][FTP.FTPConnection]: ConnectionTimeout: 200
+[04 Mrz 2015 14:29:19][FTP.FTPConnection]: ReadTimeout: 4000
+[04 Mrz 2015 14:29:19][FTP.FTPConnection]: Username: ftptest
+[04 Mrz 2015 14:29:19][FTP.FTPConnection]: Password: jevis
+[04 Mrz 2015 14:29:19][FTP.FTPConnection]: Timezone: UTC
+[04 Mrz 2015 14:29:19][FTP.FTPConnection]: Enabled: true
+[04 Mrz 2015 14:36:58][FTP.FTPConnection]: No connection possible
+[04 Mrz 2015 14:36:58][FTP.FTPConnection]: Data Source ID: 547
+[04 Mrz 2015 14:36:58][FTP.FTPConnection]: SSL: false
+[04 Mrz 2015 14:36:58][FTP.FTPConnection]: Server: 192.168.1.90
+[04 Mrz 2015 14:36:58][FTP.FTPConnection]: Port: 21  
+[04 Mrz 2015 14:36:58][FTP.FTPConnection]: ConnectionTimeout: 200
+[04 Mrz 2015 14:36:58][FTP.FTPConnection]: ReadTimeout: 4000
+[04 Mrz 2015 14:36:58][FTP.FTPConnection]: Username: ftptest
+[04 Mrz 2015 14:36:58][FTP.FTPConnection]: Password: jevis
+[04 Mrz 2015 14:36:58][FTP.FTPConnection]: Timezone: UTC
+[04 Mrz 2015 14:36:58][FTP.FTPConnection]: Enabled: true
+[04 Mrz 2015 14:36:58][connection.ConnectionHelper]: Connection is not open
+[04 Mrz 2015 14:36:58][FTP.FTPConnection]: Cant get any data from the device
+[04 Mrz 2015 14:37:03][api.JEVisException]: [4234] Error while inserting Sample 
+[04 Mrz 2015 14:37:03][jedatacollector.DataCollector]: Problems while calculating the Last Readout Attribute
+[04 Mrz 2015 14:37:03][jedatacollector.DataCollector]: Periodical Sampling: true
+[04 Mrz 2015 14:37:03][jedatacollector.DataCollector]: Calculated Readout: null
+[04 Mrz 2015 14:41:38][FTP.FTPConnection]: No connection possible
+[04 Mrz 2015 14:41:38][FTP.FTPConnection]: Data Source ID: 547
+[04 Mrz 2015 14:41:38][FTP.FTPConnection]: SSL: false
+[04 Mrz 2015 14:41:38][FTP.FTPConnection]: Server: 192.168.1.90
+[04 Mrz 2015 14:41:38][FTP.FTPConnection]: Port: 21  
+[04 Mrz 2015 14:41:38][FTP.FTPConnection]: ConnectionTimeout: 200
+[04 Mrz 2015 14:41:38][FTP.FTPConnection]: ReadTimeout: 4000
+[04 Mrz 2015 14:41:38][FTP.FTPConnection]: Username: ftptest
+[04 Mrz 2015 14:41:38][FTP.FTPConnection]: Password: jevis
+[04 Mrz 2015 14:41:38][FTP.FTPConnection]: Timezone: UTC
+[04 Mrz 2015 14:41:38][FTP.FTPConnection]: Enabled: true
+[04 Mrz 2015 14:41:38][connection.ConnectionHelper]: Connection is not open
+[04 Mrz 2015 14:41:38][FTP.FTPConnection]: Cant get any data from the device
+[04 Mrz 2015 14:41:38][api.JEVisException]: [4234] Error while inserting Sample 
+[04 Mrz 2015 14:41:38][jedatacollector.DataCollector]: Problems while calculating the Last Readout Attribute
+[04 Mrz 2015 14:41:38][jedatacollector.DataCollector]: Periodical Sampling: true
+[04 Mrz 2015 14:41:38][jedatacollector.DataCollector]: Calculated Readout: null

@@ -7,7 +7,6 @@ package org.jevis.jedatacollector.service;
 import java.util.ArrayList;
 import java.util.List;
 import org.jevis.commons.parsing.DataCollectorParser;
-import org.jevis.commons.parsing.GenericParser;
 import org.jevis.commons.parsing.ParsingRequest;
 import org.jevis.commons.parsing.ParsingRequestGenerator;
 import org.jevis.commons.parsing.inputHandler.InputHandler;
@@ -18,7 +17,6 @@ import org.jevis.jedatacollector.connection.DataCollectorConnection;
 import org.jevis.jedatacollector.data.Data;
 import org.jevis.jedatacollector.data.DataSource;
 import org.jevis.jedatacollector.data.DataPoint;
-import org.jevis.jedatacollector.data.DataPointDir;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
@@ -75,7 +73,7 @@ public class RequestGenerator {
         return req;
     }
 
-    public static Request createOnlyParsingRequestWithOutput(GenericParser fileParser, InputHandler input, String outputPath) {
+    public static Request createOnlyParsingRequestWithOutput(DataCollectorParser fileParser, InputHandler input, String outputPath) {
         Request req = new DefaultRequest();
         req.setNeedConnection(false);
         req.setNeedImport(true);
@@ -109,7 +107,7 @@ public class RequestGenerator {
         return request;
     }
 
-    public static Request createCLIRequest(DataCollectorConnection connection, GenericParser parsing, DataPoint dataPoint, DateTime from, DateTime until, DateTimeZone timeZone) {
+    public static Request createCLIRequest(DataCollectorConnection connection, DataCollectorParser parsing, DataPoint dataPoint, DateTime from, DateTime until, DateTimeZone timeZone) {
         Request request = new DefaultRequest();
         request.setNeedConnection(true);
         request.setConnection(connection);
@@ -126,7 +124,7 @@ public class RequestGenerator {
         return request;
     }
 
-    public static Request createCLIRequestWithFileOutput(DataCollectorConnection connection, GenericParser parsing, DataPoint dataPoint, DateTime from, DateTime until, DateTimeZone timeZone, String outputPath) {
+    public static Request createCLIRequestWithFileOutput(DataCollectorConnection connection, DataCollectorParser parsing, DataPoint dataPoint, DateTime from, DateTime until, DateTimeZone timeZone, String outputPath) {
         Request request = new DefaultRequest();
         request.setNeedConnection(true);
         request.setConnection(connection);
@@ -214,5 +212,4 @@ public class RequestGenerator {
         request.setNeedParsing(false);
         return request;
     }
-
 }

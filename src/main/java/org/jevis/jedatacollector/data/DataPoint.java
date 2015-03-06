@@ -126,6 +126,10 @@ public class DataPoint {
         return _fileName;
     }
 
+    public void setFileName(String fileName) {
+        _fileName = fileName;
+    }
+
     public String getMappingIdentifier() {
         return _mappingIdentifier;
     }
@@ -186,7 +190,7 @@ public class DataPoint {
             if (!filePath.endsWith("/") && !_fileName.startsWith("/")) {
                 filePath += "/" + _fileName;
             } else if (filePath.endsWith("/") && _fileName.startsWith("/")) {
-                filePath += _fileName.substring(1,_fileName.length());
+                filePath += _fileName.substring(1, _fileName.length());
             } else {
                 filePath += _fileName;
             }

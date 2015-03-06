@@ -8,7 +8,6 @@ import org.jevis.jedatacollector.service.Request;
 import java.util.ArrayList;
 import java.util.List;
 import org.jevis.commons.parsing.DataCollectorParser;
-import org.jevis.commons.parsing.GenericParser;
 import org.jevis.commons.parsing.ParsingRequest;
 import org.jevis.commons.parsing.inputHandler.InputHandler;
 import org.jevis.jedatacollector.connection.DataCollectorConnection;

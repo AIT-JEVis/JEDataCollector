@@ -16,11 +16,10 @@ import org.jevis.jedatacollector.service.Request;
 public class ThreadRequestHandler {
 
     private List<Request> _requests;
-    private List<Request> _activeRequests;
+    private static List<Request> _activeRequests = new ArrayList<Request>();
 
     public ThreadRequestHandler(List<Request> requests) {
         _requests = requests;
-        _activeRequests = new ArrayList<Request>();
     }
 
     synchronized public boolean hasRequest() {
@@ -32,6 +31,25 @@ public class ThreadRequestHandler {
     }
 
     synchronized public boolean hasValidRequest() {
+        for (Request currentReq : _requests) {
+
+            DataCollectorConnection dataSource = currentReq.getDataSource();
+            boolean contains = false;
+            int currentPort = dataSource.getPort();
+            String currentHost = dataSource.getHost();
+            for (Request currentActiveReq : _activeRequests) {
+                DataCollectorConnection connection = currentActiveReq.getDataSource();
+                if (currentPort == connection.getPort() && currentHost.equals(dataSource.getHost())) {
+                    contains = true;
+                    break;
+                }
+            }
+            if (contains) {
+                continue;
+            } else {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -40,7 +58,6 @@ public class ThreadRequestHandler {
 
             DataCollectorConnection dataSource = currentReq.getDataSource();
             boolean contains = false;
-            long currentID = dataSource.getID();
             int currentPort = dataSource.getPort();
             String currentHost = dataSource.getHost();
             for (Request currentActiveReq : _activeRequests) {
@@ -62,11 +79,19 @@ public class ThreadRequestHandler {
         return null;
     }
 
-    synchronized public void removeActiveRequest(Request request) {
+    synchronized public int getRequestSize() {
+        return _requests.size();
+    }
+
+    synchronized public static void removeActiveRequest(Request request) {
         _activeRequests.remove(request);
     }
-    
-    synchronized  public int getNumberActiveRequests(){
+
+    synchronized public int getNumberActiveRequests() {
         return _activeRequests.size();
+    }
+
+    synchronized public List<Request> getActiveRequests() {
+        return _activeRequests;
     }
 }

@@ -10,13 +10,13 @@ import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.soap.*;
 import javax.xml.transform.dom.DOMSource;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.jevis.api.JEVisAttribute;
 import org.jevis.api.JEVisClass;
 import org.jevis.api.JEVisException;
@@ -99,55 +99,8 @@ public class SOAPConnection implements DataCollectorConnection {
 
     @Override
     public void initialize(JEVisObject soapObject) throws FetchingException {
-//        try {
-//            //        _id = cn.getID();
-//            //        _xmlTemplate = cn.<String>getPropertyValue("XML Template");
-//            //        _address = cn.<String>getPropertyValue("Server URL");
-//            //        _dateFormat = cn.<String>getPropertyValue("Date Format");
-//            //        _sampleCount = String.valueOf(cn.<Long>getPropertyValue("Sample Count"));
-//            //        _triesRead = cn.<Long>getPropertyValue("Read Tries");
-//            //        _timeoutRead = cn.<Long>getPropertyValue("Read Timeout (in sec.)");
-//            //        _triesConnection = cn.<Long>getPropertyValue("Connection Tries");
-//            //        _maximumDayRequest = cn.<Long>getPropertyValue("Maximum days for Request");
-//            //        _maximumDayRequest = cn.<Long>getPropertyValue("Maximum days for Request");
-//
-//            JEVisClass type = cn.getJEVisClass();
-//            JEVisType template = type.getType("XML Template");
-//            JEVisType address = type.getType("Server URL");
-//            JEVisType dateFormat = type.getType("Date Format");
-//            JEVisType sampleCound = type.getType("Sample Count");
-//            JEVisType triesRead = type.getType("Read Tries");
-//            JEVisType timeoutRead = type.getType("Read Timeout (in sec.)");
-//            JEVisType triesConnection = type.getType("Connection Tries");
-//            JEVisType timeoutConnection = type.getType("Connection Timeout (in sec.)");
-//            JEVisType maxRequests = type.getType("Maximum days for Request");
-//
-//            _id = cn.getID();
-//            _xmlTemplate = (String) cn.getAttribute(template).getLatestSample().getValue();
-//            _address = (String) cn.getAttribute(address).getLatestSample().getValue();
-//            _dateFormat = (String) cn.getAttribute(dateFormat).getLatestSample().getValue();
-//            _sampleCount = (String) cn.getAttribute(sampleCound).getLatestSample().getValue();
-//            _triesRead = (Long) cn.getAttribute(triesRead).getLatestSample().getValue();
-//            _timeoutRead = (Long) cn.getAttribute(timeoutRead).getLatestSample().getValue();
-//            _triesConnection = (Long) cn.getAttribute(triesConnection).getLatestSample().getValue();
-//            _timeoutConnection = (Long) cn.getAttribute(timeoutConnection).getLatestSample().getValue();
-//            _maximumDayRequest = (Long) cn.getAttribute(maxRequests).getLatestSample().getValue();
-//
-//            if (_maximumDayRequest == null || _maximumDayRequest < 1) {
-//                _maximumDayRequest = 10l;
-//            }
-//
-//            if (_sampleCount.equals("0")) {
-//                _sampleCount = "1000";
-//            }
-//        } catch (JEVisException ex) {
-//            Logger.getLogger(SOAPConnection.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-
         try {
             JEVisClass soapType = Launcher.getClient().getJEVisClass(JEVisTypes.DataServer.SOAP.NAME);
-//            JEVisObject soapObject = node.getChildren(soapType, true).get(0);
-//            JEVisType dateFormat = soapType.getType(JEVisTypes.Connection.SOAP.DateFormat);
             JEVisType server = soapType.getType(JEVisTypes.DataServer.SOAP.HOST);
             JEVisType port = soapType.getType(JEVisTypes.DataServer.SOAP.PORT);
             JEVisType sslType = soapType.getType(JEVisTypes.DataServer.SOAP.SSL);
@@ -182,7 +135,7 @@ public class SOAPConnection implements DataCollectorConnection {
             _timezone = DatabaseHelper.getObjectAsString(soapObject, timezoneType);
             _enabled = DatabaseHelper.getObjectAsBoolean(soapObject, enableType);
         } catch (JEVisException ex) {
-            org.apache.log4j.Logger.getLogger(SOAPConnection.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
+            Logger.getLogger(SOAPConnection.class.getName()).log(Level.ERROR, null, ex);
         }
     }
 
@@ -190,28 +143,9 @@ public class SOAPConnection implements DataCollectorConnection {
     public boolean connect() {
         try {
             _conn = SOAPConnectionFactory.newInstance().createConnection();
-            _uri = "http://";
-            if (_userName != null) {
-                _uri += _userName;
-                if (_password != null) {
-                    _uri += ":" + _password + "@";
-                } else {
-                    _uri += "@";
-                }
-            }
-            _uri += _server;
-            if (_port != null) {
-                _uri += ":" + _port + "/DL/";
-            } else {
-                _uri += ":80/DL/";
-            }
-            System.out.println(_uri);
-            _serverURL = new URL(_uri);
 
-        } catch (MalformedURLException ex) {
-//            throw new FetchingException(_id, FetchingExceptionType.URL_ERROR);
         } catch (SOAPException ex) {
-            Logger.getLogger(SOAPConnection.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SOAPConnection.class.getName()).log(Level.ERROR, ex.getMessage());
         }
 
         return true;
@@ -219,7 +153,39 @@ public class SOAPConnection implements DataCollectorConnection {
 
     @Override
     public List<InputHandler> sendSampleRequest(DataPoint dp, DateTime from, DateTime until) {
-//        SimpleDateFormat sdf = null;
+        _uri = "";
+        if (_userName != null) {
+            _uri += _userName;
+            if (_password != null) {
+                _uri += ":" + _password + "@";
+            } else {
+                _uri += "@";
+            }
+        }
+
+        String path = dp.getDirectory().getFolderName();
+        _uri += _server;
+        if (_port != null) {
+            _uri += ":" + _port + path;
+        } else {
+            _uri += ":80" + path;
+        }
+
+        if (!_uri.contains("://")) {
+            _uri = "http://" + _uri;
+        }
+
+        if (_ssl) {
+            _uri = _uri.replace("http", "https");
+        }
+        System.out.println(_uri);
+        try {
+            _serverURL = new URL(_uri);
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(SOAPConnection.class.getName()).log(Level.ERROR, ex.getMessage());
+        }
+
+
         DateTimeFormatter fmt = null;
         if (_dateFormat != null && !_dateFormat.equals("")) {
             fmt = DateTimeFormat.forPattern(_dateFormat);
@@ -240,7 +206,10 @@ public class SOAPConnection implements DataCollectorConnection {
         SOAPMessage buildSOAPMessage = buildSOAPMessage(doc);
         List<InputHandler> inputHandler = new ArrayList<InputHandler>();
         try {
-            SOAPMessage call = _conn.call(buildSOAPMessage, _uri);
+            if (_ssl) {
+                ConnectionHelper.doTrustToCertificates();
+            }
+            SOAPMessage call = _conn.call(buildSOAPMessage, _serverURL);
             soapResponses.add(call);
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             call.writeTo(out);
@@ -251,9 +220,17 @@ public class SOAPConnection implements DataCollectorConnection {
             //        }
             //        }
         } catch (SOAPException ex) {
-            Logger.getLogger(SOAPConnection.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SOAPConnection.class.getName()).log(Level.ERROR, ex.getMessage());
         } catch (IOException ex) {
-            Logger.getLogger(SOAPConnection.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SOAPConnection.class.getName()).log(Level.ERROR, ex.getMessage());
+        } catch (Exception ex) {
+            Logger.getLogger(SOAPConnection.class.getName()).log(Level.ERROR, ex.getMessage());
+        } finally {
+            try {
+                _conn.close();
+            } catch (SOAPException ex) {
+                Logger.getLogger(SOAPConnection.class.getName()).log(Level.ERROR, ex.getMessage());
+            }
         }
 
         inputHandler.add(InputHandlerFactory.getInputConverter(soapResponses));
@@ -269,11 +246,11 @@ public class SOAPConnection implements DataCollectorConnection {
             document = (Document) builder.parse(new InputSource(
                     new StringReader(s)));
         } catch (SAXException ex) {
-            Logger.getLogger(SOAPConnection.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SOAPConnection.class.getName()).log(Level.ERROR, ex.getMessage());
         } catch (IOException ex) {
-            Logger.getLogger(SOAPConnection.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SOAPConnection.class.getName()).log(Level.ERROR, ex.getMessage());
         } catch (ParserConfigurationException ex) {
-            Logger.getLogger(SOAPConnection.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SOAPConnection.class.getName()).log(Level.ERROR, ex.getMessage());
         } finally {
             return document;
         }
@@ -294,7 +271,7 @@ public class SOAPConnection implements DataCollectorConnection {
             soapPart.setContent(new DOMSource(doc));
 
         } catch (Exception ex) {
-            Logger.getLogger(DataCollectorConnection.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SOAPConnection.class.getName()).log(Level.ERROR, ex.getMessage());
         }
 
         MimeHeaders headers = message.getMimeHeaders();
@@ -332,7 +309,7 @@ public class SOAPConnection implements DataCollectorConnection {
                 }
             }
         } catch (Exception ex) {
-            Logger.getLogger(DataCollectorConnection.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SOAPConnection.class.getName()).log(Level.ERROR, ex.getMessage());
         }
 
         if (answer == null) {
