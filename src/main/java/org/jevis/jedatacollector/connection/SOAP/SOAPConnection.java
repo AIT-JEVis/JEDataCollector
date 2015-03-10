@@ -161,9 +161,7 @@ public class SOAPConnection implements DataCollectorConnection {
             } else {
                 _uri += "@";
             }
-        }
-
-        String path = dp.getDirectory().getFolderName();
+        }        String path = dp.getDirectory().getFolderName();
         _uri += _server;
         if (_port != null) {
             _uri += ":" + _port + path;

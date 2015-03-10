@@ -33,7 +33,7 @@ public class JevisJobHandler {
         List<JEVisObject> dataSources;
         List<Request> requests = new ArrayList<Request>();
         try {
-            JEVisClass jeVisClass = Launcher.getClient().getJEVisClass(JEVisTypes.DataServer.NAME);
+            JEVisClass jeVisClass = Launcher.getClient().getJEVisClass(JEVisTypes.DataSource.NAME);
             dataSources = Launcher.getClient().getObjects(jeVisClass, true);
             Logger.getLogger(this.getClass().getName()).log(Level.INFO, dataSources.size() + " Equipments found");
 

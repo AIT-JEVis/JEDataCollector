@@ -22,9 +22,13 @@ import org.jevis.api.sql.JEVisDataSourceSQL;
 import org.jevis.commons.JEVisTypes;
 import org.jevis.commons.cli.JEVisCommandLine;
 import org.jevis.jedatacollector.CLIProperties.JEVisServerConnectionCLI;
+import org.jevis.jedatacollector.connection.ConnectionFactory;
 import org.jevis.jedatacollector.connection.DataCollectorConnection;
 import org.jevis.jedatacollector.data.DataPoint;
+import org.jevis.commons.parsing.Driver;
 import org.jevis.jedatacollector.service.JevisJobHandler;
+import org.jevis.commons.parsing.LoadingDriver;
+import org.jevis.commons.parsing.ParsingFactory;
 
 /**
  *
@@ -59,6 +63,9 @@ public class Launcher {
             requestJobs = handler.createJobs();
         } else {
             launcher.establishConnection();
+            List<Driver> driverList = getDriverList();
+            ConnectionFactory.setDrivers(driverList);
+            ParsingFactory.setDrivers(driverList);
             JevisJobHandler handler = new JevisJobHandler();
             requestJobs = handler.createJobs();
         }
@@ -72,115 +79,9 @@ public class Launcher {
         System.out.println("Fertig");
     }
 
-    private void excecuteRequsts(List<Request> requestJobs) {
-        Logger.getLogger(
-                this.getClass().getName()).log(Level.INFO, "Number of Requests: " + requestJobs.size());
-        //ToDo each request should be executed in a thread
-        for (Request request : requestJobs) {
-            Logger.getLogger(this.getClass().getName()).log(Level.INFO, "----------------Execute Request-----------------");
-            if (request.getDataSource() != null) {
-                Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Data Source (ID,Name): (" + request.getDataSource().getID() + "," + request.getDataSource().getName() + ")");
-//                Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Datapoints:");
-                for (DataPoint p : request.getDataPoints()) {
-                    Logger.getLogger(this.getClass().getName()).log(Level.ALL, "Datapoint ID: " + p.getDatapointId());
-                }
-            }
-            DataCollector datalogger = new DataCollector(request);
-            try {
-                datalogger.run();
-
-            } catch (Exception ex) {
-                Logger.getLogger(Launcher.class.getName()).log(Level.ERROR, ex.getMessage());
-            }
-            Logger.getLogger(this.getClass().getName()).log(Level.INFO, "------------------------------------------------");
-        }
-    }
-
-    private void excecuteRequstsWithThreads(List<Request> requestJobs) {
-        Logger.getLogger(
-                this.getClass().getName()).log(Level.INFO, "Number of Requests: " + requestJobs.size());
-        //ToDo each request should be executed in a thread
-
-//        for (Request req : requestJobs) {
-//            Logger.getLogger(
-//                    this.getClass().getName()).log(Level.INFO, req.getDataSource().getName());
-//        }
-
-
-        long maxNumberThreads = getNumberOfMaxThreads();
-        List<DataCollectorConnection> activeEquipments = new ArrayList<DataCollectorConnection>();
-        int threadID = 1;
-        MDC.remove(Launcher.KEY);
-        while (!requestJobs.isEmpty()) {
-            Request currentReq = requestJobs.get(0);
-
-            DataCollectorConnection dataSource = currentReq.getDataSource();
-            int activeCount = Thread.activeCount();
-            if (activeCount <= maxNumberThreads) {
-                boolean contains = false;
-                long currentID = dataSource.getID();
-                int currentPort = dataSource.getPort();
-                String currentHost = dataSource.getHost();
-                for (DataCollectorConnection connection : activeEquipments) {
-                    if (currentPort == connection.getPort() && currentHost.equals(dataSource.getHost())) {
-                        contains = true;
-                        break;
-                    }
-                }
-                if (contains) {
-                    requestJobs.remove(0);
-                    requestJobs.add(currentReq);
-                } else {
-                    activeEquipments.add(dataSource);
-
-                    initNewAppender("" + threadID, dataSource.getName() + "_ID(" + dataSource.getID() + ").log");
-//                    initNewAppender("" + threadID, "/home/jedc/bin/Thread_" + threadID + ".log");
-//                    Logger.getLogger("Thread_" + currentReq.getDataSource().getID()).log(Level.INFO, "----------------Execute Request-----------------");
-                    MDC.put(Launcher.KEY, "" + threadID);
-                    Logger.getLogger(this.getClass().getName()).log(Level.INFO, "----------------Execute Request-----------------");
-                    if (currentReq.getDataSource() != null) {
-//                        Logger.getLogger("Thread_" + currentReq.getDataSource().getID()).log(Level.INFO, "Data Source (ID,Name): (" + currentReq.getDataSource().getID() + "," + currentReq.getDataSource().getName() + ")");
-                        Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Data Source (ID,Name): (" + currentReq.getDataSource().getID() + "," + currentReq.getDataSource().getName() + ")");
-//                Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Datapoints:");
-                        for (DataPoint p : currentReq.getDataPoints()) {
-//                            Logger.getLogger("Thread_" + currentReq.getDataSource().getID()).log(Level.ALL, "Datapoint ID: " + p.getDatapointId());
-                            Logger.getLogger(this.getClass().getName()).log(Level.ALL, "Datapoint ID: " + p.getDatapointId());
-                        }
-                    }
-                    DataCollector dataCollector = new DataCollector(currentReq);
-                    Thread dataCollectionThread = new Thread(dataCollector, currentReq.getDataSource().getName());
-                    try {
-                        dataCollectionThread.start();
-
-                    } catch (Exception ex) {
-                        Logger.getLogger(Launcher.class.getName()).log(Level.ERROR, ex.getMessage());
-                    }
-                    Logger.getLogger(this.getClass().getName()).log(Level.INFO, "------------------------------------------------");
-                    threadID++;
-                    MDC.remove(Launcher.KEY);
-                    activeEquipments.remove(dataSource);
-                    requestJobs.remove(0);
-                }
-            } else {
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException ie) {
-                    System.out.println(ie);
-                }
-            }
-        }
-    }
-
     private void excecuteRequstsWithThreadsExtend(List<Request> requestJobs) {
         Logger.getLogger(
                 this.getClass().getName()).log(Level.INFO, "Number of Requests: " + requestJobs.size());
-        //ToDo each request should be executed in a thread
-
-//        for (Request req : requestJobs) {
-//            Logger.getLogger(
-//                    this.getClass().getName()).log(Level.INFO, req.getDataSource().getName());
-//        }
-
 
         long maxNumberThreads = getNumberOfMaxThreads();
         int threadID = 1;
@@ -196,11 +97,6 @@ public class Launcher {
 //                    initNewAppender("" + threadID, "/home/jedc/bin/Thread_" + threadID + ".log");
 //                    Logger.getLogger("Thread_" + currentReq.getDataSource().getID()).log(Level.INFO, "----------------Execute Request-----------------");
                 MDC.put(Launcher.KEY, "" + threadID);
-                System.out.println("CurrentReq " + dataSource.getName() + "_ID(" + dataSource.getID());
-                System.out.println("ThreadID " + threadID);
-                System.out.println("active " + activeCount);
-                System.out.println("maxNum " + maxNumberThreads);
-                System.out.println("ReqSize " + threadReqHandler.getRequestSize());
                 Logger.getLogger(this.getClass().getName()).log(Level.INFO, "----------------Execute Request-----------------");
                 if (currentReq.getDataSource() != null) {
 //                        Logger.getLogger("Thread_" + currentReq.getDataSource().getID()).log(Level.INFO, "Data Source (ID,Name): (" + currentReq.getDataSource().getID() + "," + currentReq.getDataSource().getName() + ")");
@@ -226,14 +122,12 @@ public class Launcher {
 //                    requestJobs.remove(0);
 //                }
             } else {
-                System.out.println("thread sleep");
-                for (Request req : threadReqHandler.getActiveRequests()) {
-                    System.out.println(req.getDataSource().getID());
-                    System.out.println(req.getDataSource().getName());
-                    System.out.println(req.getDataPoints().get(0).getDatapointId());
-                }
                 try {
                     Thread.sleep(10000);
+                    System.out.println("thread sleeps");
+                    for(Request req: threadReqHandler.getActiveRequests()){
+                        System.out.println(req.getDataSource().getName());
+                    }
                 } catch (InterruptedException ie) {
                     System.out.println(ie);
                 }
@@ -297,5 +191,38 @@ public class Launcher {
         appender.addFilter(new ThreadFilter(NameForAppender));
         logger.setAdditivity(false);    //<--do not use default root logger
         logger.addAppender(appender);
+    }
+
+    private static List<Driver> getDriverList() {
+        List<Driver> drivers = new ArrayList<Driver>();
+        try {
+            JEVisClass collectorClass = getClient().getJEVisClass(JEVisTypes.JEDataCollector.NAME);
+            JEVisClass driverDirClass = getClient().getJEVisClass(JEVisTypes.DriverDirectory.NAME);
+            JEVisClass driverClass = getClient().getJEVisClass(JEVisTypes.Driver.NAME);
+            List<JEVisObject> dataCollector = getClient().getObjects(collectorClass, false);
+            if (dataCollector.size() == 1) {
+                List<JEVisObject> children = dataCollector.get(0).getChildren();
+                JEVisObject driverDirectory = null;
+                for (JEVisObject child : children) {
+                    if (child.getJEVisClass().equals(driverDirClass)) {
+                        driverDirectory = child;
+                        break;
+                    }
+                }
+                if (driverDirectory == null) {
+                    return drivers;
+                }
+                for (JEVisObject child : driverDirectory.getChildren()) {
+                    if (child.getJEVisClass().equals(driverClass)) {
+                        Driver driver = new Driver();
+                        driver.init(child);
+                        drivers.add(driver);
+                    }
+                }
+            }
+        } catch (JEVisException ex) {
+            java.util.logging.Logger.getLogger(Launcher.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        return drivers;
     }
 }

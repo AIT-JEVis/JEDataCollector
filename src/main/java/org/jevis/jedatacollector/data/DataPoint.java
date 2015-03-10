@@ -105,7 +105,7 @@ public class DataPoint {
                 tmpDateNew = fmt.parseDateTime(dateString);
             }
             _lastReadout = tmpDateNew;
-            _currentReadoutString = new DateTime().toString(fmt);
+            _currentReadoutString = new DateTime().toString(fmtNew);
             _periodicallySampling = DatabaseHelper.getObjectAsBoolean(dp, periodicallySampling);
 
 //            _channelID = DatabaseHelper.getObjectAsString(dp, channelIDType);

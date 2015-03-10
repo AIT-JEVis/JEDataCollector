@@ -4,9 +4,10 @@
  */
 package org.jevis.jedatacollector.connection;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.jevis.api.JEVisClass;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
@@ -16,6 +17,8 @@ import org.jevis.jedatacollector.connection.HTTP.HTTPConnection;
 import org.jevis.commons.JEVisTypes;
 import org.jevis.jedatacollector.CLIProperties.ConnectionCLIParser;
 import org.jevis.jedatacollector.connection.SOAP.SOAPConnection;
+import org.jevis.commons.parsing.Driver;
+import org.jevis.commons.parsing.LoadingDriver;
 
 /**
  *
@@ -23,13 +26,25 @@ import org.jevis.jedatacollector.connection.SOAP.SOAPConnection;
  */
 public class ConnectionFactory {
 
-    public static DataCollectorConnection getConnection(JEVisObject jevisObject) throws JEVisException {
+    public static List<Driver> _drivers = new ArrayList<Driver>();
 
-        JEVisClass httpClass = jevisObject.getDataSource().getJEVisClass(JEVisTypes.DataServer.HTTP.NAME);
+    public static void setDrivers(List<Driver> drivers) {
+        _drivers = drivers;
+    }
+
+    public static DataCollectorConnection loadConnectionDrivers(Driver driver) {
+        LoadingDriver loadDriver = new LoadingDriver();
+//        return (DataCollectorConnection) loadDriver.loadClass("/home/bf/NetBeansProjects/JEDataCollector/Driver/VIDA350_Connection.jar", "org.jevis.jedatacollector.vida350connection.VIDA350_Connection");
+        return (DataCollectorConnection) loadDriver.loadClass("/home/jedc/bin/Driver/VIDA350_Connection.jar", "org.jevis.jedatacollector.vida350connection.VIDA350_Connection");
+//        return (DataCollectorConnection) loadDriver.loadClass(driver.getConnectionSourceName(), driver.getConnectionClassName());
+//        return (DataCollectorConnection) loadDriver.loadClass("/home/bf/NetBeansProjects/JEDataCollector/Driver/VIDA350_Connection.jar", driver.getConnectionName());
+    }
+
+    public static DataCollectorConnection getConnection(JEVisObject jevisObject) throws JEVisException {
         //workaround for inherit bug, normally only with jevic class parser and connection
         JEVisClass ftpClass = jevisObject.getDataSource().getJEVisClass(JEVisTypes.DataServer.FTP.NAME);
         JEVisClass sftpClass = jevisObject.getDataSource().getJEVisClass(JEVisTypes.DataServer.sFTP.NAME);
-        JEVisClass dataServerClass = jevisObject.getDataSource().getJEVisClass(JEVisTypes.DataServer.NAME);
+        JEVisClass dataServerClass = jevisObject.getDataSource().getJEVisClass(JEVisTypes.DataSource.NAME);
 
         JEVisObject connectionObject = null;
         //if the jevisObject is a data server object?
@@ -46,7 +61,8 @@ public class ConnectionFactory {
             List<JEVisObject> connectionObjects = jevisObject.getChildren(ftpClass, true);
             if (connectionObjects.size() == 1) {
                 connectionObject = connectionObjects.get(0);
-                org.apache.log4j.Logger.getLogger(ConnectionFactory.class.getName()).log(org.apache.log4j.Level.INFO, "http Connection");
+                org.apache.log4j.Logger.getLogger(ConnectionFactory.class
+                        .getName()).log(org.apache.log4j.Level.INFO, "http Connection");
                 //same workaround as above
             }
 //            else {
@@ -70,11 +86,10 @@ public class ConnectionFactory {
 
         DataCollectorConnection connection = null;
         String identifier = null;
-
         try {
             identifier = connectionObject.getJEVisClass().getName();
         } catch (JEVisException ex) {
-            Logger.getLogger(ConnectionFactory.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ConnectionFactory.class.getName()).log(Level.ERROR, ex.getMessage());
         }
 
         if (identifier.equals(JEVisTypes.DataServer.HTTP.NAME)) {
@@ -87,6 +102,14 @@ public class ConnectionFactory {
             connection = new FTPConnection();
         } else if (identifier.equals(JEVisTypes.DataServer.sFTP.NAME)) {
             connection = new SFTPConnection();
+        }
+
+        if (connection == null) {
+            for (Driver driver : _drivers) {
+                if (identifier.equals(driver.getDataSourceName())) {
+                    connection = loadConnectionDrivers(driver);
+                }
+            }
         }
         return connection;
     }
