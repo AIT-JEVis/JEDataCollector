@@ -65,11 +65,15 @@ public class DataCollector implements Runnable {
                 Logger.getLogger(DataCollector.class.getName()).log(Level.ALL, "Start Parsing");
                 parse();
             }
+            boolean succesfullOutput = false;
             if (_request.needImport() && !_request.getParser().getResults().isEmpty()) {
                 Logger.getLogger(DataCollector.class.getName()).log(Level.ALL, "Import Data");
-                importData(_request, _parsingService);
+                succesfullOutput = importData();
             }
-
+            Logger.getLogger(DataCollector.class.getName()).log(Level.INFO, "set DB Data");
+            if (_request.getParsingRequest() != null && _request.getParsingRequest().getOutputType().equals(OutputHandler.JEVIS_OUTPUT) && succesfullOutput) {
+                DataCollector.setLastReadout(_request);
+            }
         } catch (Throwable ex) {
             Logger.getLogger(this.getClass().getName()).log(Level.ERROR, ex.getMessage());
         } finally {
@@ -94,14 +98,11 @@ public class DataCollector implements Runnable {
         return _inputHandler;
     }
 
-    synchronized public static void importData(Request req, ParsingService parsingService) {
-        OutputHandler outputHandler = OutputHandlerFactory.getOutputHandler(req.getParsingRequest().getOutputType());
-        System.out.println("Outputtype: " + req.getParsingRequest().getOutputType());
-        boolean writeOutput = outputHandler.writeOutput(req.getParsingRequest(), parsingService.getFileParser().getResults());
-
-        if (req.getParsingRequest() != null && req.getParsingRequest().getOutputType().equals(OutputHandler.JEVIS_OUTPUT) && writeOutput) {
-            DataCollector.setLastReadout(req);
-        }
+    public boolean importData() {
+        OutputHandler outputHandler = OutputHandlerFactory.getOutputHandler(_request.getParsingRequest().getOutputType());
+        System.out.println("Outputtype: " + _request.getParsingRequest().getOutputType());
+        boolean writeOutput = outputHandler.writeOutput(_request.getParsingRequest(), getResults());
+        return writeOutput;
     }
 
     public List<Result> getResults() {
@@ -151,12 +152,13 @@ public class DataCollector implements Runnable {
         return null;
     }
 
-    public static void setLastReadout(Request req) throws NumberFormatException {
+    synchronized public static void setLastReadout(Request req) throws NumberFormatException {
         for (DataPoint dp : req.getDataPoints()) {
             String currentReadout = null;
             try {
                 JEVisSample latestSample = Launcher.getClient().getObject(Long.parseLong(dp.getTarget())).getAttribute("Value").getLatestSample();
                 if (!dp.getPeriodicallySampling()) {
+
                     currentReadout = dp.getCurrentReadoutString();
                 } else if (latestSample != null) {
                     currentReadout = latestSample.getTimestamp().toString(DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss"));
@@ -171,6 +173,5 @@ public class DataCollector implements Runnable {
                 Logger.getLogger(DataCollector.class.getName()).log(Level.WARN, "Calculated Readout: " + currentReadout);
             }
         }
-        Logger.getLogger(DataCollector.class.getName()).log(Level.INFO, "finish set Last Readout");
     }
 }

@@ -82,7 +82,7 @@ public class DataPoint {
             JEVisType mappingIdentifierType = type.getType(JEVisTypes.DataPoint.MAPPING_IDENTIFIER);
             JEVisType targetType = type.getType(JEVisTypes.DataPoint.TARGET);
             JEVisType valueIdentifierType = type.getType(JEVisTypes.DataPoint.VALUE_IDENTIFIER);
-//            JEVisType dateFormatType = type.getType(JEVisTypes.DataPoint.DATE_FORMAT);
+            JEVisType dateFormatType = type.getType(JEVisTypes.DataPoint.DATE_FORMAT);
             JEVisType lastReadoutType = type.getType(JEVisTypes.DataPoint.LAST_READOUT);
             JEVisType periodicallySampling = type.getType(JEVisTypes.DataPoint.PERIODICALLY_SAMPLING);
 
@@ -90,7 +90,7 @@ public class DataPoint {
             _mappingIdentifier = DatabaseHelper.getObjectAsString(dp, mappingIdentifierType);
             _target = DatabaseHelper.getObjectAsString(dp, targetType);
             _valueIdentifier = DatabaseHelper.getObjectAsString(dp, valueIdentifierType);
-//            _dateFormat = DatabaseHelper.getObjectAsString(dp, dateFormatType);
+            _dateFormat = DatabaseHelper.getObjectAsString(dp, dateFormatType);
 
             DateTimeFormatter fmt = DateTimeFormat.forPattern("ddMMyyyyHHmmss");
             DateTimeFormatter fmtNew = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");

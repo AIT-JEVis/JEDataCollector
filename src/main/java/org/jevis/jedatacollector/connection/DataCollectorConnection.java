@@ -22,48 +22,66 @@ public interface DataCollectorConnection {
      * Connects to a device.
      *
      * @return true if connection was successfull
-     * @throws URLException thrown of URL is incorrect
-     * @throws ConnectionTimeOutException thrown if time out occured
      */
-    boolean connect();
+    public boolean connect();
 
     /**
      * Sends a sample request to the specified device.
      *
-     * @param device The device the request shall be sent to
      * @param dp A device's datapoint
-     * @param ts The wanted timeset for samples
-     * @return Returns an object which's type is determined by the connection
+     * @param from 
+     * @param until
+     * @return Returns a list of InputHandler. The InputHandler contains the fetched information
      * type
      */
-    List<InputHandler> sendSampleRequest(DataPoint dp, DateTime from, DateTime until);
+    public List<InputHandler> sendSampleRequest(DataPoint dp, DateTime from, DateTime until);
 
     /**
-     * Indicates, whether a device returns all the values it was asked for or
-     * whether it has a maximum value. If it's the latter case, the fetch thread
-     * does not know if it has received all available data and therefore calls
-     * the device several times. If the connection to the device is expansive,
-     * the method should return false, if cost is no problem, it should return
-     * true.
-     *
-     * @return true if data is limited, false otherwise
+     * Initialization of the DataSource Object.
+     * 
+     * @param object The Data Source Object from the JEVis system.
+     * @throws FetchingException 
      */
-//    boolean returnsLimitedSampleCount();
+    public void initialize(JEVisObject object) throws FetchingException;
 
-    void initialize(JEVisObject object) throws FetchingException;
-
+    /**
+     * Returns the timezone of the DataSource
+     * 
+     * @return 
+     */
     public String getTimezone();
 
+    /**
+     * Returns the Name of the DataSource in the JEVis system.
+     * 
+     * @return 
+     */
     public String getName();
 
+    /**
+     * Returns the ID of the DataSource in the JEVis system.
+     * @return 
+     */
     public Long getID();
 
+    /**
+     * Returns true, if the DataSource is enabled in the JEVis system
+     * 
+     * @return 
+     */
     public Boolean isEnabled();
     
+    /**
+     * Returns the Host given in the JEVis system
+     * 
+     * @return 
+     */
     public String getHost();
     
+    /**
+     * Returns the Port given in the JEVis system,
+     * 
+     * @return 
+     */
     public Integer getPort();
-    
-//    public String getConnectionType();
-
 }

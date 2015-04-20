@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+
+
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+    <SOAP-ENV:Header/>
+    <SOAP-ENV:Body>
+        <LogRead xmlns="http://www.loytec.com/wsdl/XMLDL/1.0/" NumItems="500" ReturnCompleteSet="false" StartDateTime="2014-01-01T10:30:00">
+            <ReqBase clientItemHandle="472680764" logHandle="00/var/lib//dpal/trend-10C3.bin"/>
+        </LogRead>
+    </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

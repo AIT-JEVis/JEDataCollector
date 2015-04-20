@@ -125,7 +125,7 @@ public class Launcher {
                 try {
                     Thread.sleep(10000);
                     System.out.println("thread sleeps");
-                    for (Request req : threadReqHandler.getActiveRequests()) {
+                    for(Request req: threadReqHandler.getActiveRequests()){
                         System.out.println(req.getDataSource().getName());
                     }
                 } catch (InterruptedException ie) {
@@ -158,7 +158,6 @@ public class Launcher {
         Logger.getLogger(this.getClass().getName()).log(Level.ALL, con.getDb());
         try {
 //            _client = new JEVisDataSourceSQL("192.168.2.55", "3306", "jevis", "jevis", "jevistest", "Sys Admin", "jevis");
-//            _client = new JEVisDataSourceSQL("lthneo.kaust.edu.sa", "3306", "jevis", "jevis", "Taexu3Eesesieth3eid1");
             _client = new JEVisDataSourceSQL("coffee-project.eu", "13306", "jevis", "jevis", "jevistest");
             _client.connect("Sys Admin", "JEV34Env");
 //            _client = new JEVisDataSourceSQL(con.getDb(), con.getPort(), con.getSchema(), con.getUser(), con.getPw());
