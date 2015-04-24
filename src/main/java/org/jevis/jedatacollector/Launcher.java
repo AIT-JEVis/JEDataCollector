@@ -157,12 +157,8 @@ public class Launcher {
         JEVisServerConnectionCLI con = new JEVisServerConnectionCLI(configFile);
         Logger.getLogger(this.getClass().getName()).log(Level.ALL, con.getDb());
         try {
-//            _client = new JEVisDataSourceSQL("192.168.2.55", "3306", "jevis", "jevis", "jevistest", "Sys Admin", "jevis");
-//            _client = new JEVisDataSourceSQL("lthneo.kaust.edu.sa", "3306", "jevis", "jevis", "Taexu3Eesesieth3eid1");
-            _client = new JEVisDataSourceSQL("coffee-project.eu", "13306", "jevis", "jevis", "jevistest");
-            _client.connect("Sys Admin", "JEV34Env");
-//            _client = new JEVisDataSourceSQL(con.getDb(), con.getPort(), con.getSchema(), con.getUser(), con.getPw());
-//            _client.connect(con.getJevisUser(), con.getJevisPW());
+            _client = new JEVisDataSourceSQL(con.getDb(), con.getPort(), con.getSchema(), con.getUser(), con.getPw());
+            _client.connect(con.getJevisUser(), con.getJevisPW());
         } catch (JEVisException ex) {
             Logger.getLogger(Launcher.class.getName()).log(Level.ERROR, ex.getMessage());
             return false;

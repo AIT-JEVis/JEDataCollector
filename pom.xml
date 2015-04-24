@@ -66,16 +66,6 @@
             <version>2.0.2</version>
         </dependency>
         <dependency>
-            <groupId>org.jevis.api</groupId>
-            <artifactId>jeapi</artifactId>
-            <version>3.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jevis.api.sql</groupId>
-            <artifactId>jeapi-sql</artifactId>
-            <version>3.0.1</version>
-        </dependency>
-        <dependency>
             <groupId>commons-net</groupId>
             <artifactId>commons-net</artifactId>
             <version>3.2</version>
@@ -124,6 +114,16 @@
             <groupId>org.jevis.commons</groupId>
             <artifactId>JECommons</artifactId>
             <version>3.0</version>
+        </dependency>
+                <dependency>
+            <groupId>org.jevis.api</groupId>
+            <artifactId>jeapi</artifactId>
+            <version>3.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jevis.api.sql</groupId>
+            <artifactId>jeapi-sql</artifactId>
+            <version>3.0.1</version>
         </dependency>
     </dependencies>
     
