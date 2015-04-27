@@ -203,22 +203,15 @@ public class SOAPConnection implements DataCollectorConnection {
         Document doc = buildDocument(realQuery);
         SOAPMessage buildSOAPMessage = buildSOAPMessage(doc);
         List<InputHandler> inputHandler = new ArrayList<InputHandler>();
-        Logger.getLogger(SOAPConnection.class.getName()).log(Level.ALL, "1");
         try {
             if (_ssl) {
                 ConnectionHelper.doTrustToCertificates();
             }
-            Logger.getLogger(SOAPConnection.class.getName()).log(Level.ALL, realQuery);
             SOAPMessage call = _conn.call(buildSOAPMessage, _serverURL);
-            Logger.getLogger(SOAPConnection.class.getName()).log(Level.ALL, realQuery);
             soapResponses.add(call);
-            Logger.getLogger(SOAPConnection.class.getName()).log(Level.ALL, "1");
             ByteArrayOutputStream out = new ByteArrayOutputStream();
-            Logger.getLogger(SOAPConnection.class.getName()).log(Level.ALL, "1");
             call.writeTo(out);
-            Logger.getLogger(SOAPConnection.class.getName()).log(Level.ALL, "1");
             String strMsg = new String(out.toByteArray());
-            Logger.getLogger(SOAPConnection.class.getName()).log(Level.ALL, "1");
             System.out.println(strMsg);
             //        soapRequests.add(buildSOAPMessage);
             //        for (int i = 0; i < soapRequests.size(); i++) {
@@ -237,9 +230,7 @@ public class SOAPConnection implements DataCollectorConnection {
                 Logger.getLogger(SOAPConnection.class.getName()).log(Level.ERROR, ex.getMessage());
             }
         }
-        Logger.getLogger(SOAPConnection.class.getName()).log(Level.ALL, "1");
         inputHandler.add(InputHandlerFactory.getInputConverter(soapResponses));
-        Logger.getLogger(SOAPConnection.class.getName()).log(Level.ALL, "1");
         return inputHandler;
     }
 
