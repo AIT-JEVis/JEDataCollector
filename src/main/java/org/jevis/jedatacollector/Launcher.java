@@ -72,7 +72,6 @@ public class Launcher {
 
         //hier müssen verschiedene Modi an und abgestellt werden können
 //        boolean cliJob = false;
-
         launcher.excecuteRequstsWithThreadsExtend(requestJobs);
         MDC.put(Launcher.KEY, "-1");
         Logger.getLogger(Launcher.class.getName()).log(Level.INFO, "########## Finish JEDataCollector #########");

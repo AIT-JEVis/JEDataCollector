@@ -101,7 +101,6 @@ public class SFTPConnection implements DataCollectorConnection {
             String login = _username;
             String password = _password;
 
-
             java.util.Properties config = new java.util.Properties();
             config.put("StrictHostKeyChecking", "no");
 
@@ -131,7 +130,6 @@ public class SFTPConnection implements DataCollectorConnection {
         Object answer = null;
         String fileName = ConnectionHelper.parseConnectionString(dp, from, until, _fileNameScheme, _dateFormat);
 //        String query = _filePath + fileName;
-
 
         try {
 //            String directory = "the directory";
@@ -164,13 +162,11 @@ public class SFTPConnection implements DataCollectorConnection {
 //            while ((inputLine = bufferedReader.readLine()) != null) {
 //                ret.add(inputLine);
 //            }
-
-
         } catch (SftpException ex) {
-             _channel.disconnect();
+            _channel.disconnect();
             _session.disconnect();
             Logger.getLogger(SFTPConnection.class.getName()).log(Level.SEVERE, null, ex);
-        } 
+        }
         List<InputHandler> answerList = new ArrayList<InputHandler>();
         answerList.add(InputHandlerFactory.getInputConverter(answer));
         return answerList;
@@ -221,7 +217,6 @@ public class SFTPConnection implements DataCollectorConnection {
                 }
                 answerList.add(inputConverter);
 
-
             } catch (SftpException ex) {
                 org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(org.apache.log4j.Level.ERROR, ex.getMessage());
                 _channel.disconnect();
@@ -255,7 +250,7 @@ public class SFTPConnection implements DataCollectorConnection {
 
             _id = sftpObject.getID();
             _name = sftpObject.getName();
-            _serverURL = sftpObject.getAttribute(server).getLatestSample().getValueAsString();
+            _serverURL = DatabaseHelper.getObjectAsString(sftpObject, server);
             JEVisAttribute portAttr = sftpObject.getAttribute(port);
             if (!portAttr.hasSample()) {
                 _port = 22;

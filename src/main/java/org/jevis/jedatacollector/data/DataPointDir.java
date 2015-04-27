@@ -72,6 +72,10 @@ public class DataPointDir {
     public String getFolderName() {
         return _folderName;
     }
+    
+    public void setFolderName(String folderName){
+        _folderName = folderName;
+    }
 
     public Boolean isCompressed() {
         return _compressed;

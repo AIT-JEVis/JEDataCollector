@@ -161,7 +161,8 @@ public class SOAPConnection implements DataCollectorConnection {
             } else {
                 _uri += "@";
             }
-        }        String path = dp.getDirectory().getFolderName();
+        }
+        String path = dp.getDirectory().getFolderName();
         _uri += _server;
         if (_port != null) {
             _uri += ":" + _port + path;
@@ -176,13 +177,12 @@ public class SOAPConnection implements DataCollectorConnection {
         if (_ssl) {
             _uri = _uri.replace("http", "https");
         }
-        System.out.println(_uri);
+        Logger.getLogger(SOAPConnection.class.getName()).log(Level.ALL, "SOAP Uri: " + _uri);
         try {
             _serverURL = new URL(_uri);
         } catch (MalformedURLException ex) {
             Logger.getLogger(SOAPConnection.class.getName()).log(Level.ERROR, ex.getMessage());
         }
-
 
         DateTimeFormatter fmt = null;
         if (_dateFormat != null && !_dateFormat.equals("")) {
@@ -203,15 +203,22 @@ public class SOAPConnection implements DataCollectorConnection {
         Document doc = buildDocument(realQuery);
         SOAPMessage buildSOAPMessage = buildSOAPMessage(doc);
         List<InputHandler> inputHandler = new ArrayList<InputHandler>();
+        Logger.getLogger(SOAPConnection.class.getName()).log(Level.ALL, "1");
         try {
             if (_ssl) {
                 ConnectionHelper.doTrustToCertificates();
             }
+            Logger.getLogger(SOAPConnection.class.getName()).log(Level.ALL, realQuery);
             SOAPMessage call = _conn.call(buildSOAPMessage, _serverURL);
+            Logger.getLogger(SOAPConnection.class.getName()).log(Level.ALL, realQuery);
             soapResponses.add(call);
+            Logger.getLogger(SOAPConnection.class.getName()).log(Level.ALL, "1");
             ByteArrayOutputStream out = new ByteArrayOutputStream();
+            Logger.getLogger(SOAPConnection.class.getName()).log(Level.ALL, "1");
             call.writeTo(out);
+            Logger.getLogger(SOAPConnection.class.getName()).log(Level.ALL, "1");
             String strMsg = new String(out.toByteArray());
+            Logger.getLogger(SOAPConnection.class.getName()).log(Level.ALL, "1");
             System.out.println(strMsg);
             //        soapRequests.add(buildSOAPMessage);
             //        for (int i = 0; i < soapRequests.size(); i++) {
@@ -230,8 +237,9 @@ public class SOAPConnection implements DataCollectorConnection {
                 Logger.getLogger(SOAPConnection.class.getName()).log(Level.ERROR, ex.getMessage());
             }
         }
-
+        Logger.getLogger(SOAPConnection.class.getName()).log(Level.ALL, "1");
         inputHandler.add(InputHandlerFactory.getInputConverter(soapResponses));
+        Logger.getLogger(SOAPConnection.class.getName()).log(Level.ALL, "1");
         return inputHandler;
     }
 
@@ -346,4 +354,65 @@ public class SOAPConnection implements DataCollectorConnection {
     public Integer getPort() {
         return _port;
     }
+
+    public void setServerURL(URL _serverURL) {
+        this._serverURL = _serverURL;
+    }
+
+    public void setServer(String _server) {
+        this._server = _server;
+    }
+
+    public void setDateFormat(String _dateFormat) {
+        this._dateFormat = _dateFormat;
+    }
+
+    public void setPort(Integer _port) {
+        this._port = _port;
+    }
+
+    public void setConnectionTimeout(Integer _connectionTimeout) {
+        this._connectionTimeout = _connectionTimeout;
+    }
+
+    public void setReadTimeout(Integer _readTimeout) {
+        this._readTimeout = _readTimeout;
+    }
+
+    public void setMaximumDayRequest(Integer _maximumDayRequest) {
+        this._maximumDayRequest = _maximumDayRequest;
+    }
+
+    public void setId(Long _id) {
+        this._id = _id;
+    }
+
+    public void setUserName(String _userName) {
+        this._userName = _userName;
+    }
+
+    public void setPassword(String _password) {
+        this._password = _password;
+    }
+
+    public void setSsl(Boolean _ssl) {
+        this._ssl = _ssl;
+    }
+
+    public void setTimezone(String _timezone) {
+        this._timezone = _timezone;
+    }
+
+    public void setUri(String _uri) {
+        this._uri = _uri;
+    }
+
+    public void setEnabled(Boolean _enabled) {
+        this._enabled = _enabled;
+    }
+
+    public void setName(String _name) {
+        this._name = _name;
+    }
+
 }

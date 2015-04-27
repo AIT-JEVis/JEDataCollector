@@ -197,4 +197,46 @@ public class DataPoint {
         }
         return filePath;
     }
+
+    public void setJevisDatapoint(JEVisObject _jevisDatapoint) {
+        this._jevisDatapoint = _jevisDatapoint;
+    }
+
+    public void setDatapointID(Long _datapointID) {
+        this._datapointID = _datapointID;
+    }
+
+    public void setOnlineData(JEVisObject _onlineData) {
+        this._onlineData = _onlineData;
+    }
+
+    public void setMappingIdentifier(String _mappingIdentifier) {
+        this._mappingIdentifier = _mappingIdentifier;
+    }
+
+    public void setTarget(String _target) {
+        this._target = _target;
+    }
+
+    public void setValueIdentifier(String _valueIdentifier) {
+        this._valueIdentifier = _valueIdentifier;
+    }
+
+    public void setDateFormat(String _dateFormat) {
+        this._dateFormat = _dateFormat;
+    }
+
+    public void setLastReadout(DateTime _lastReadout) {
+        this._lastReadout = _lastReadout;
+    }
+
+    public void setCurrentReadoutString(String _currentReadoutString) {
+        this._currentReadoutString = _currentReadoutString;
+    }
+
+    public void setPeriodicallySampling(Boolean _periodicallySampling) {
+        this._periodicallySampling = _periodicallySampling;
+    }
+    
+    
 }

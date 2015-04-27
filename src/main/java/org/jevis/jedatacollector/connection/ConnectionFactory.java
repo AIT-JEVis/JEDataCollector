@@ -108,6 +108,7 @@ public class ConnectionFactory {
             for (Driver driver : _drivers) {
                 if (identifier.equals(driver.getDataSourceName())) {
                     connection = loadConnectionDrivers(driver);
+                    break;
                 }
             }
         }
