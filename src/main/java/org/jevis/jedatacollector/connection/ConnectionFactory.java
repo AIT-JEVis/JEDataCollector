@@ -19,6 +19,7 @@ import org.jevis.jedatacollector.CLIProperties.ConnectionCLIParser;
 import org.jevis.jedatacollector.connection.SOAP.SOAPConnection;
 import org.jevis.commons.parsing.Driver;
 import org.jevis.commons.parsing.LoadingDriver;
+import org.jevis.jedatacollector.connection.mysql.MySQLConnection;
 
 /**
  *
@@ -102,6 +103,8 @@ public class ConnectionFactory {
             connection = new FTPConnection();
         } else if (identifier.equals(JEVisTypes.DataServer.sFTP.NAME)) {
             connection = new SFTPConnection();
+        } else if (identifier.equals("MySQL Server")) {
+            connection = new MySQLConnection();
         }
 
         if (connection == null) {
