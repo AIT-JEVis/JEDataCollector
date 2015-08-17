@@ -6,11 +6,11 @@ package org.jevis.jedatacollector.dataTests;
 
 import java.util.List;
 import org.jevis.api.JEVisClass;
-import org.jevis.api.JEVisConfiguration;
 import org.jevis.api.JEVisDataSource;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisInfo;
 import org.jevis.api.JEVisObject;
+import org.jevis.api.JEVisOption;
 import org.jevis.api.JEVisRelationship;
 import org.jevis.api.JEVisUnit;
 
@@ -96,17 +96,17 @@ public class JEVisFakeClient implements JEVisDataSource {
     }
 
     @Override
-    public void init(JEVisConfiguration config) throws IllegalArgumentException {
+    public void init(List<JEVisOption> config) throws IllegalArgumentException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public JEVisConfiguration getConfiguration() {
+    public void setConfiguration(List<JEVisOption> config) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void setConfiguration(JEVisConfiguration config) {
+    public List<JEVisOption> getConfiguration() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
