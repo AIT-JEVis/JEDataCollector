@@ -19,11 +19,11 @@ import org.jevis.api.JEVisObject;
 import org.jevis.api.JEVisType;
 import org.jevis.api.sql.JEVisDataSourceSQL;
 import org.jevis.commons.DatabaseHelper;
-import org.jevis.commons.JEVisTypes;
 import org.jevis.commons.cli.JEVisCommandLine;
 import org.jevis.commons.driver.ConverterFactory;
 import org.jevis.commons.driver.DataSourceFactory;
 import org.jevis.commons.driver.ImporterFactory;
+import org.jevis.commons.driver.JEVisDriverTypes;
 import org.jevis.commons.driver.ParserFactory;
 import org.jevis.commons.driver.datasourcce.DataSource;
 import org.jevis.jedatacollector.CLIProperties.JEVisServerConnectionCLI;
@@ -125,8 +125,8 @@ public class Launcher {
 
     private Long getNumberOfMaxThreads() {
         try {
-            JEVisClass collectorClass = getClient().getJEVisClass(JEVisTypes.JEDataCollector.NAME);
-            JEVisType numberThreadsType = collectorClass.getType(JEVisTypes.JEDataCollector.MAX_NUMBER_THREADS);
+            JEVisClass collectorClass = getClient().getJEVisClass(JEVisDriverTypes.JEDataCollector.NAME);
+            JEVisType numberThreadsType = collectorClass.getType(JEVisDriverTypes.JEDataCollector.MAX_NUMBER_THREADS);
             List<JEVisObject> dataCollector = getClient().getObjects(collectorClass, false);
             if (dataCollector.size() == 1) {
                 return dataCollector.get(0).getAttribute(numberThreadsType).getLatestSample().getValueAsLong();
@@ -175,8 +175,8 @@ public class Launcher {
     private List<JEVisObject> getEnabledDataSources(JEVisDataSource client) {
         List<JEVisObject> enabledDataSources = new ArrayList<JEVisObject>();
         try {
-            JEVisClass dataSourceClass = client.getJEVisClass(JEVisTypes.DataServer.NAME);
-            JEVisType enabledType = dataSourceClass.getType(JEVisTypes.DataServer.ENABLE);
+            JEVisClass dataSourceClass = client.getJEVisClass(JEVisDriverTypes.DataSource.NAME);
+            JEVisType enabledType = dataSourceClass.getType(JEVisDriverTypes.DataSource.ENABLE);
             List<JEVisObject> allDataSources = client.getObjects(dataSourceClass, true);
             for (JEVisObject dataSource : allDataSources) {
                 Boolean enabled = DatabaseHelper.getObjectAsBoolean(dataSource, enabledType);
