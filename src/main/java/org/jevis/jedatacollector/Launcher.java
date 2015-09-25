@@ -96,7 +96,7 @@ public class Launcher {
             int activeCount = threadReqHandler.getNumberActiveRequests();
             if (activeCount < maxNumberThreads) {
                 JEVisObject currentDataSourceJevis = threadReqHandler.getNextDataSource();
-                initNewAppender("" + threadID, currentDataSourceJevis.getName() + "_ID(" + currentDataSourceJevis.getID() + ").log");
+                initNewAppender("" + threadID, currentDataSourceJevis.getName().replace(" ", "_") + "_ID(" + currentDataSourceJevis.getID() + ").log");
                 MDC.put(Launcher.KEY, "" + threadID);
 
                 Logger.getLogger(this.getClass().getName()).log(Level.INFO, "----------------Execute DataSource-----------------");
