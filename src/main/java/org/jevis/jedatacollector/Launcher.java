@@ -25,7 +25,7 @@ import org.jevis.commons.driver.DataSourceFactory;
 import org.jevis.commons.driver.ImporterFactory;
 import org.jevis.commons.driver.DataCollectorTypes;
 import org.jevis.commons.driver.ParserFactory;
-import org.jevis.commons.driver.datasourcce.DataSource;
+import org.jevis.commons.driver.DataSource;
 import org.jevis.jedatacollector.CLIProperties.JEVisServerConnectionCLI;
 
 /**
