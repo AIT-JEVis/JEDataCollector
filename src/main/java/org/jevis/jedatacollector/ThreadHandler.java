@@ -5,6 +5,7 @@
 package org.jevis.jedatacollector;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.jevis.api.JEVisObject;
 
@@ -14,11 +15,13 @@ import org.jevis.api.JEVisObject;
  */
 public class ThreadHandler {
 
-    private List<JEVisObject> _requests;
-    private static List<JEVisObject> _activeRequests = new ArrayList<JEVisObject>();
+    private List<JEVisObject> _requests = Collections.synchronizedList(new ArrayList());
+    private static List<Long> _activeThreads = Collections.synchronizedList(new ArrayList());
 
     public ThreadHandler(List<JEVisObject> requests) {
-        _requests = requests;
+        for (JEVisObject object : requests) {
+            _requests.add(object);
+        }
     }
 
     synchronized public boolean hasRequest() {
@@ -31,7 +34,6 @@ public class ThreadHandler {
 
     synchronized public JEVisObject getNextDataSource() {
         for (JEVisObject currentReq : _requests) {
-            _activeRequests.add(currentReq);
             _requests.remove(currentReq);
             return currentReq;
         }
@@ -39,6 +41,18 @@ public class ThreadHandler {
     }
 
     synchronized public int getNumberActiveRequests() {
-        return _activeRequests.size();
+        return _activeThreads.size();
+    }
+
+    synchronized public void removeActiveRequest(Long threadID) {
+        _activeThreads.remove(threadID);
+    }
+
+    synchronized public void addActiveThread(long threadid) {
+        _activeThreads.add(threadid);
+    }
+
+    synchronized public List<Long> getActiveThreads() {
+        return _activeThreads;
     }
 }
