@@ -111,7 +111,7 @@ public class Launcher {
                 dataSource.initialize(currentDataSourceJevis);
                 Thread dataCollectionThread = new Thread(dataSource, currentDataSourceJevis.getName());
                 long threadid = dataCollectionThread.getId();
-                System.out.println("start equip:" + currentDataSourceJevis.getName() + "id." + threadid);
+//                System.out.println("start equip:" + currentDataSourceJevis.getName() + "id." + threadid);
                 threadReqHandler.addActiveThread(threadid);
                 try {
                     //start the data source in a new thread
@@ -128,7 +128,7 @@ public class Launcher {
                     Set<Long> currentThreadIds = new HashSet<Long>();
                     for (Thread t : Thread.getAllStackTraces().keySet()) {
                         currentThreadIds.add(t.getId());
-                        System.out.println("thread_id:" + t.getId());
+//                        System.out.println("thread_id:" + t.getId());
                     }
                     for (Long id : threadReqHandler.getActiveThreads()) {
                         if (!currentThreadIds.contains(id)) {
@@ -138,12 +138,12 @@ public class Launcher {
                     }
                     if (foundFinishedThread) {
                         for (Long id : finishedThreads) {
-                            System.out.println("Remove equip id: " + id);
+//                            System.out.println("Remove equip id: " + id);
                             threadReqHandler.removeActiveRequest(id);
                         }
                     } else {
                         Thread.sleep(10000);
-                        System.out.println("thread sleeps");
+//                        System.out.println("thread sleeps");
                     }
                 } catch (InterruptedException ie) {
                     System.out.println(ie);
@@ -172,11 +172,11 @@ public class Launcher {
                     }
                 }
                 for (Long id : finishedThreads) {
-                    System.out.println("Remove equip id: " + id);
+//                    System.out.println("Remove equip id: " + id);
                     threadReqHandler.removeActiveRequest(id);
                 }
                 for (Long id : abortThreads) {
-                    System.out.println("Abort equip id: " + id);
+//                    System.out.println("Abort equip id: " + id);
                     threadReqHandler.removeActiveRequest(id);
                 }
             }
@@ -186,7 +186,7 @@ public class Launcher {
                 Set<Long> currentThreadIds = new HashSet<Long>();
                 for (Thread t : Thread.getAllStackTraces().keySet()) {
                     currentThreadIds.add(t.getId());
-                    System.out.println("thread_id:" + t.getId());
+//                    System.out.println("thread_id:" + t.getId());
                 }
                 for (Long id : threadReqHandler.getActiveThreads()) {
                     if (!currentThreadIds.contains(id)) {
@@ -196,12 +196,12 @@ public class Launcher {
                 }
                 if (foundFinishedThread) {
                     for (Long id : finishedThreads) {
-                        System.out.println("Remove equip id: " + id);
+//                        System.out.println("Remove equip id: " + id);
                         threadReqHandler.removeActiveRequest(id);
                     }
                 } else {
                     Thread.sleep(10000);
-                    System.out.println("thread sleeps");
+//                    System.out.println("thread sleeps");
                 }
             } catch (InterruptedException ie) {
                 System.out.println(ie);
